@@ -71,3 +71,22 @@ function addTagClick(tags) {
         element.addEventListener('click', function () { sessionStorage.setItem("tag", element.textContent); })
     }
 }
+
+function removeLeadingWhiteSpace() {
+    var pres = document.getElementsByTagName('pre');
+    for (const pre of pres) {
+      let lines = pre.innerHTML.split( '\n' );
+      let length = lines[1].length - lines[1].trimLeft(' ').length
+      let innerHtml = "";
+      
+      for (let index = 0; index < lines.length; index++) {
+        const element = lines[index];
+        let newLine = "\n";
+
+        if(index == 0 || index == lines.length - 2) { newLine = ""; }
+        innerHtml += element.replace(' '.repeat(length)) + newLine;
+        innerHtml = innerHtml.replace('undefined', "");
+      }
+      pre.innerHTML = innerHtml.trimLeft('\n').trimRight('\n');
+    }
+}

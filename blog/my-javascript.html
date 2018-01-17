@@ -7,11 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="../style.css" />
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-  <script src="/external.js"></script>
+  <script src="../external.js"></script>
   <script src="highlight.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
@@ -35,7 +35,7 @@
   <br/>
 
   <!-- w3-content defines a container for fixed size centered content, and is wrapped around the whole page content, except for the footer in this example -->
-  <div style="max-width:1400px">
+  <div >
 
     <!-- Ariticle tags -->
     <div class="w3-card w3-margin w3-padding w3-white">
@@ -47,29 +47,29 @@
     </div>
 
     <!-- Blog entry -->
-    <article class="w3-card w3-margin w3-white w3-container">
+    <div class="w3-card w3-margin w3-white w3-container">
       <section class="w3-container">
         <h3>
           <b>Structure</b>
         </h3>
-        <div class="w3-panel w3-card w3-light-gray">
-          <pre class="w3-code w3-leftbar"><code class="js">
-              // variable initilazation
-              var myvar = "";
-              ...
+        
+        <pre class="w3-panel w3-card w3-light-gray"><code class="js w3-code w3-leftbar">
+          // variable initilazation
+          var myvar = "";
+          ...
 
-              // Function definition
-              function name(param) {}
-              ...
-      
-              // The rest of the code
-              ...
-            </code></pre>
-        </div>
+          // Function definition
+          function name(param) {}
+          ...
+
+          // The rest of the code
+          ...
+        </code></pre>
+        
         <hr />
       </section>
 
-    </article>
+    </div>
 
     <!-- END w3-content -->
   </div>
@@ -91,6 +91,7 @@
   <script>
     setTag();
     hljs.initHighlightingOnLoad();
+    removeLeadingWhiteSpace();
   </script>
 </body>
 

@@ -36,7 +36,7 @@
   <br/>
 
   <!-- w3-content defines a container for fixed size centered content, and is wrapped around the whole page content, except for the footer in this example -->
-  <div class="w3-content" style="max-width:1400px">
+  <div class="w3-content">
     
     <!-- Ariticle tags -->
     <div class="w3-card w3-margin w3-padding w3-white">
@@ -48,66 +48,59 @@
     </div>
 
     <!-- Blog entry -->
-    <article class="w3-card w3-margin w3-white w3-container">
+    <div class="w3-card w3-margin w3-white w3-container">
       <section class="w3-container">
         <h3><b>Events</b></h3>
-        <section class="w3-container">
+        <section>
           <h4><b><code class="w3-light-gray">addEventListener()</code> and <code class="w3-light-gray">removeEventListener()</code></b></h4>
           <p>The main advantages of the DOM Level 2 Events <code class="w3-light-gray">addEventListener()</code> and <code class="w3-light-gray">removeEventListener()</code> are that you can remove event handler code if needed, using <code class="w3-light-gray">removeEventListener()</code>, and you can add multiple listeners of the same type to elements if required. For example, you can call <code class="w3-light-gray">addEventListener('click', function() { ... })</code> on an element multiple times, with different functions specified in the second argument. This is impossible with event handler properties, because any subsequent attempts to set a property will overwrite earlier ones, e.g.:</p>
           
-          <div class="w3-panel w3-card w3-light-gray">
-            <pre class="w3-code w3-leftbar"><code class="js">
+          <pre class="w3-panel w3-card w3-light-gray"><code class="js w3-code w3-leftbar">
             element.onclick = function1;
             element.onclick = function2; // element.onclick is function2 now
-            </code></pre>
-          </div>
-          <hr />
+          </code></pre>
         </section>
 
-        <section class="w3-container">
+        <section>
           <h4><b>Event Object</b></h4>
           <p><code>e.target</code> is incredibly useful when you want to set the <b>same</b> event handler on multiple elements, and do something to all of them when an event occurs on them after you assign the handler.</p>
-          <div class="w3-panel w3-card w3-light-gray">
-            <pre class="w3-code w3-leftbar"><code class="js">
-              /* Looping through images */ 
-              for (var i = 1; i &lt;= 5; i++) { 
-                var newImage = document.createElement('img'); 
-                newImage.setAttribute('src', 'images/pic' + i + '.jpg'); 
-                thumbBar.appendChild(newImage); 
-                // When click event occur, newImage.src = images/pic5.jpg'
-                newImage.onclick = function(e) { // Use e.target to match the element 
-                  displayedImage.setAttribute('src', e.target.getAttribute('src')); 
-                } 
-              }
-            </code></pre>
-          </div>
-          <hr />
+          <pre class="w3-panel w3-card w3-light-gray"><code class="js w3-code w3-leftbar">
+            /* Looping through images */ 
+            for (var i = 1; i &lt;= 5; i++) { 
+              var newImage = document.createElement('img'); 
+              newImage.setAttribute('src', 'images/pic' + i + '.jpg'); 
+              thumbBar.appendChild(newImage); 
+              // When click event occur, newImage.src = images/pic5.jpg'
+              newImage.onclick = function(e) { // Use e.target to match the element 
+                displayedImage.setAttribute('src', e.target.getAttribute('src')); 
+              } 
+            }
+          </code></pre>
         </section>
     
       </section>
       
+      <hr />
       <section class="w3-container">
         <h3><b>Object</b></h3>
         <p>a fairly common pattern for more object definitions is to define the properties inside the constructor, and the methods on the prototype. This makes the code easier to read, as the constructor only contains the property definitions, and the methods are split off into separate blocks. For example:</p>
-        <div class="w3-panel w3-card w3-light-gray">
-          <pre class="w3-code w3-leftbar"><code class="js">
-            // Constructor with property definitions  
-            function Test(a, b, c, d) {
-            // property definitions
-            }
-            
-            // First method definition
-            Test.prototype.x = function() { ... };
-            
-            // Second method definition
-            Test.prototype.y = function() { ... };
-            
-            // etc.
-          </code></pre>
-        </div>
+        <pre class="w3-panel w3-card w3-light-gray"><code class="js w3-code w3-leftbar">
+          // Constructor with property definitions  
+          function Test(a, b, c, d) {
+          // property definitions
+          }
+          
+          // First method definition
+          Test.prototype.x = function() { ... };
+          
+          // Second method definition
+          Test.prototype.y = function() { ... };
+          
+          // etc.
+        </code></pre>
       </section>
 
-    </article>
+    </div>
 
     <!-- END w3-content -->
   </div>
@@ -127,6 +120,7 @@
   <script>
     setTag();
     hljs.initHighlightingOnLoad();
+    removeLeadingWhiteSpace();
   </script>
 </body>
 

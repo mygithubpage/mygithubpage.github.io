@@ -112,3 +112,9 @@ hue-6-2: #c18401
 .margin-small {
   margin:4px;
 }
+
+hr { 
+  border-width: 2px!important;
+  border-color: dimgray!important;
+} 
+
