@@ -1,56 +1,73 @@
-function mobileTopNav(elem) {
+// My Personal JavaScript
+
+// Toggle to add or remove classes
+function toggleByClass(elem, toggleClass) {
+    for (let i = 0; i < elem.length; i++) {
+        // if the element has the class, remove it; otherwise add the class to the element
+        if (elem[i].className.indexOf(toggleClass[i]) !== -1) {
+            elem[i].className = elem[i].className.replace(" " + toggleClass[i], "");
+        } else {
+            elem[i].className += " " + toggleClass[i];
+        }
+    }
+}
+
+function toggleTopNav(thisElem) {
     // toggle block display
-    var x = document.getElementById("hideNav");
-    if (x.className.indexOf("w3-bar-block") == -1) {
-        x.className += " w3-bar-block ";
-    } else { 
-        x.className = x.className.replace(" w3-bar-block", "");
-    }
-    
+    var hideNav = document.getElementById("hideNav");
+    hideNav.classList.toggle("w3-bar-block");
+
     // toggle sidebar button
-    var sidebarButton = document.getElementById("sidebar-btn")
-    if (sidebarButton.className.indexOf("w3-hide") == -1) {
-        sidebarButton.className += " w3-hide";
-    } else { 
-        sidebarButton.className = sidebarButton.className.replace(" w3-hide", "");
-    }
+    var sidebarButton = document.getElementById("sidebar-btn");
+    if (sidebarButton) { sidebarButton.classList.toggle("w3-hide"); }
 
     // toggle top navigation bar item
-    for (let index = 0; index < x.children.length; index++) {
-        var element = x.children[index];
-        if (element.className.indexOf("w3-hide-small") == -1) {
-            element.className += " w3-hide-small";
-        } else { 
-            element.className = element.className.replace(" w3-hide-small", "");
-        }
+    for (let index = 0; index < hideNav.children.length; index++) {
+        hideNav.children[index].classList.toggle("w3-hide-small");
     }
 
     // toggle top naviagtion shape
-    if (elem.innerText == "\u25B2") {
-        elem.innerText = "\u25BC"
+    if (thisElem.innerText == "\u25B2") {
+        thisElem.innerText = "\u25BC";
     } else {
-        elem.innerText = "\u25B2"
+        thisElem.innerText = "\u25B2";
     }
 }
 
-function sidebarFunc() {
-    var element = document.getElementById("sidebar");
-    if (element.className.indexOf("w3-hide") == -1) {
-        element.className += " w3-hide";
-    } else { 
-        element.className = element.className.replace(" w3-hide", "");
+
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("w3-hide");
+}
+
+function toggleAccordion(name) {
+    var elem = document.getElementById(name);
+    var color = document.getElementsByTagName("footer")[0].className.split(" ")[1];
+    elem.classList.toggle("w3-show");
+    elem.classList.toggle(color);
+    //toggleByClass([elem, elem.previousElementSibling], ["w3-show", color]);
+}
+
+function highlight(thisElem) {
+    // Hint: Use unchanged class name
+    var elems = document.getElementsByClassName(thisElem.className.split(" ")[0]);
+    var color = document.getElementsByTagName("footer")[0].className.split(" ")[1];
+
+    for (let index = 0; index < elems.length; index++) {
+        elems[index].classList.toggle(color);
     }
 }
 
-function accFunc(name) {
-    var x = document.getElementById(name);
-    var color = document.getElementsByTagName('footer')[0].className.split(' ')[1];
-    if (x.className.indexOf("w3-show") == -1) {
-        x.className += " w3-show";
-        x.previousElementSibling.className += " " + color;
-    } else { 
-        x.className = x.className.replace(" w3-show", "");
-        x.previousElementSibling.className = 
-        x.previousElementSibling.className.replace(" " + color, "");
+function setTag() {
+    var topNavBtn = document.querySelector('#topNavBtn');
+    topNavBtn.addEventListener('click', function () { toggleTopNav(topNavBtn) });
+
+    addTagClick(document.querySelectorAll('.w3-tag'));
+    addTagClick(document.querySelectorAll('a.w3-bar-item'));
+}
+
+function addTagClick(tags) {
+    for (let index = 0; index < tags.length; index++) {
+        const element = tags[index];
+        element.addEventListener('click', function () { sessionStorage.setItem("tag", element.textContent); })
     }
 }

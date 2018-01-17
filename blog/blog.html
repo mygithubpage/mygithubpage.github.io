@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>My Personal Blog</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/style.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="/external.js"></script>
+
+  <style>
+    /* The sticky class is added to the tagDiv with JS when it reaches its scroll position */
+    .sticky {
+      position: fixed;
+      top: 0;
+    }
+    .margin-small {
+      margin:4px;
+    }
+  </style>
+</head>
+
+
+<body class="w3-light-gray">
+
+  <!-- Top Navigation -->
+  <nav id="topNav" class="w3-bar w3-black w3-card w3-center">
+    <div id="hideNav">
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">HOME</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">JavaScript</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Python</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">PowerShell</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Setup</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Office</a>        
+    </div>
+    <button class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" id="topNavBtn">&#9660;</button>
+  </nav>
+
+  <br/>
+  <br/>
+  <!-- w3-content defines a container for fixed size centered content, and is wrapped around the whole page content, except for the footer in this example -->
+  <div class="w3-content" style="max-width:1400px">
+
+    <!-- Header -->
+    <header class="w3-container w3-center w3-padding" id="blogHeader">
+      <h1>
+        <b>MY PERSONAL BLOG</b>
+      </h1>
+      <p>Welcome to the blog of decisact</p>
+    </header>
+
+    <br/>
+    <br/>
+
+    <!-- Labels / tags -->
+    <div class="w3-margin w3-container" id="tagsDiv">
+      <div class="w3-container w3-card w3-black">
+        <h4>Tags</h4>
+      </div>
+      <div class="w3-container w3-card w3-white">
+          <p id="tagsPara"></p>
+      </div>
+    </div>
+    
+    <!-- Blog entries -->
+    <div class="w3-container" id="entries">
+
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>Mozilla Developer Network JavaScript Programming Notes</b>
+          </h3>
+          <p>Notes about to JavaScript Programming Language in MDN</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span> 
+          <span class="w3-tag w3-black">MDN</span>
+          <span class="w3-tag w3-black">JavaScript</span>
+          <span class="w3-tag w3-black">Programming</span>       
+        </div>
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="mdn-javascript.html">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+      </div>
+      <hr>
+      
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>My Personal JavaScript Programming Notes</b>
+          </h3>
+          <p>Notes about JavaScript Programming Language I encoutered in the process of my personal webpages building.</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span> 
+          <span class="w3-tag w3-black">Personal</span>
+          <span class="w3-tag w3-black">JavaScript</span>
+          <span class="w3-tag w3-black">Programming</span>       
+        </div>
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="my-javascript.html">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+      </div>
+      <hr>
+
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>W3Schools CSS Framework</b>
+          </h3>
+          <p>Notes about W3Schools CSS Framework</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span> 
+          <span class="w3-tag w3-black">W3School</span>
+          <span class="w3-tag w3-black">CSS</span>
+          <span class="w3-tag w3-black">Programming</span>
+          <span class="w3-tag w3-black">Notes</span>        
+        </div>
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="w3-css.html">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+      </div>
+      <hr>
+
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>Always telling the truth is the most important consideration in any relationship.</b>
+          </h3>
+          <p>Notes about how to build your personal websites in GitHub</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span>
+          <span class="w3-tag w3-black">TOEFL</span>
+          <span class="w3-tag w3-black">Writing</span>
+          <span class="w3-tag w3-black">Setup</span>        
+        </div>
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="#">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+      </div>
+      <hr>
+
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>Building Personal Websites</b>
+          </h3>
+          <p>Notes about how to build your personal websites in GitHub</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span>
+          <span class="w3-tag w3-black">Websites</span>
+          <span class="w3-tag w3-black">GitHub</span>
+          <span class="w3-tag w3-black">Setup</span>        
+        </div>
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="#">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+      </div>
+      <hr>
+  
+    <!-- END BLOG ENTRIES -->
+    </div>
+
+    <!-- END w3-content -->
+  </div>
+
+  <!-- Footer -->
+  <footer class="w3-container w3-black w3-center w3-margin-top">
+      <p>Find me on social media.</p>
+      <i class="fa fa-facebook-official w3-hover-opacity"></i>
+      <i class="fa fa-instagram w3-hover-opacity"></i>
+      <i class="fa fa-snapchat w3-hover-opacity"></i>
+      <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+      <i class="fa fa-twitter w3-hover-opacity"></i>
+      <i class="fa fa-linkedin w3-hover-opacity"></i>
+      <p>Powered by <a href="https://mygithubpage.github.io">GitHubPages</a></p>
+  </footer>
+
+  <script>
+    
+    var tags = document.querySelectorAll('span.w3-tag'); // All tags in all entries.
+    var tagsPara = document.querySelector('#tagsPara'); // Place to add tags
+    var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.
+    var entriesTags = []; // Displayed entries' tags.
+    var tagsArray = []; // All tags need to be show in tag div on load.
+    var topNavBtn = document.getElementById('topNavBtn');
+    var barItems = document.querySelectorAll("a.w3-bar-item");
+
+    // Toggle Fixed tag div
+    function toggleFixed() {
+      // Get the tagDiv
+      let tagDiv = document.getElementById("tagsDiv");
+
+      // Add the sticky class to the tagDiv when you reach its scroll position. 
+      if (window.pageYOffset >= tagDiv.offsetTop) {
+        tagDiv.classList.add("sticky")
+      } else { // Remove "sticky" when you leave the scroll position
+        tagDiv.classList.remove("sticky"); 
+      }
+    } 
+
+    // Filter multiple tags
+    function toggleFilter(thisElem) {
+      
+      // Add selected tag to array
+      if (thisElem.className.indexOf('w3-light-gray') > 0) {
+        selectedTags.push(thisElem.textContent);
+      } else {
+        selectedTags.splice(selectedTags.indexOf(thisElem.textContent), 1);
+      }
+
+      // Unselected Tag is light gray, selected tag is black
+      thisElem.classList.toggle('w3-light-gray');
+
+      let entries = document.querySelectorAll(".entry");
+      let entriesTagsString = "";
+
+      // if the entry do not contains selected tags, it is hidden.
+      entries.forEach(entry => {
+        
+        // get the entries tag
+        let entryTags = entry.querySelectorAll("span.w3-tag");
+        let tagString = "";
+        entry.classList.remove("w3-hide");
+
+        // join the entry tag in one string
+        entryTags.forEach(element => { tagString += element.textContent });
+
+        // if one selected tag is not in the tagstring, the entry is hidden
+        selectedTags.forEach( tag => {
+          if(tagString.indexOf(tag) < 0) { 
+            entry.classList.add("w3-hide"); 
+          } 
+        }); // End of selectedTags foreach  
+
+        // if the entry is not hidden
+        if (!entry.classList.contains("w3-hide")) {
+          entriesTagsString += tagString;
+          tagBtns.forEach(element => {
+              element.classList.remove("w3-hide");
+            if (entriesTagsString.indexOf(element.textContent) < 0) {
+              element.classList.add('w3-hide');
+            }
+          });
+        }
+      }); // End of entries foreach
+
+    }
+
+    // Trigger tag click event
+    function clickTag(tag) {
+      tagBtns.forEach(element => {
+        if(element.textContent === tag) {
+          element.click();
+        }
+      });
+    }
+
+    // Show tags
+    tags.forEach(tag => {
+      element = tag.textContent;
+      if(tagsArray.indexOf(element) < 0){
+        tagsArray.push(element);
+        var btn = document.createElement('a');
+        btn.className = "w3-tag w3-light-gray w3-btn w3-padding-small margin-small";
+        btn.setAttribute('href', "#blogHeader");
+        btn.textContent = element;
+        tagsPara.appendChild(btn);
+      }
+    });
+
+    // Add filter Event for tags in tag div. 
+    var tagBtns = document.querySelectorAll("a.w3-tag");
+    tagBtns.forEach(element => {
+      element.addEventListener('click', function() {toggleFilter(element)} );
+    });
+
+    // Add top bar item tag.
+    barItems.forEach(element => {
+      element.addEventListener('click', function() {clickTag(element.textContent)} );
+    });
+
+    // Set fixed tag
+    // When the user scrolls the page, execute toggleFixed
+    window.onscroll = function() {toggleFixed()};
+
+    // Add Top Navigation Button Click Event
+    topNavBtn.addEventListener('click', function(){toggleTopNav(topNavBtn)});
+    
+    // Filter Tag
+    var tag = sessionStorage.getItem('tag');
+    if (tag) { clickTag(tag); }
+  
+  </script>
+</body>
+
+</html>
