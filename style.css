@@ -113,8 +113,13 @@ hue-6-2: #c18401
   margin:4px;
 }
 
+/* The sticky class is added to the tagDiv with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  top: 0;
+}
+
 hr { 
   border-width: 2px!important;
   border-color: dimgray!important;
 } 
-

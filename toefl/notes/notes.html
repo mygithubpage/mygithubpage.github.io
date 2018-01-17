@@ -2,16 +2,16 @@
 <html>
 
 <head>
-  <title>My Personal Blog</title>
+  <title>My TOEFL Notes</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="../../style.css">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-  <script src="/external.js"></script>
+  <script src="../../external.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
@@ -23,11 +23,11 @@
   <nav id="topNav" class="w3-bar w3-black w3-card w3-center">
     <a href="blog.html#blogHeader" class="w3-bar-item w3-button">HOME</a>
     <div id="hideNav">
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">JavaScript</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Python</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">PowerShell</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Setup</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Office</a>        
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">TOEFL</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Reading</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Listening</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Speaking</a>
+      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Writing</a>        
     </div>
     <button class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" id="topNavBtn">&#9660;</button>
   </nav>
@@ -35,14 +35,14 @@
   <br/>
   <br/>
   <!-- w3-content defines a container for fixed size centered content, and is wrapped around the whole page content, except for the footer in this example -->
-  <div class="w3-content" style="max-width:1400px">
+  <main class="w3-content" style="max-width:1400px">
 
     <!-- Header -->
-    <header class="w3-center w3-padding" id="blogHeader">
+    <header class="w3-center w3-padding" id="notesHeader">
       <h1>
-        <b>MY PERSONAL BLOG</b>
+        <b>MY PERSONAL TOEFL NOTES</b>
       </h1>
-      <p>Welcome to the blog of decisact</p>
+      <p>Welcome to the toefl notes of decisact</p>
     </header>
 
     <br/>
@@ -54,12 +54,59 @@
         <h4>Tags</h4>
       </div>
       <div class="w3-container w3-card w3-white">
-          <p id="tagsPara"></p>
+        <p id="tagsPara"></p>
       </div>
     </div>
     
     <!-- Blog entries -->
     <div id="entries">
+      
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>Always telling the truth is the most important consideration in any relationship.</b>
+          </h3>
+          <p>Do you agree or disagree with the following statement?<br/>
+              <b>Always telling the truth is the most important consideration in any relationship.</b><br/>
+            Use specific reasons and examples to support your answer.</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span>
+          <span class="w3-tag w3-black">TOEFL</span>
+          <span class="w3-tag w3-black">Writing</span>
+          <span class="w3-tag w3-black">Trait</span>        
+        </div>
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="og-example-writing2.html">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+      </div>
+              
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+        <div class="w3-container">
+          <h3>
+            <b>W3Schools CSS Framework</b>
+          </h3>
+          <p>Notes about W3Schools CSS Framework</p>
+        </div>
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+            <span>Tags:</span> 
+            <span class="w3-tag w3-black">W3School</span>
+            <span class="w3-tag w3-black">CSS</span>
+            <span class="w3-tag w3-black">Programming</span>
+            <span class="w3-tag w3-black">Notes</span>        
+        </div>
+        <div class="w3-container">
+            <p><a class="w3-button w3-padding-large w3-white w3-border" href="w3-css.html">
+              <b>READ MORE</b>
+            </a></p>
+        </div>
+      </div>
 
       <!-- Blog entry -->
       <div class="w3-card w3-margin w3-white entry">
@@ -72,9 +119,9 @@
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
           <span>Tags:</span> 
-          <span class="w3-tag w3-black margin-small">MDN</span>
-          <span class="w3-tag w3-black margin-small">JavaScript</span>
-          <span class="w3-tag w3-black margin-small">Programming</span>       
+          <span class="w3-tag w3-black">MDN</span>
+          <span class="w3-tag w3-black">JavaScript</span>
+          <span class="w3-tag w3-black">Programming</span>       
         </div>
         <div class="w3-container">
           <p><a class="w3-button w3-padding-large w3-white w3-border" href="mdn-javascript.html">
@@ -93,10 +140,10 @@
         </div>
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
-          <span>Tags:</span> 
-          <span class="w3-tag w3-black margin-small">Personal</span>
-          <span class="w3-tag w3-black margin-small">JavaScript</span>
-          <span class="w3-tag w3-black margin-small">Programming</span>       
+            <span>Tags:</span> 
+            <span class="w3-tag w3-black">Personal</span>
+            <span class="w3-tag w3-black">JavaScript</span>
+            <span class="w3-tag w3-black">Programming</span>       
         </div>
         <div class="w3-container">
           <p><a class="w3-button w3-padding-large w3-white w3-border" href="my-javascript.html">
@@ -104,52 +151,7 @@
           </a></p>
         </div>
       </div>
-      
-      <!-- Blog entry -->
-      <div class="w3-card w3-margin w3-white entry">
-        <div class="w3-container">
-          <h3>
-            <b>W3Schools CSS Framework</b>
-          </h3>
-          <p>Notes about W3Schools CSS Framework</p>
-        </div>
-        <!-- Ariticle tags -->
-        <div class="w3-padding w3-white">
-          <span>Tags:</span> 
-          <span class="w3-tag w3-black margin-small">W3School</span>
-          <span class="w3-tag w3-black margin-small">CSS</span>
-          <span class="w3-tag w3-black margin-small">Programming</span>
-          <span class="w3-tag w3-black margin-small">Notes</span>        
-        </div>
-        <div class="w3-container">
-          <p><a class="w3-button w3-padding-large w3-white w3-border" href="w3-css.html">
-            <b>READ MORE</b>
-          </a></p>
-        </div>
-      </div>
-      
-      <!-- Blog entry -->
-      <div class="w3-card w3-margin w3-white entry">
-        <div class="w3-container">
-          <h3>
-            <b>Always telling the truth is the most important consideration in any relationship.</b>
-          </h3>
-          <p>Notes about how to build your personal websites in GitHub</p>
-        </div>
-        <!-- Ariticle tags -->
-        <div class="w3-padding w3-white">
-          <span>Tags:</span>
-          <span class="w3-tag w3-black margin-small">TOEFL</span>
-          <span class="w3-tag w3-black margin-small">Writing</span>
-          <span class="w3-tag w3-black margin-small">Setup</span>        
-        </div>
-        <div class="w3-container">
-          <p><a class="w3-button w3-padding-large w3-white w3-border" href="#">
-            <b>READ MORE</b>
-          </a></p>
-        </div>
-      </div>
-      
+
       <!-- Blog entry -->
       <div class="w3-card w3-margin w3-white entry">
         <div class="w3-container">
@@ -160,15 +162,15 @@
         </div>
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
-          <span>Tags:</span>
-          <span class="w3-tag w3-black margin-small">Websites</span>
-          <span class="w3-tag w3-black margin-small">GitHub</span>
-          <span class="w3-tag w3-black margin-small">Setup</span>        
+            <span>Tags:</span>
+            <span class="w3-tag w3-black">Websites</span>
+            <span class="w3-tag w3-black">GitHub</span>
+            <span class="w3-tag w3-black">Setup</span>        
         </div>
         <div class="w3-container">
-          <p><a class="w3-button w3-padding-large w3-white w3-border" href="#">
-            <b>READ MORE</b>
-          </a></p>
+            <p><a class="w3-button w3-padding-large w3-white w3-border" href="#">
+              <b>READ MORE</b>
+            </a></p>
         </div>
       </div>
       
@@ -177,7 +179,7 @@
     </div>
 
     <!-- END w3-content -->
-  </div>
+  </main>
 
   <!-- Footer -->
   <footer class="w3-container w3-black w3-center w3-margin-top">
@@ -190,7 +192,7 @@
       <i class="fa fa-linkedin w3-hover-opacity"></i>
       <p>Powered by <a href="https://mygithubpage.github.io">GitHubPages</a></p>
   </footer>
-
+  
   <script>
     
     var tags = document.querySelectorAll('span.w3-tag'); // All tags in all entries.
