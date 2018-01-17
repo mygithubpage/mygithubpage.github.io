@@ -91,6 +91,7 @@ hue-6-2: #c18401
   text-decoration: underline;
 }
 
+/* My link style */
 .link:link {
     text-decoration: none;
 }
@@ -107,3 +108,7 @@ hue-6-2: #c18401
     text-decoration: underline;
 }
 
+/* My margin small */
+.margin-small {
+  margin:4px;
+}
