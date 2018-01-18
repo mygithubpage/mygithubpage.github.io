@@ -34,7 +34,6 @@ function toggleTopNav(thisElem) {
     }
 }
 
-
 function toggleSidebar() {
     document.getElementById("sidebar").classList.toggle("w3-hide");
 }
@@ -57,6 +56,7 @@ function highlight(thisElem) {
     }
 }
 
+// Add Top Navigation Button Click Event and Tag Click Event.
 function setTag() {
     var topNavBtn = document.querySelector('#topNavBtn');
     topNavBtn.addEventListener('click', function () { toggleTopNav(topNavBtn) });
@@ -65,6 +65,7 @@ function setTag() {
     addTagClick(document.querySelectorAll('a.w3-bar-item'));
 }
 
+// If Article Tag or Top Bar Item is clicked, store the content of clicked tag in sessionStorage
 function addTagClick(tags) {
     for (let index = 0; index < tags.length; index++) {
         const element = tags[index];
@@ -72,18 +73,21 @@ function addTagClick(tags) {
     }
 }
 
+// Remove Leading WhiteSpace in pre tag.
 function removeLeadingWhiteSpace() {
     var pres = document.getElementsByTagName('pre');
     for (const pre of pres) {
       let lines = pre.innerHTML.split( '\n' );
-      let length = lines[1].length - lines[1].trimLeft(' ').length
+      let length = lines[1].length - lines[1].trimLeft(' ').length // The Greatest WhiteSpace Length to be removed
       let innerHtml = "";
       
       for (let index = 0; index < lines.length; index++) {
         const element = lines[index];
         let newLine = "\n";
 
+        // Remove first and last empty line
         if(index == 0 || index == lines.length - 2) { newLine = ""; }
+
         innerHtml += element.replace(' '.repeat(length)) + newLine;
         innerHtml = innerHtml.replace('undefined', "");
       }

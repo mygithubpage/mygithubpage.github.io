@@ -123,3 +123,7 @@ hr {
   border-width: 2px!important;
   border-color: dimgray!important;
 } 
+
+audio {
+  background-color: dimgray;
+}
