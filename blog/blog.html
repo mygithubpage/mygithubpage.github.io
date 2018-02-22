@@ -9,11 +9,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="./../style.css" />
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-  <script src="/external.js"></script>
+  <script src="./../external.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
@@ -22,31 +22,20 @@
 
   <!-- Top Navigation -->
   <nav id="topNav" class="w3-bar w3-black w3-card w3-center">
-    <a href="blog.html#blogHeader" class="w3-bar-item w3-button">HOME</a>
+    <a href="blog.html" class="w3-bar-item w3-button">HOME</a>
 
     <div id="hideNav">
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">JavaScript</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Python</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">PowerShell</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Setup</a>
-      <a href="blog.html#blogHeader" class="w3-bar-item w3-button w3-hide-small">Office</a>        
+      <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">JavaScript</a>
+      <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">Python</a>
+      <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">PowerShell</a>
+      <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">Setup</a>
+      <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">Office</a>        
     </div>
 
     <button class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" id="topNavBtn">&#9660;</button>
   </nav>
-
-  <br/>
-  <br/>
   
   <main>
-    <!-- Header -->
-    <header class="w3-center w3-padding" id="blogHeader">
-      <h1><b>MY PERSONAL BLOG</b></h1>
-      <p>Welcome to the my personal blog</p>
-    </header>
-
-    <br/>
-    <br/>
 
     <!-- Labels / tags -->
     <div class="w3-margin" id="tagsDiv">
@@ -55,8 +44,7 @@
         <h4>Tags</h4>
       </div>
 
-      <div class="w3-container w3-card w3-white">
-          <p id="tagsPara"></p>
+      <div class="w3-container w3-padding w3-card w3-white" id="tags">
       </div>
 
     </div>
@@ -75,9 +63,9 @@
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
           <span>Tags:</span> 
-          <span class="w3-tag w3-black margin-small">MDN</span>
-          <span class="w3-tag w3-black margin-small">JavaScript</span>
-          <span class="w3-tag w3-black margin-small">Programming</span>       
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">MDN</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">JavaScript</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Programming</a>       
         </div>
 
         <div class="w3-container">
@@ -99,9 +87,9 @@
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
           <span>Tags:</span> 
-          <span class="w3-tag w3-black margin-small">Personal</span>
-          <span class="w3-tag w3-black margin-small">JavaScript</span>
-          <span class="w3-tag w3-black margin-small">Programming</span>       
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Personal</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">JavaScript</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Programming</a>       
         </div>
 
         <div class="w3-container">
@@ -123,10 +111,10 @@
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
           <span>Tags:</span> 
-          <span class="w3-tag w3-black margin-small">W3School</span>
-          <span class="w3-tag w3-black margin-small">CSS</span>
-          <span class="w3-tag w3-black margin-small">Programming</span>
-          <span class="w3-tag w3-black margin-small">Notes</span>        
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">W3School</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">CSS</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Programming</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Notes</a>        
         </div>
 
         <div class="w3-container">
@@ -150,9 +138,9 @@
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
           <span>Tags:</span>
-          <span class="w3-tag w3-black margin-small">TOEFL</span>
-          <span class="w3-tag w3-black margin-small">Writing</span>
-          <span class="w3-tag w3-black margin-small">Setup</span>        
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">TOEFL</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Writing</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Setup</a>        
         </div>
 
         <div class="w3-container">
@@ -174,9 +162,9 @@
         <!-- Ariticle tags -->
         <div class="w3-padding w3-white">
           <span>Tags:</span>
-          <span class="w3-tag w3-black margin-small">Websites</span>
-          <span class="w3-tag w3-black margin-small">GitHub</span>
-          <span class="w3-tag w3-black margin-small">Setup</span>        
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Websites</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">GitHub</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small" href="#tagsPara">Setup</a>        
         </div>
 
         <div class="w3-container">
@@ -206,13 +194,12 @@
 
   <script>
     
-    var tags = document.querySelectorAll('span.w3-tag'); // All tags in all entries.
-    var tagsPara = document.querySelector('#tagsPara'); // Place to add tags
-    var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.
-    var entriesTags = []; // Displayed entries' tags.
-    var tagsArray = []; // All tags need to be show in tag div on load.
     var topNavBtn = document.getElementById('topNavBtn');
     var barItems = document.querySelectorAll("a.w3-bar-item");
+    var tags = document.querySelectorAll('div > a.w3-tag'); // All tags in all entries.
+    var tagsPara = document.querySelector('#tags'); // Place to add tags
+    var tagsArray = []; // All tags need to be show in tag div on load.
+    
 
     // Toggle Fixed tag div
     function toggleFixed() {
@@ -229,6 +216,7 @@
 
     // Filter multiple tags
     function toggleFilter(thisElem) {
+      let selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.
       
       // Add selected tag to array
       if (thisElem.className.indexOf('w3-light-gray') > 0) {
@@ -241,35 +229,41 @@
       thisElem.classList.toggle('w3-light-gray');
 
       let entries = document.querySelectorAll(".entry");
-      let entriesTagsString = "";
+      let entriesTagsArray = [];
 
       // if the entry do not contains selected tags, it is hidden.
       entries.forEach(entry => {
         
         // get the entries tag
-        let entryTags = entry.querySelectorAll("span.w3-tag");
-        let tagString = "";
+        let entryTags = entry.querySelectorAll("a.w3-tag");
+        let entryTagsArray = []; // one entry's tags.
         entry.classList.remove("w3-hide");
 
         // join the entry tag in one string
-        entryTags.forEach(element => { tagString += element.textContent });
+        entryTags.forEach(element => { 
+          entryTagsArray.push(element.textContent);
+          if(element.textContent === thisElem.textContent) {
+            element.classList.toggle('w3-light-gray');
+          }
+        });
 
-        // if one selected tag is not in the tagstring, the entry is hidden
+        // if one selected tag is not in the entryTagsArray, the entry is hidden
         selectedTags.forEach( tag => {
-          if(tagString.indexOf(tag) < 0) { 
+          if(entryTagsArray.indexOf(tag) === -1) { 
             entry.classList.add("w3-hide"); 
           } 
         }); // End of selectedTags foreach  
 
         // if the entry is not hidden
         if (!entry.classList.contains("w3-hide")) {
-          entriesTagsString += tagString;
+          entryTagsArray.forEach(element => { entriesTagsArray.push(element) } );
           tagBtns.forEach(element => {
               element.classList.remove("w3-hide");
-            if (entriesTagsString.indexOf(element.textContent) < 0) {
+            if (entriesTagsArray.indexOf(element.textContent) === -1) {
               element.classList.add('w3-hide');
             }
-          });
+          }); // End of tag Buttons forEach
+
         }
       }); // End of entries foreach
 
@@ -287,24 +281,29 @@
     // Show tags
     tags.forEach(tag => {
       element = tag.textContent;
-      if(tagsArray.indexOf(element) < 0){
+      if(tagsArray.indexOf(element) === -1){
         tagsArray.push(element);
         var btn = document.createElement('a');
         btn.className = "w3-tag w3-light-gray w3-btn w3-padding-small margin-small";
-        btn.setAttribute('href', "#blogHeader");
+        btn.setAttribute('href', "#tagsPara");
         btn.textContent = element;
         tagsPara.appendChild(btn);
       }
     });
 
     // Add filter Event for tags in tag div. 
-    var tagBtns = document.querySelectorAll("a.w3-tag");
+    var tagBtns = document.querySelectorAll("#tags > a.w3-tag");
     tagBtns.forEach(element => {
       element.addEventListener('click', function() {toggleFilter(element)} );
     });
 
     // Add top bar item tag.
     barItems.forEach(element => {
+      element.addEventListener('click', function() {clickTag(element.textContent)} );
+    });
+
+    // Add article tag.
+    tags.forEach(element => {
       element.addEventListener('click', function() {clickTag(element.textContent)} );
     });
 
