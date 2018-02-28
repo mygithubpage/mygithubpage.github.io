@@ -91,6 +91,7 @@ hue-6-2: #c18401
   text-decoration: underline;
 }
 
+/* My Class */
 /* My link style */
 .link:link {
     text-decoration: none;
@@ -108,7 +109,7 @@ hue-6-2: #c18401
     text-decoration: underline;
 }
 
-/* My margin small */
+/* My Margin Small */
 .margin-top-small {
   margin-top:8px;
 }
@@ -130,6 +131,20 @@ hue-6-2: #c18401
 }
 
 /* My Element */
+@media (min-width:600px) {
+  #sidebar {
+    margin-top:-22px; 
+    width:25%;
+  }
+}
+
+@media (max-width:600px) {
+  #sidebar {
+    margin-top:-22px; 
+    width:75%;
+  }
+}
+
 hr { 
   border-width: 2px!important;
   border-color: dimgray!important;
