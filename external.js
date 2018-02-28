@@ -56,6 +56,14 @@ function highlight(thisElem) {
     }
 }
 
+function addHighlight() {
+    var highlightElems = document.querySelectorAll("[class*='h-']");
+    highlightElems.forEach(element => {
+      element.addEventListener('mouseover', function() {highlight(element)} );
+      element.addEventListener('mouseout', function() {highlight(element)} );
+    });
+}
+
 // Add Top Navigation Button Click Event and Tag Click Event.
 function setTag() {
     var topNavBtn = document.querySelector('#topNavBtn');
@@ -93,4 +101,25 @@ function removeLeadingWhiteSpace() {
       }
       pre.innerHTML = innerHtml.trimLeft('\n').trimRight('\n');
     }
+}
+
+// Set Timer
+function setTimer(second) {
+    var timerBtn = document.querySelector("#timerBtn");
+    var timeSpan = document.querySelector("#timeSpan");
+
+    var timer = second, min = 0, sec = 0;
+
+    function startTimer(params) {
+        min = parseInt(timer / 60);
+        sec = parseInt(timer % 60);
+
+        if(timer < 0) { return }
+        let secStr = sec < 10 ? "0" + sec.toString() : sec.toString()
+        timeSpan.innerHTML = min.toString() + ":" + secStr;
+        timer--;
+        setTimeout(function () { startTimer(); }, 1000);
+    }
+
+    timerBtn.addEventListener("click", function () { startTimer(); });
 }

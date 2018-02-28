@@ -110,12 +110,11 @@ hue-6-2: #c18401
 
 /* My margin small */
 .margin-top-small {
-  margin-top:4px;
+  margin-top:8px;
 }
 
-/* My margin small */
 .margin-small {
-  margin:2px;
+  margin:4px;
 }
 
 /* The sticky class is added to the tagDiv with JS when it reaches its scroll position */
@@ -124,12 +123,31 @@ hue-6-2: #c18401
   top: 0;
 }
 
+/* My Color */
+.crimson { 
+  color: white!important; 
+  background-color: crimson!important; 
+}
+
+/* My Element */
 hr { 
   border-width: 2px!important;
   border-color: dimgray!important;
 } 
 
-.crimson { 
-  color: white!important; 
-  background-color: crimson!important; 
+a:hover {
+  position: relative;
 }
+
+a[title]:hover:after {
+  content: attr(title);
+  padding: 4px 8px;
+  position: absolute;
+  left: 0;
+  color:black;
+  bottom: 100%;
+  background-color: lightgray;
+  box-shadow:0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+  font-family:Verdana,sans-serif;
+  font-size:15px;
+}  

@@ -8,11 +8,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   
-  <link rel="stylesheet" href="../../style.css" />
+  <link rel="stylesheet" href="/style.css" />
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-  <script src="../../external.js"></script>
+  <script src="/external.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
@@ -152,6 +152,50 @@
 
       </div><!-- END BLOG ENTRY -->
 
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+
+        <div class="w3-container">
+          <h3><b>Performance Feedback</b></h3>
+        </div>
+
+        <!-- Ariticle tags -->
+        <div class="w3-padding w3-white">
+          <span>Tags:</span>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small">TOEFL</a>
+          <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small">Performance</a> 
+        </div>
+
+        <div class="w3-container">
+          <p><a class="w3-button w3-padding-large w3-white w3-border" href="performance-feedback.html">
+            <b>READ MORE</b>
+          </a></p>
+        </div>
+
+      </div><!-- END BLOG ENTRY -->
+
+      <!-- Blog entry -->
+      <div class="w3-card w3-margin w3-white entry">
+
+          <div class="w3-container">
+            <h3><b>Scoring Rubric</b></h3>
+          </div>
+  
+          <!-- Ariticle tags -->
+          <div class="w3-padding w3-white">
+            <span>Tags:</span>
+            <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small">TOEFL</a>
+            <a class="w3-tag w3-light-gray w3-btn w3-padding-small margin-top-small">Scoring</a>       
+          </div>
+  
+          <div class="w3-container">
+            <p><a class="w3-button w3-padding-large w3-white w3-border" href="scoring-rubric.html">
+              <b>READ MORE</b>
+            </a></p>
+          </div>
+  
+        </div><!-- END BLOG ENTRY -->
+
     </div><!-- END BLOG ENTRIES -->
 
   </main>
@@ -176,7 +220,7 @@
     var tags = document.querySelectorAll('a.w3-tag'); // All tags in all entries.
     var tagsDiv = document.querySelector('#tagsDiv'); // Place to add tags
     var tagsArray = []; // All tags need to be show in tag div on load.
-    
+    var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.    
 
     // Toggle Fixed tag div
     function toggleFixed() {
@@ -193,7 +237,6 @@
 
     // Filter multiple tags
     function toggleFilter(thisElem) {
-      let selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.
 
       // Add selected tag to array
       if (thisElem.className.indexOf('w3-light-gray') > 0) {
