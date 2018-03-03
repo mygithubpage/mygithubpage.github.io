@@ -103,8 +103,11 @@ function addFooter(color) {
     icons.forEach(element => {
         var img = document.createElement("img");
         img.src = "https://png.icons8.com/metro/20/ffffff/" + element + ".png";
-        img.className = "w3-padding-small"
-        footer.appendChild(img);
+        img.className = "my-margin-small"
+        var a = document.createElement("a");
+        a.href = "";
+        a.appendChild(img);
+        footer.appendChild(a);
     });
 
     p = document.createElement("p");
