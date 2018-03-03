@@ -3,53 +3,27 @@
 
 <head>
   <title>Mozilla Developer Network JavaScript Programming Notes</title>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-
-  <script src="/external.js"></script>
+  <script src="/initialize.js"></script>
   <script src="highlight.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
 </head>
 
 <body class="w3-light-gray">
 
-  <!-- Top Navigation -->
-  <nav id="topNav" class="w3-bar w3-black w3-card w3-top w3-center">
-    <a href="blog.html" class="w3-bar-item w3-button">HOME</a>
-
-    <div id="hideNav">
-        <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">JavaScript</a>
-        <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">Python</a>
-        <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">PowerShell</a>
-        <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">Setup</a>
-        <a href="blog.html" class="w3-bar-item w3-button w3-hide-small">Office</a>
-    </div>
-
-    <button class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" id="topNavBtn">&#9660;</button>
-  </nav>
-  
   <main>
 
     <!-- Ariticle tags -->
     <div class="w3-card w3-margin w3-padding w3-white">
       <span>Tags:</span> 
 
-      <a class="w3-tag w3-black w3-btn w3-padding-small margin-small" href="blog.html">MDN</a>
-      <a class="w3-tag w3-black w3-btn w3-padding-small margin-small" href="blog.html">JavaScript</a>
-      <a class="w3-tag w3-black w3-btn w3-padding-small margin-small" href="blog.html">Programming</a>
-      <a class="w3-tag w3-black w3-btn w3-padding-small margin-small" href="blog.html">Notes</a>        
+      <a class="w3-tag w3-black w3-btn w3-padding-small my-margin-small" href="blog.html">MDN</a>
+      <a class="w3-tag w3-black w3-btn w3-padding-small my-margin-small" href="blog.html">JavaScript</a>
+      <a class="w3-tag w3-black w3-btn w3-padding-small my-margin-small" href="blog.html">Programming</a>
+      <a class="w3-tag w3-black w3-btn w3-padding-small my-margin-small" href="blog.html">Notes</a>        
     </div>
 
     <div class="w3-card w3-margin w3-white w3-container">
 
-      <!-- Event Section -->
+      <!-- Event -->
       <section class="w3-container">
         <h3><b>Events</b></h3>
 
@@ -83,11 +57,11 @@
 
         </section>
 
-      </section> <!-- End of Event Section -->
+      </section> <!-- Event -->
 
       <hr />
 
-      <!-- Object Section -->
+      <!-- Object -->
       <section class="w3-container">
         <h3><b>Object</b></h3>
         <p>a fairly common pattern for more object definitions is to define the properties inside the constructor, and the methods on the prototype. This makes the code easier to read, as the constructor only contains the property definitions, and the methods are split off into separate blocks. For example:</p>
@@ -107,11 +81,11 @@
           // etc.
         </code></pre>
 
-      </section> <!-- End of Object Section -->
+      </section> <!-- Object -->
 
       <hr />
 
-      <!-- Declaration Section -->
+      <!-- Declaration -->
       <section class="w3-container">
         <h3><b>Declaration</b></h3>
         <p>a fairly common pattern for more object definitions is to define the properties inside the constructor, and the methods on the prototype. This makes the code easier to read, as the constructor only contains the property definitions, and the methods are split off into separate blocks. For example:</p>
@@ -131,27 +105,13 @@
           // etc.
         </code></pre>
 
-      </section> <!-- End of Decalare Section -->
+      </section> <!-- Decalare -->
 
     </div>
 
   </main>
 
-  <footer class="w3-container w3-black w3-center w3-margin-top">
-    <p>Find me on social media.</p>
-
-    <i class="fa fa-facebook-official w3-hover-opacity"></i>
-    <i class="fa fa-instagram w3-hover-opacity"></i>
-    <i class="fa fa-snapchat w3-hover-opacity"></i>
-    <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-    <i class="fa fa-twitter w3-hover-opacity"></i>
-    <i class="fa fa-linkedin w3-hover-opacity"></i>
-
-    <p>Powered by <a href="https://mygithubpage.github.io">GitHubPages</a></p>
-  </footer>
-
   <script>
-    initialize();
     hljs.initHighlightingOnLoad();
   </script>
 </body>

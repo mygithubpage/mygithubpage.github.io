@@ -1,31 +1,13 @@
 // My Personal JavaScript
 
 
-// 
-document.onload = function () {
-    var hideNav = document.querySelector("#hideNav");
-    var sidebarBtn = document.querySelector("#sidebarBtn");
-    var sidebar = document.querySelector("#sidebar");
-    var topNavBtn = document.querySelector("#topNavBtn");
-    var topNav = document.querySelector("#topNav");
-}
-
-// Toggle to add or remove classes
-function toggleByClass(elem, toggleClass) {
-    for (let i = 0; i < elem.length; i++) {
-        // if the element has the class, remove it; otherwise add the class to the element
-        if (elem[i].className.indexOf(toggleClass[i]) !== -1) {
-            elem[i].className = elem[i].className.replace(" " + toggleClass[i], "");
-        } else {
-            elem[i].className += " " + toggleClass[i];
-        }
-    }
-}
+hideBarItems = document.querySelectorAll(".w3-hide-small");
+sidebarBtn = document.querySelector("#sidebarBtn");
+sidebar = document.querySelector("#sidebar");
+topNavBtn = document.querySelector("#topNavBtn");
+topNav = document.querySelector("#topNav"); 
 
 function toggleTopNav(thisElem) {
-    // toggle block display
-    
-    hideNav.classList.toggle("w3-bar-block");
 
     // toggle sidebar button
     if (sidebarBtn) { 
@@ -34,9 +16,10 @@ function toggleTopNav(thisElem) {
     }
 
     // toggle top navigation bar item
-    for (let index = 0; index < hideNav.children.length; index++) {
-        hideNav.children[index].classList.toggle("w3-hide-small");
-    }
+    hideBarItems.forEach(element => {
+        element.classList.toggle("w3-bar-block");
+        element.classList.toggle("w3-hide-small");
+    });
 
     // toggle top naviagtion shape
     if (thisElem.innerText == "\u25B2") {
@@ -48,29 +31,20 @@ function toggleTopNav(thisElem) {
 
 function toggleAccordion(name) {
     var elem = document.getElementById(name);
-    var color = document.getElementsByTagName("footer")[0].className.split(" ")[1];
     elem.classList.toggle("w3-show");
-    elem.classList.toggle(color);
-    //toggleByClass([elem, elem.previousElementSibling], ["w3-show", color]);
+    elem.previousElementSibling.classList.toggle(color);
 }
 
 function highlight(thisElem) {
     // Hint: Use unchanged class name
     var elems = document.getElementsByClassName(thisElem.className.split(" ")[0]);
-    var color = document.getElementsByTagName("footer")[0].className.split(" ")[1];
 
     for (let index = 0; index < elems.length; index++) {
         elems[index].classList.toggle(color);
     }
 }
 
-function toggleFixed(element) {
-    if (window.pageYOffset !== element.offsetTop) {
-        topNav.classList.add("sticky")
-    } else { // Remove "sticky" when you leave the scroll position
-        topNav.classList.remove("sticky"); 
-    }
-}
+
 
 // If Article Tag or Top Bar Item is clicked, store the content of clicked tag in sessionStorage
 function addTagClick(tags) {
@@ -123,7 +97,7 @@ function removeLeadingWhiteSpace() {
     }
 }
 
-function initialize() {
+function addHighlight() {
     var highlightElems = document.querySelectorAll("[class*='h-']");
     if(highlightElems) {
         highlightElems.forEach(element => {
@@ -131,6 +105,14 @@ function initialize() {
             element.addEventListener('mouseout', function() {highlight(element)} );
           });
     }
+}
+
+function initialize() {
+
+    document.querySelectorAll(".my-color").forEach(element => {
+        element.classList.remove("my-color");
+        element.classList.add(color);
+    });
 
     // Add Top Navigation Button Click Event and Tag Click Event.
     topNavBtn.addEventListener('click', function () { toggleTopNav(topNavBtn) });
@@ -138,21 +120,21 @@ function initialize() {
     addTagClick(document.querySelectorAll('.w3-tag'));
     addTagClick(document.querySelectorAll('a.w3-bar-item'));
 
-    
-
     let sidebarItems = document.querySelectorAll("#sidebar > a");
-    sidebarItems.forEach(element => {
-        let item = document.querySelector("#" + element.href.split("#")[1]);
-        element.addEventListener('click', function () { 
-            sidebar.classList.add("w3-hide");
-            topNav.classList.remove("sticky"); 
-            window.onscroll = function () { toggleFixed(item);}
+    if(sidebarItems.length > 0) {
+        sidebarItems.forEach(element => {
+            let item = document.querySelector("#" + element.href.split("#")[1]);
+            element.addEventListener('click', function () { 
+                sidebar.classList.add("w3-hide");
+                window.onscroll = function () { toggleFixed(item);}
+            });
         });
-    });
-
-    if(sidebarBtn) {
-        sidebarBtn.addEventListener('click', function () { sidebar.classList.toggle("w3-hide"); });
     }
+
+    if(sidebarBtn) { sidebarBtn.addEventListener('click', function () { sidebar.classList.toggle("w3-hide"); }); }
+    window.onscroll = function () { toggleFixed(topNav);}
     removeLeadingWhiteSpace(); // Remove Leading WhiteSpace in pre tag.
 
 }
+
+initialize(); 

@@ -3,45 +3,19 @@
 
 <head>
   <title>Scoring Rubric</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-
-  <link rel="stylesheet" href="/style.css" />
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="https://rawgit.com/isagalaev/highlight.js/master/src/styles/atom-one-light.css" />
-  
-  <script src="/external.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
+  <script src="/initialize.js"></script>
 </head>
 
 
 <body class="w3-light-gray">
 
-  <!-- Top Navigation -->
-  <nav id="topNav" class="w3-bar w3-black w3-card w3-top w3-center">
-    <a href="notes.html" class="w3-bar-item w3-button">HOME</a>
-    <div id="hideNav">
-      <a href="notes.html" class="w3-bar-item w3-button w3-hide-small">TOEFL</a>
-      <a href="notes.html" class="w3-bar-item w3-button w3-hide-small">Reading</a>
-      <a href="notes.html" class="w3-bar-item w3-button w3-hide-small">Listening</a>
-      <a href="notes.html" class="w3-bar-item w3-button w3-hide-small">Speaking</a>
-      <a href="notes.html" class="w3-bar-item w3-button w3-hide-small">Writing</a>        
-    </div>
-    <button class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" id="topNavBtn">&#9660;</button>
-  </nav>
-
-  <br/><br/>
-  
   <main>
 
     <!-- Ariticle tags -->
     <div class="w3-card w3-margin w3-padding w3-white">
       <span>Tags:</span>
-      <a class="w3-tag w3-black w3-btn w3-padding-small" href="notes.html">TOEFL</a>
-      <a class="w3-tag w3-black w3-btn w3-padding-small" href="notes.html">Scoring</a>
+      <a class="w3-tag my-color w3-btn w3-padding-small" href="notes.html">TOEFL</a>
+      <a class="w3-tag my-color w3-btn w3-padding-small" href="notes.html">Scoring</a>
     </div>
 
     <!-- Scoring Rubric -->
@@ -51,9 +25,9 @@
       <section>
         <h4><b>Speaking Independent Tasks (Questions 1 and 2)</b></h4>
 
-        <table class="w3-table-all w3-card" id="Independent-Speaking">
+        <table class="w3-table-all w3-card" id="independent-table">
           <thead>    
-            <tr class="w3-black">
+            <tr class="my-color">
               <th>Score</th>
               <th>General Description</th>
               <th>Delivery</th>
@@ -94,6 +68,45 @@
           </tbody>
         </table>
 
+        <div class="speaking" id="independent">
+          <form>
+            <p>
+              <input class="my-radio" type="radio" name="criteria" checked="checked">
+              <label>General Description</label>
+              
+              <input class="my-radio" type="radio" name="criteria">
+              <label>Delivery</label>
+            </p>
+
+            <p>
+              <input class="my-radio" type="radio" name="criteria">
+              <label>Language Use</label>
+  
+              <input class="my-radio" type="radio" name="criteria">
+              <label>Topic Development</label>
+            </p>
+          </form>
+
+          <form>
+            <span>Score:</span>
+            <input class="my-radio" type="radio" name="score" checked="checked">
+            <label>4</label>
+
+            <input class="my-radio" type="radio" name="score">
+            <label>3</label>
+
+            <input class="my-radio" type="radio" name="score">
+            <label>2</label>
+
+            <input class="my-radio" type="radio" name="score">
+            <label>1</label>
+          </form>
+          
+          <div class="w3-margin-top w3-card w3-padding-small" id="independent-description">
+
+          </div>
+        </div>
+         
       </section> <!-- Independent Speaking Scoring Rubric -->
       
       <hr/>
@@ -101,9 +114,9 @@
       <section>
         <h4><b>Speaking Integrated Tasks (Questions 3, 4, 5, and 6)</b></h4>
 
-        <table class="w3-table-all w3-card" id="Integrated-Speaking">
+        <table class="w3-table-all w3-card" id="integrated-table">
           <thead>    
-            <tr class="w3-black">
+            <tr class="my-color">
               <th>Score</th>
               <th>General Description</th>
               <th>Delivery</th>
@@ -143,6 +156,45 @@
             </tr>
           </tbody>
         </table>
+
+        <div class="speaking" id="integrated">
+          <form>
+            <p>
+              <input class="my-radio" type="radio" name="criteria" checked="checked">
+              <label>General Description</label>
+              
+              <input class="my-radio" type="radio" name="criteria">
+              <label>Delivery</label>
+            </p>
+
+            <p>
+              <input class="my-radio" type="radio" name="criteria">
+              <label>Language Use</label>
+  
+              <input class="my-radio" type="radio" name="criteria">
+              <label>Topic Development</label>
+            </p>
+          </form>
+
+          <form>
+            <span>Score:</span>
+            <input class="my-radio" type="radio" name="score" checked="checked">
+            <label>4</label>
+
+            <input class="my-radio" type="radio" name="score">
+            <label>3</label>
+
+            <input class="my-radio" type="radio" name="score">
+            <label>2</label>
+
+            <input class="my-radio" type="radio" name="score">
+            <label>1</label>
+          </form>
+          
+          <div class="my-margin-top-small w3-card w3-padding" id="integrated-description">
+
+          </div>
+        </div>
 
       </section> <!-- Integrated Speaking Scoring Rubric -->
       
@@ -249,28 +301,48 @@
 
   </main>
 
-  <!-- Footer -->
-  <footer class="w3-container w3-black w3-center w3-margin-top">
-    <p>Find me on social media.</p>
-
-    <i class="fa fa-facebook-official w3-hover-opacity"></i>
-    <i class="fa fa-instagram w3-hover-opacity"></i>
-    <i class="fa fa-snapchat w3-hover-opacity"></i>
-    <i class="fa fa-pinterest-p w3-hover-opacity"></i>
-    <i class="fa fa-twitter w3-hover-opacity"></i>
-    <i class="fa fa-linkedin w3-hover-opacity"></i>
-
-    <p>Powered by <a href="https://mygithubpage.github.io">GitHubPages</a></p>
-  </footer>
 
   <script>
-    initialize();
     //
+    
+    var independentTable = document.querySelector("#independent-table");
+    var independentDescription = document.querySelector("#independent-description");
+    var independentInputs = document.querySelectorAll("#independent input");
+
+    var integratedTable = document.querySelector("#integrated-table");
+    var integratedDescription = document.querySelector("#integrated-description");
+    var integratedInputs = document.querySelectorAll("#integrated input");
+
+    var criterias = ["General Description", "Delivery", "Language Use", "Topic Development"];
+
+    function getChecked(array, description, table) {
+      for (let index = 0; index < array.length; index++) {
+        const element = array[index];
+        if(element.checked) {
+          if(index > 3) { row = index - 3; }
+          else { col = index + 1; }
+        }
+      }
+      description.innerHTML = table.rows[row].cells[col].textContent;
+    }
+
     document.querySelectorAll("table").forEach(element => {
       element.classList.add("w3-hide");
     });
-    var independentTable = document.querySelector("#Independent-Speaking");
-    var integratedTable = document.querySelector("#Integrated-Speaking");
+
+    row = 1; col = 1;
+    independentDescription.innerHTML = independentTable.rows[row].cells[col].textContent;   
+    integratedDescription.innerHTML = integratedTable.rows[row].cells[col].textContent;   
+
+    independentInputs.forEach(element => {
+      element.addEventListener("change", function() { 
+        getChecked(independentInputs, independentDescription, independentTable); } )
+    });
+
+    integratedInputs.forEach(element => {
+      element.addEventListener("change", function() { 
+        getChecked(integratedInputs, integratedDescription, integratedTable) } )
+    });
 
   </script>
 </body>
