@@ -20,16 +20,16 @@ function addColor() {
         notes : "w3-black",  
         essay : "w3-brown",
         tpo : "my-crimson",
-        og : "my-dark-blue"
+        og : "my-dark-blue",
+        barrons : "w3-green"
     };
     var path = location.pathname.split("/");
     color = colors[path[path.length - 2]];
     
     if(!color) { 
-        color = document.body.title; 
-        if(path[path.length - 2].startsWith("tpo")) {
-            color = colors.tpo
-        }
+        if(path[path.length - 1].startsWith("tpo")) { color = colors.tpo }
+        if(path[path.length - 1].startsWith("index")) { color = colors.barrons; }
+        if(path[path.length - 1].startsWith("toefl")) { color = colors.og; }
     }
 }
 
@@ -55,7 +55,7 @@ function addHead() {
     // My CSS
     link = document.createElement("link");
     link.setAttribute("rel", "stylesheet");
-    link.href = "/github/style.css";
+    link.href = "/style.css";
     document.head.appendChild(link);
 
     // W3Schools W3 CSS
@@ -79,7 +79,7 @@ function addHead() {
 
     // My javascript
     script = document.createElement("script")
-    script.src = "/github/external.js"
+    script.src = "/external.js"
     document.head.appendChild(script);
 }
 
@@ -126,7 +126,7 @@ function addTopNav(color) {
     for (let index = 0; index < barItems.length; index++) {
         const element = barItems[index];
         let a = document.createElement("a");
-        a.href = "/github/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html";
+        a.href = "/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html";
         a.className = "w3-bar-item w3-button";
         a.textContent = element;
         if(index > 3) { a.className += " w3-hide-small" }
