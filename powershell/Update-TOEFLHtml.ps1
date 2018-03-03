@@ -1,6 +1,8 @@
 . .\Utility.ps1
 
-(Get-ChildItem .\..\toefl\essay\topic*.html).ForEach{
+(Get-ChildItem .\..\toefl\tpo\tpo*.html -File -Recurse).ForEach{
+
+
     $content = Get-Content $_.FullName
     $xml = [xml]($content.Replace("&emsp", "emsp"))
 
@@ -20,5 +22,5 @@
     $node.ParentNode.RemoveChild($node) | Out-Null
 
     $_.FullName
-    Set-Content $_.FullName (Format-Xml $xml.OuterXml 2).Replace("&amp;", "&").Replace("html[]", "html").Replace("<br />", "").Replace("w3-brown", "my-color")
+    Set-Content $_.FullName (Format-Xml $xml.OuterXml 2).Replace("&amp;", "&").Replace("html[]", "html").Replace("<br />", "")
 }

@@ -38,33 +38,60 @@ function New-Html ()
     $headNode = $xml.CreateElement("head")
     $headNode.innerText = ""
     $htmlNode.AppendChild($headNode) | Out-Null
-
-    # Create meat Node and Set attribute charset="UTF-8" <meta charset="UTF-8">
-    $metaNode = $xml.CreateElement("meta")
-    $metaNode.SetAttribute("charset", "UTF-8") 
-    $headNode.AppendChild($metaNode) | Out-Null
-
-    # Create meat Node and Set Attributes to view in mobile device
-    $metaNode = $xml.CreateElement("meta")
-    $metaNode.SetAttribute("name", "viewport") 
-    $metaNode.SetAttribute("content", "width=device-width, initial-scale=1.0")
-    $headNode.AppendChild($metaNode) | Out-Null
-
+ 
     # Create title Node and Add title
     $titleNode = $xml.CreateElement("title")
-    $titleNode.innerText = $Path.Split('\\')[-1].TrimEnd('.html')
+    $title = $Path.Split('\\')[-1].TrimEnd('.html').Split('-')
+    $titleNode.InnerText = $title[0].ToUpper() + " " + ($title[1].Substring(0,1).ToUpper() + 
+    $title[1].Substring(1,$title[1].length - 1)).insert($title[1].length - 1, " ")
     $headNode.AppendChild($titleNode) | Out-Null
+
+    # Create Script Element
+    $scriptNode = $xml.CreateElement("script")
+    $scriptNode.SetAttribute("src", "/initialize.js") 
+    $scriptNode.InnerText = ""
+    $headNode.AppendChild($scriptNode) | Out-Null
+
 
     # Create body Node
     $bodyNode = $xml.CreateElement("body") 
-    $bodyNode.innerText = ""
+    $bodyNode.InnerText = ""
     $htmlNode.AppendChild($bodyNode) | Out-Null
 
     # Add Content
     $cdata = $xml.CreateCDataSection($Content)
     $bodyNode.AppendChild($cdata) | Out-Null
     $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[", "").Replace("]]>", "")
-    $string = (Format-Xml $xml 2).Tostring()
+
+    # Add Navigation
+    $node = (Select-Xml "//div[@id='$($title[0])']" ([xml](Get-Content .\..\toefl\tpo\tpo.html))).Node
+    $div = $xml.CreateElement("div")
+    $div.SetAttribute("class", "w3-bar w3-margin-bottom")
+    $div.SetAttribute("id", $title[0])
+    $div.InnerXml = $node.InnerXml
+    $div.RemoveChild($div.FirstChild) | Out-Null
+    (Select-Xml "//main" $xml).Node.InsertBefore($div, (Select-Xml "//main" $xml).Node.FirstChild) | Out-Null
+    
+    # Add Previous Next Button
+    $htmls = Get-ChildItem ".\..\toefl\tpo\$($title[0])\*.html" | ForEach-Object {$_.Name}
+    $index = $htmls.IndexOf($Path.Split('\\')[-1])
+    $div = $xml.CreateElement("div")
+    $div.SetAttribute("class", "w3-bar")
+    
+    $a = $xml.CreateElement("a")
+    $a.SetAttribute("href", $htmls[$index - 1])
+    $a.SetAttribute("class", "w3-btn w3-left my-color")
+    $a.InnerText = "Previous"
+    $div.AppendChild($a) | Out-Null
+
+    $a = $xml.CreateElement("a")
+    $a.SetAttribute("href", $htmls[$index + 1])
+    $a.SetAttribute("class", "w3-btn w3-right my-color")
+    $a.InnerText = "Next"
+    $div.AppendChild($a) | Out-Null
+    (Select-Xml "//main" $xml).Node.AppendChild($div) | Out-Null
+
+    $string = (Format-Xml $xml 2).Tostring().Replace("$($title[0])/","")
     ("<!DOCTYPE html>`n" + $string) | Out-File $Path -Encoding "utf8"
 }
 
@@ -86,8 +113,9 @@ function Get-Barrons ()
 
 function Get-TPO ()
 {
-    for ($n = 1; $n -le 1; $n++) 
+    for ($n = 1; $n -le 51; $n++) 
     {
+        $n
         $tpoNumber = $n
         if ($tpoNumber -lt 10) {$tpoNumber = "0$tpoNumber"}
         
@@ -98,18 +126,25 @@ function Get-TPO ()
             $content = Get-Content $xmlFile
             [xml]$xml = $content
             $node = (Select-Xml "//miniPassageText" $xml).Node
+
+            $type = $xmlFile.Name.Substring(5,1)
+            $sections.ForEach{
+                if($_.Substring(0,1).ToUpper() -eq $type) { 
+                    $fileName = $xmlFile.Name.Replace($type, "-$_").ToLower()
+                }
+            }
+
             if ($node) 
             { 
                 if ($xmlFile.Name -like "*S[34].xml") 
                 {
-                    $text = "<main><section id=`"Reading Text`"><h2>Reading Text</h2><article><h3 style=`"text-align:center;`">" + 
-                    $node.ParentNode.miniPassageTitle + "</h3><p>" + $node.innerText + "</p></article></section></main>"
+                    $text = "<main class=`"w3-container`"><section id=`"reading-text`"><h3>Reading Text</h3><article><h4 class=`"w3-center`">" + $node.ParentNode.miniPassageTitle + "</h4><p>" + $node.innerText + "</p></article></section><hr/></main>"
                 }
                 else 
                 {
                     $text = $node.innerText -replace ("`n"+ " " * 8),"</p><p>"
-                    $text = "<main><section id=`"reading-text`"><h2>Reading Text</h2><article><p>" + $text + 
-                    "</p></article></section></main>"
+                    $text = "<main class=`"w3-container`"><section id=`"reading-text`"><h3>Reading Text</h3><article><p>" + $text + 
+                    "</p></article></section><hr/></main>"
                 }
             }
             $node = (Select-Xml "//PassageText" $xml).Node
@@ -117,34 +152,36 @@ function Get-TPO ()
             { 
                 $index = $node.innerText.IndexOf("`n" + " "*8)
                 $text = $node.InnerText.Remove($index, 9)
-                $text = $text.Insert($index, "</h3><p>")
+                $text = $text.Insert($index, "</h4><p>")
                 $text = $text -replace ("`n"+ " " * 8),"</p><p>"
-                $text = "<main><section id=`"reading-text`"><h2>Reading Text</h2><article><h3 style=`"text-align:center;`">" + $text + "</p></article></section></main>"
+                $text = "<main class=`"w3-container`"><div id=`"reading-text`"><article><h4 class=`"w3-center`">" + $text + "</p></article></div></main>"
             }
             $node = (Select-Xml "//AudioText" $xml).Node
             if ($node) 
             { 
-                $audioText = ($node.innerText -replace "\[.{8}\]", "" -replace (" " * 8), "")
+                $audioText = ($node.innerText -replace "\[.{8}\]", "" -replace (" " * 8), ":")
                 $audioText = $audioText -replace "`n","</p><p>"
                 
-                $text += "<main><section id=`"listening-text`"><h2>Listening Text</h2><article><p>" + $audioText + "</p></article></section></main>"
+                $text += "<main class=`"w3-container`"><div><audio src=`"" + $fileName.TrimEnd(".xml") + ".mp3`" controls=`"controls`"></audio></div>" + 
+                "<section id=`"listening-text`"><h3>Listening Text</h3><article><p>" + $audioText + "</p></article></section></main>"
             }
             $node = (Select-Xml "//SampleResponse" $xml).Node
             if ($node) 
             { 
-                $main = "<main>"
-                if ($xmlFile.Name -like "*S[12].xml" -or $xmlFile.Name -like "*W1.xml") 
+                $main = "<main class=`"w3-container`">"
+                if ($xmlFile.Name -like "*S[12].xml" -or $xmlFile.Name -like "*W[12].xml") 
                 {
-                    $text += "<main><section id=`"question`"><h3>Question</h3><p>" + $node.ParentNode.Stem + "</p></section>"
+                    $text += "<main class=`"w3-container`"><hr/><section id=`"question`"><h4>Question</h4><p>" + $node.ParentNode.Stem + "</p></section>"
                     $main = ""
                 }
-                $text += "$main<section id=`"sample-response`"><h3>Sample Response</h3><article><p>" + $node.innerText + "</p></article></section></main>"
+                $text += "$main<hr/><section id=`"sample-response`"><h4>Sample Response</h4><article><p>" + $node.innerText + "</p></article></section></main>"
+                $text = $text.Replace("`n","</p><p>")
             }
-            $path = "$PSScriptRoot\TPO\$($xmlFile.Name.Substring(0,5))"
-            New-Item $path -ItemType "Directory" -ErrorAction SilentlyContinue
+            $path = ".\..\toefl\tpo\$($xmlFile.Name.Substring(0,5).ToLower())"
+            New-Item $path -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
             if($text) 
             { 
-                New-Html ($text -replace "<p></p>", "" -replace "</main><main>", "") "$path\$($xmlFile.Name.TrimEnd(".xml")).html"
+                New-Html ($text -replace "<p></p>", "" -replace "</main><main class=`"w3-container`">", "") "$path\$($fileName.TrimEnd(".xml")).html"
             }
         }
     }
@@ -175,10 +212,12 @@ function Set-TPO ()
 }
 $global:folder = "$HOME\Downloads\ETS\TOEFL Programs"
 $global:projectPath = "$HOME\Downloads\ETS\TOEFL Programs\Sampler\forml1"
+$global:sections = "reading", "listening", "speaking", "writing"
 #Get-Barrons
-#Get-TPO
+Get-TPO
 #Set-TPO
-$article = "/integrated-toefl-writing-essays/tpo-01-integrated-writing-task-united-states-employees-typically"
+
+<#
 (Get-AllIndexesOf $article " ").Count
 $article.Split("-")[4]
 #$xml.html.body.InnerText

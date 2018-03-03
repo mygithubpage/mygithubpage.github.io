@@ -34,6 +34,9 @@ $content = Get-Content .\..\initialize.js
 if (($content -like "*/github*" -split "/")[-1] -like "*$($jQueryVersion.TrimStart("v"))*")
 {$content -replace ($content -like "*jquery*js*" -split "/")[-1], "jquery-$($jQueryVersion.TrimStart("v")).js\`""}
 #>
+
+# 31S4 31S6 36L5
+
 git add .
 git commit -m "Update"
 git push -u origin master 
