@@ -1,6 +1,4 @@
 toefl/test-big
-toefl/tpo
-/tpo
-/favicons
-test*
+toefl/tpo/tpo*/*.mp3
+mytest*
 w3*
