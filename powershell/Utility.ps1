@@ -28,15 +28,17 @@ function Submit-Website ()
     $ie.Document.querySelector($selector.signin).click()
 }
 
-function Start-InternetExplorer ($Uri)
+function Start-InternetExplorer ($Uri, $Show)
 {
     Get-Process -Name iexplore -ErrorAction Ignore | Stop-Process 
     $ie = New-Object -ComObject InternetExplorer.Application 
     $ie.Navigate($Uri)
-    $ie.Visible = $true
-    Initialize-SendKeys "Internet Explorer" 0
-    Send-Keys "% " 1
-    Send-Keys "x" 1
+    if($Show) {
+        $ie.Visible = $true
+        Initialize-SendKeys "Internet Explorer" 0
+        Send-Keys "% " 1
+        Send-Keys "x" 1
+    }
     $ie
 }
 

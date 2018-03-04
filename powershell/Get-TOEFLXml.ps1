@@ -1,9 +1,9 @@
 . .\Utility.ps1
-function ConvertTo-HtmlCharSets()
+function ConvertTo-HtmlCharSets($string)
 {
-    #$content = $content -replace "–", "&#8208;"
-    #$content = $content -replace "°C", "&#8451;"
-    $content
+    $string = [regex]::Replace($string, "\u2103", "&#8451;") # ℃
+    $string = [regex]::Replace($string, "\u2013", "&#8211;") # –
+    $string
 }
 
 function Update-Xml()
@@ -113,7 +113,7 @@ function Get-Barrons ()
 
 function Get-TPO ()
 {
-    for ($n = 1; $n -le 51; $n++) 
+    for ($n = 52; $n -le 53; $n++) 
     {
         $n
         $tpoNumber = $n
@@ -152,9 +152,10 @@ function Get-TPO ()
             { 
                 $index = $node.innerText.IndexOf("`n" + " "*8)
                 $text = $node.InnerText.Remove($index, 9)
-                $text = $text.Insert($index, "</h4><p>")
+                $title = (Select-Xml "//Title" $xml).Node
+                #$text = $text.Insert($index, "</h4><p>")
                 $text = $text -replace ("`n"+ " " * 8),"</p><p>"
-                $text = "<main class=`"w3-container`"><div id=`"reading-text`"><article><h4 class=`"w3-center`">" + $text + "</p></article></div></main>"
+                $text = "<main class=`"w3-container`"><div id=`"reading-text`"><article><h4 class=`"w3-center`">" + $title.InnerText + "</h4><p>" + $text + "</p></article></div></main>"
             }
             $node = (Select-Xml "//AudioText" $xml).Node
             if ($node) 
