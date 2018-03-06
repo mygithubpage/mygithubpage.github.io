@@ -1,8 +1,9 @@
 
-. ".\Utility.ps1"
+. "$PSScriptRoot\Utility.ps1"
 
-function Add-XmlNodes ($xml, $parentNode, $nodes) 
-{
+
+
+function Add-XmlNodes ($xml, $parentNode, $nodes) {
     foreach ($node in $nodes) 
     {
         $xmlElement = $xml.CreateElement($node.Name)
@@ -18,8 +19,7 @@ function Add-XmlNodes ($xml, $parentNode, $nodes)
     }
 }
 
-function Add-XmlTestItemNode($attributes) 
-{
+function Add-XmlTestItemNode($attributes) {
     $xml = ConvertTo-Xml -InputObject $xml
     $xml.RemoveAll()
 
@@ -28,8 +28,7 @@ function Add-XmlTestItemNode($attributes)
     $xml
 }
 
-function Add-XmlChildNodes($xml, $names, $innerTexts, $type) 
-{
+function Add-XmlChildNodes($xml, $names, $innerTexts, $type) {
     $parentNode = $xml.FirstChild
     if ($type) { $parentNode = Add-XmlNodes $xml $xml.FirstChild @{ Name = $type} }
     $nodes = @()
@@ -41,55 +40,130 @@ function Add-XmlChildNodes($xml, $names, $innerTexts, $type)
     Add-XmlNodes $xml $parentNode $nodes | Out-Null
 }
 
-function New-File($file, $path) 
-{
+function ConvertTo-HtmlName ($Name) {
+    $type = $Name.Substring(5,1)
+    $sections.ForEach{
+        if($_.Substring(0,1) -eq $type) { 
+            $Name = $Name.Replace($type, "-$_").ToLower()
+        }
+    }
+    $Name -creplace "q", "-question" -creplace "p\.", "-reading." -creplace "r\.", "-replay."
+}
+
+function New-File($file, $path) {
     New-Item $path -ErrorAction SilentlyContinue | Out-Null
     if ($file.GetType().Name -eq "XmlDocument") {$file = Format-Xml $file}
     Set-Content -Value $file -Path $path
 }
 
-function Get-AllIndexesOf($string, $value) 
-{
-    $indexes = @()
-    for ($index = 0; ; $index += $value.Length) 
-    {
-        $index = $string.IndexOf($value, $index)
-        if ($index -eq -1) {break}
-        $indexes += $index
-    }
-    $indexes
+function New-Html ($Content, $Path) {
+
+    $xml = ConvertTo-Xml -InputObject $xml
+    $xml.RemoveAll()
+
+    # Create html Node and Set Attribute lang="en" <html lang="en"></html>
+    $htmlNode = $xml.CreateElement("html")
+    $htmlNode.innerText = ""
+    $htmlNode.SetAttribute("lang", "en")
+    $htmlNode = $xml.AppendChild($htmlNode)
+
+    # Create head Node
+    $headNode = $xml.CreateElement("head")
+    $headNode.innerText = ""
+    $htmlNode.AppendChild($headNode) | Out-Null
+ 
+    # Create title Node and Add title
+    $titleNode = $xml.CreateElement("title")
+    $title = $Path.Split('\\')[-1].TrimEnd('.html').Split('-')
+    $titleNode.InnerText = $title[0].ToUpper() + " " + ($title[1].Substring(0,1).ToUpper() + 
+    $title[1].Substring(1,$title[1].length - 1)).insert($title[1].length - 1, " ")
+    $headNode.AppendChild($titleNode) | Out-Null
+
+    # Create Script Element
+    $scriptNode = $xml.CreateElement("script")
+    $scriptNode.SetAttribute("src", "/initialize.js") 
+    $scriptNode.InnerText = ""
+    $headNode.AppendChild($scriptNode) | Out-Null
+
+
+    # Create body Node
+    $bodyNode = $xml.CreateElement("body") 
+    $bodyNode.InnerText = ""
+    $htmlNode.AppendChild($bodyNode) | Out-Null
+
+    # Add Content
+    $cdata = $xml.CreateCDataSection($Content)
+    $bodyNode.AppendChild($cdata) | Out-Null
+    $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[", "").Replace("]]>", "")
+
+    # Add Navigation
+    $node = (Select-Xml "//div[@id='$($title[0])']" ([xml](Get-Content .\..\toefl\tpo\tpo.html))).Node
+    $div = $xml.CreateElement("div")
+    $div.SetAttribute("class", "w3-bar w3-margin-bottom")
+    $div.SetAttribute("id", $title[0])
+    $div.InnerXml = $node.InnerXml
+    $div.RemoveChild($div.FirstChild) | Out-Null
+    (Select-Xml "//main" $xml).Node.InsertBefore($div, (Select-Xml "//main" $xml).Node.FirstChild) | Out-Null
+    
+    # Add Previous Next Button
+    $htmls = Get-ChildItem ".\..\toefl\tpo\$($title[0])\*.html" | ForEach-Object {$_.Name}
+    $index = $htmls.IndexOf($Path.Split('\\')[-1])
+    $div = $xml.CreateElement("div")
+    $div.SetAttribute("class", "w3-bar")
+    
+    $a = $xml.CreateElement("a")
+    $a.SetAttribute("href", $htmls[$index - 1])
+    $a.SetAttribute("class", "w3-btn w3-left my-color")
+    $a.InnerText = "Previous"
+    $div.AppendChild($a) | Out-Null
+
+    $a = $xml.CreateElement("a")
+    $a.SetAttribute("href", $htmls[$index + 1])
+    $a.SetAttribute("class", "w3-btn w3-right my-color")
+    $a.InnerText = "Next"
+    $div.AppendChild($a) | Out-Null
+    (Select-Xml "//main" $xml).Node.AppendChild($div) | Out-Null
+
+    $string = (Format-Xml $xml 2).Tostring().Replace("$($title[0])/","")
+    ("<!DOCTYPE html>`n" + $string) | Out-File $Path -Encoding "utf8"
 }
 
-function Copy-ResourceItem($name, $path, $files) 
-{
-    $file = $files.Where{$_.Name -like $name}[0]
-    if ($file) { }#Copy-Item -Path $file.FullName -Destination $path -ErrorAction SilentlyContinue }
+function Update-Character($string) {
+    # unicode-table.com
+    $string = [regex]::Replace($string, "\u2018", "'") 
+    $string = [regex]::Replace($string, "\u2019", "'") 
+    $string = [regex]::Replace($string, "\u201C", "`"") 
+    $string = [regex]::Replace($string, "\u201D", "`"") 
+    $string = [regex]::Replace($string, "\u2026", "...") 
+    $string
 }
 
-function Format-Paragraphs($string) 
-{
+function Format-Paragraphs($string) {
     $string = $string -replace "\s*`r`n\s*", "`r"
     $string = $string -replace "`r`n`r`n", "`r"
     while($string.Contains("  ")) { $string = $string.Replace("  ", " ") }
     $string = $string.Replace("`r", "`n" + " " * 8)
-    $string
+    Update-Character $string
 }
 
-function Add-Shading($text, $highlight, $character) 
-{
+function Add-Shading($text, $highlight, $character) {
     $sentenceIndex = $text.IndexOf((Remove-Characters $highlight.parentNode.innerText))
-    $index = $highlight.parentNode.innerHTML.indexof("v=201711281803") + 16
-    if($index -ne 15) 
+
+    # if innerText has img tag
+    if($highlight.parentNode.firstChild.tagName -eq "img") 
     {
+        $index = $highlight.parentNode.firstChild.outerHTML.Length
         $selectionIndex = $highlight.parentNode.innerHTML.IndexOf('<span class="light">') - $index
         $selection = $highlight.parentNode.innerHTML.Substring($selectionIndex + 20 + $index, `
             $highlight.parentNode.innerHTML.IndexOf('</span>') - $selectionIndex - 20 - $index)
     }
     else
     {
-        $index = $highlight.parentNode.innerHTML.indexof("data-answer=") + 23
-        $selectionIndex = $highlight.parentNode.innerHTML.IndexOf('<span class="light">')
-        if($index -ne 22) 
+        $index = $highlight.parentNode.innerHTML.IndexOf("data-answer=") + 23
+        $selectionIndex = (Remove-Characters $highlight.parentNode.innerHTML).IndexOf('<span class="light">')
+
+        # if innerText has insert-area tag
+        if($index -ne 22 -and $selectionIndex -gt $index) 
         { 
             $selectionIndex -= $index 
             $selection = $highlight.parentNode.innerHTML.Substring($selectionIndex + 20 + $index, `
@@ -97,8 +171,7 @@ function Add-Shading($text, $highlight, $character)
         } 
         else 
         {
-            $selection = $highlight.parentNode.innerHTML.Substring($selectionIndex + 20, `
-            $highlight.parentNode.innerHTML.IndexOf('</span>') - $selectionIndex - 20)
+            $selection = $highlight.innerText
         }
         
     }
@@ -109,122 +182,24 @@ function Add-Shading($text, $highlight, $character)
     $text
 }
 
-function Remove-Characters($string, $type) 
-{
+function Remove-Characters($string) {
+    <#
     if ($type -eq "selection") {$digit = "0-9"}
     $character = "[^A-za-z$digit!#$%&'()*+,./:;<=>?@\^_`{}~-]"
     while ($string -and $string.Substring(0, 1) -match $character) { $string = $string.Remove(0, 1) } 
     while ($string -and $string.Substring($string.Length - 1, 1) -match $character) { $string = $string.Remove($string.Length - 1, 1) } 
     if ($type -eq "question") { while ($string.Substring(0, 1) -match "[^A-Za-z]") { $string = $string.Remove(0, 1) } }
     while($string.Contains("  ")) { $string = $string.Replace("  ", " ") }
-    $string 
+    #>
+    while ($string.Substring(0, 1) -eq " ") { $string = $string.Remove(0, 1) } 
+    while ($string.Substring($string.Length - 1, 1) -eq " ") { $string = $string.Remove($string.Length - 1, 1) } 
+    while ($string.Contains("  ")) { $string = $string.Replace("  ", " ") }
+    #>
+    Update-Character $string.Replace("&nbsp;", "") 
 }
 
-function Update-SamplerXml () 
-{
-    
-    $path = "$($projectPath.Substring(0, $projectPath.Length - 7))\sampler.xml"
-    $content = Get-Content $path
-    $content = $content -replace "$sets[0-9]*", "$sets$number"
-    [xml]$xml = $content
-
-    foreach ($section in $sections[0..1]) 
-    {
-        $xmlPrefix = "$projectPath\$sets$number\$section\$sets$number$($section.Chars(0))"
-        $nodes = Select-Xml -Xml $xml -XPath "/TestItem/TESTLET[@LABEL=`"$section`" and @NUMBQUESTS]"
-        for ($i = 1; $i -le $nodes.Count; $i++) 
-        {
-            $count = (Get-ChildItem "$xmlPrefix$($i)Q*.xml").Count
-            $node = $nodes[$i - 1].Node
-            if ($section -eq "Reading") { $node.NUMBQUESTS = $count.ToString() }
-            else 
-            {
-                if ($i -lt 4) { $question = "123" }
-                else { $question = "456" }
-                $node.NUMBQUESTS = (Get-ChildItem "$xmlPrefix[$question]Q*.xml").Count.ToString()
-            }
-            if ($node.QUESTBEGIN) 
-            {
-                $length = $nodes[$i - 2].Node.TestItemName.Count
-                if ($i -eq 3 -or $i -eq 6) { $length += $nodes[$i - 3].Node.TestItemName.Count - 1 }
-                $node.QUESTBEGIN = ($length).ToString()
-            }
-            while ($node.TestItemName.Count - 1 -lt $count) 
-            { 
-                Add-XmlNodes $xml $node `
-                @{
-                    Name = "TestItemName"; 
-                    innerText = "$sets$number\$section\$sets$number$($section.Chars(0))$($i)Q$($node.TestItemName.Count).xml"
-                }
-            }
-            while ($node.TestItemName.Count - 1 -gt $count)
-            { $node.RemoveChild($node.LastChild) }
-        }
-    }
-    New-File $xml "$($projectPath.Substring(0, $projectPath.Length - 7))\sampler.xml" 
-}
-
-function Get-Score () 
-{
-    <#
-    $scores = @(
-        @(23, 23, 24, 25, 26, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 30),
-        @()
-    )#>
-    $keys = 
-    @(
-        @(
-            @(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 123),
-            @(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 123),
-            @(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 123)
-        ),
-        @(
-            @(1, 2, 3, 4, 1),
-            @(1, 2, 3, 4, 1, 2),
-            @(1, 2, 3, 4, 1, 2),
-            @(1, 2, 3, 4, 1),
-            @(1, 2, 3, 4, 1, 2),
-            @(1, 2, 3, 4, 1, 2)
-        )
-    )
-
-    $totalPoints = @(45, 34)
-    for ($i = 0; $i -lt $keys.Count; $i++) 
-    {
-        for ($j = 1; $j -le $keys[$i].Count; $j++) 
-        {
-            for ($k = 1; $k -le $keys[$i][$j - 1].Count; $k++) 
-            {
-                if ($k -lt 10 -and $i -eq 0) { $l = "0$k" }
-                else {$l = $k}
-                [xml]$xml = Get-Content "$projectPath\$sets$number\$($sections[$i])\$sets$number$($sections[$i].Chars(0))$($j)Q$l.xml"
-                
-                if ($xml.TestItem.Key -ne $keys[$i][$j - 1][$k - 1]) 
-                {
-                    $totalPoints[$i]--
-                    if ($k -eq 14) 
-                    {
-                        $string = $xml.TestItem.Key
-                        $point = -3
-                        foreach ($character in $string.ToCharArray()) 
-                        {
-                            if (($keys[$i][$j - 1][$k - 1]).ToString().ToCharArray() -contains $character) { $point++ }
-                        }
-                        $totalPoints[$i] += $point 
-                    }
-                    Write-Host "$($sections[$i]) passage $j question $k"
-                    Write-Host "Correct answer is: $($xml.TestItem.Key)"
-                    Write-Host "Your Answer is: $($keys[$i][$j-1][$k-1])"
-                }
-            }
-        }
-        Write-Host "$($sections[$i]) raw points: $($totalPoints[$i])"
-    }
-}
-
-function Update-Audio ($test) 
-{
-    $xmlFiles = Get-ChildItem "$projectPath\$sets$number\*.xml" -Recurse
+function Update-Audio ($test) {
+    $xmlFiles = Get-ChildItem "$xmlPath\$sets$number\*.xml" -Recurse
     foreach ($xmlFile in $xmlFiles) 
     {
         [xml]$xml = Get-Content $xmlFile
@@ -261,238 +236,145 @@ function Update-Audio ($test)
     }
 }
 
-function Get-Audio ($Uri, $AudioName) 
-{
-    if($Uri.Contains("speak") -and !$Uri.Contains("feedback"))
-    {
-        Invoke-WebRequest $Uri -OutFile "$PSScriptRoot\$sets$number.html"
-        $html = Get-Content "$PSScriptRoot\$sets$number.html"
-        foreach($line in $html)
-        {
+function Get-Audio ($Link, $Path) {
+    
+    $audioName = $Path.Split("\")[-1]
+    # Download mp3
+    $mp3 = "$htmlPath\$(($sets + $number).ToLower())\" + (ConvertTo-HtmlName $audioName)
+    if (Test-Path $mp3) { Write-Host "$mp3 Exist" }
+    else {
+        
+        $file = "$sets$number-$($Link.Split("-")[1]).html"
+        if(!(Test-Path $file)) { Invoke-WebRequest $Link -OutFile $file }
+
+        $html = Get-Content $file -Encoding UTF8
+        foreach($line in $html) {
             $end = $line.IndexOf(".mp3") + 4
-            $start = $line.IndexOf("https://tikustorage.oss-cn-hangzhou.aliyuncs.com")
-            if($start -ne -1)
-            {
-                $link = $line.Substring($start,$end - $start)
+            $start = $line.IndexOf("https://")
+            if($end -ne 3 -and $start -ne -1 -and $line.IndexOf("speaking_beep_prepare") -eq -1) {
+                $audioLink = $line.Substring($start, $end - $start)
+                Remove-Item $file
                 break
             }
         }
-        Remove-Item "$PSScriptRoot\$sets$number.html"
-    }
-    else
-    {
-        $html = Invoke-WebRequest $Uri
-        $document = $html.ParsedHtml.body
 
-        $link = ""
-        do 
-        {
-            $link = $document.getElementsByClassName("audio").item(0).src
-        } until ($link)
-
-        if($link.substring($link.length - 6,2) -notlike "*[_CLQ][0-9]*" -and $link.substring($link.length - 6,2) -notlike "*1[0-9]*") 
-        {
-            $AudioName = $AudioName.Insert(9,"R")
-        }
+        Write-Host "Downloading" $audioName
+        & $idmExe /n /d $audioLink -p "$htmlPath\$(($sets + $number).ToLower())\" -f (ConvertTo-HtmlName $audioName)
+        while (!(Test-Path $mp3)) {} # Wait for downloading completed
     }
 
-    $item = New-Object PSObject -Property `
-    @{
-        Audiolink = $link
-        FileName  = $link.Split("/")[-1]
-        AudioName = $AudioName            
+    # Convert mp3
+    $wav = $Path.Replace(".mp3", ".wav")
+    if ((Test-Path $mp3.Replace(".mp3", ".wav")) -or (Test-Path $wav)) { Write-Host "$($mp3.Replace(".mp3", ".wav")) Exist" }
+    else {
+        Write-Host "Converting" $mp3.Split("\")[-1]
+        & $switchExe -convert $mp3 -overwrite always -hide -format .wav -settings .wav PCM16 22050 2
+        while (!(Test-Path $mp3.Replace(".mp3", ".wav"))) {} # Wait for converting completed
     }
-    $global:links += $item
-    $links | Out-Null
-    $link
-}
 
-function Get-Text ()
-{
-    $word = new-object -comobject word.application 
-    $word.Visible = $false 
-    $xmlFiles = Get-ChildItem "$projectPath\$sets$number\*.xml" -Recurse
-    foreach ($xmlFile in $xmlFiles) 
-    {
-        $text = ""
-        $content = Get-Content $xmlFile
-        [xml]$xml = $content
-        $node = (Select-Xml "//miniPassageText" $xml).Node
-        if ($node) 
-        { 
-            $text += "Reading Text`n" + $node.innerText + "`n"
-        }
-        $node = (Select-Xml "//PassageText" $xml).Node
-        if ($node) 
-        { 
-            $text += "Passage Text`n" + $node.innerText + "`n"
-        }
-        $node = (Select-Xml "//AudioText" $xml).Node
-        if ($node) 
-        { 
-            $text += "Listening Text`n" + ($node.innerText -replace "\[.{8}\]", "" -replace (" " * 8), "") + "`n"
-        }
-        $node = (Select-Xml "//SampleResponse" $xml).Node
-        if ($node) 
-        { 
-            if ($xmlFile.Name -like "*S[12].xml") 
-            {
-                $text += $node.ParentNode.Stem
-            }
-            $text += "Sample Response`n" + $node.innerText
-        }
-        $path = "$env:USERPROFILE\Downloads\$sets\$($xmlFile.Name.Substring(0,5))"
-        New-Item $path -ItemType "Directory" -ErrorAction SilentlyContinue
-        if($text) 
-        { 
-            $file = $word.Documents.Add()
-            $file.Content = $text
-            $file.SaveAs2("$path\$($xmlFile.Name.TrimEnd(".xml")).docx")
-        }
-    }
-    $word.Quit() 
-    [void][Runtime.Interopservices.Marshal]::ReleaseComObject($word)
-}
-
-function Get-Audios ()
-{
-    $n = [int]$number
-    New-Item -Path "$($wavPath.TrimEnd('\*'))\$sets\$sets$($number)\" -ItemType "Directory" -ErrorAction SilentlyContinue
-    if ($n -lt 35 -or $n -gt 39 -and $n -lt 50) 
-    {
-        $listening = Get-ChildItem "$jpgPath\tpo$($n)_listening_passage*.mp3"
-        $speaking = Get-ChildItem "$jpgPath\tpo$($n)_speaking_question?_dialog.mp3"
-        $writing = Get-ChildItem "$jpgPath\tpo$($n)_writing_question.mp3"
-        
-        for ($j = 0; $j -lt $listening.Count; $j++) 
-        {
-            Copy-Item $listening[$j].FullName "$($wavPath.TrimEnd('\*'))\$sets\$sets$($number)\$sets$($number)L$($j+1).mp3"
-        }
-        for ($j = 0; $j -lt $speaking.Count; $j++) 
-        {
-            Copy-Item $speaking[$j].FullName "$($wavPath.TrimEnd('\*'))\$sets\$sets$($number)\$sets$($number)S$($j+3).mp3"
-        }
-        Copy-Item $writing[0].FullName "$($wavPath.TrimEnd('\*'))\$sets\$sets$($number)\$sets$($number)W1.mp3"
-    }
-    else 
-    {
-        (Get-ChildItem "$HOME\Downloads\Music\$sets$($number)??.mp3").foreach{
-            Copy-Item -Path $_.FullName -Destination "$($wavPath.TrimEnd('\*'))\$sets\$sets$($number)\$($_.Name)"
-        }
+    if(!(Test-Path $wav)) { 
+        Wait-FileUnlock $mp3.Replace(".mp3", ".wav") 100
+        Move-Item $mp3.Replace(".mp3", ".wav") $wav 
     }
 }
 
-function Get-QuestionAudio () 
-{
-    if(Get-Content "$PSScriptRoot\$sets$number-AudioLinks.csv" -ErrorAction SilentlyContinue ) 
+function Get-Passage ($Uri) {
+    $ie = Invoke-InternetExplorer $Uri
+    $passageHtml = ""
+    foreach($item in $ie.Document.IHTMLDocument3_getElementsByTagName("span"))
+    {
+        if ($item.className -ne "text" -or $item.tagName -ne "span") { continue }
+        if($item.firstChild.tagName -eq "img") {
+            $item.removeChild($item.firstChild)
+            $passageHtml = "<span id=`"arrow`"></span>"
+        }
+        $passageHtml += $item.innerHTML
+        if($item.parentNode.nextSibling.tagName -eq "br") { 
+            $passageHtml += "</p><p>"
+        }
+    }
+    $passageHtml = $passageHtml.Replace("</span><span class=`"underline`">", "</span> <span class=`"underline`">")
+    Remove-Characters "<p>$passageHtml".Remove($passageHtml.Length, 3)
+
+}
+
+function New-TPOHtml($XmlFile) {
+    
+    $xmlName = $XmlFile.Split("\")[-1]
+
+    $xml = [xml](Get-Content $XmlFile)
+    $node = (Select-Xml "//miniPassageText" $xml).Node
+    if ($node) 
     { 
-        $links = Import-Csv "$PSScriptRoot\$sets$number-AudioLinks.csv"
-        $links.Audiolink | ForEach-Object  `
+        if ($xmlName -like "*S[34].xml") 
         {
-            $_.Replace("?????", "%EF%BC%88%E9%87%8D%E5%90%AC%E9%A2%98%EF%BC%89") `
-            -replace "\?\?\?", "%E9%87%8D%E5%90%AC%E9%A2%98" -replace "\?\?", "%E9%87%8D%E5%A4%8D"
-        } | Set-Clipboard
-        $links | ForEach-Object `
-        {
-            Copy-Item -Path "$env:USERPROFILE\Downloads\Music\$($_.FileName.Replace("?",'-').Replace("%20",' '))" -Destination "$env:USERPROFILE\Music\$($_.AudioName)"
+            $text = "<main class=`"w3-container`"><section id=`"reading-text`"><h3>Reading Text</h3><article><h4 class=`"w3-center`">" + $node.ParentNode.miniPassageTitle + "</h4><p>" + $node.innerText + "</p></article></section><hr/></main>"
         }
-        return 
-    }
-    $html = Invoke-WebRequest "$website/listen/$location.html"
-    $test = $html.ParsedHtml.body.getElementsByClassName("div") | `
-    ForEach-Object {if($_.className -eq "title" -and $_.innerText.split(" ")[0] -eq "$sets$([int]$number)"){$_}} 
-    $total = $test.nextSibling.nextSibling.GetElementsByTagName("span") | ForEach-Object {if($_.className -eq "total"){$_}}
-
-    $articles = @()
-    foreach ($item in $total) 
-    {
-        $articles += "$($item.previousSibling.previousSibling.id.split("-")[1]),$($item.innerText)"
-    }
-
-    for ($i = 0; $i -lt $articles.Count; $i++) 
-    {
-        $article = $articles[$i].split(",")[0]
-        "$sets$($number)L$($i+1).mp3"
-        Get-Audio "$website/listen/review-$article-13.html" "$sets$($number)L$($i+1).mp3" | Out-Null
-        for ($j = 1; $j -le [int]$articles[$i].split(",")[1]; $j++) 
+        else 
         {
-            "$sets$($number)L$($i+1)Q$j.mp3"
-            $link = Get-Audio "$website/listen/answer.html?scenario=13&article_id=$article&seqno=$j" "$sets$($number)L$($i+1)Q$j.mp3"
-
-            if($link.substring($link.length - 6,2) -notlike "*[_CLQ][0-9]*" -and $link.substring($link.length - 6,2) -notlike "*1[0-9]*")
-            {
-                "$sets$($number)L$($i+1)Q$($j)R.mp3"
-                Get-Audio "$website/listen/answer.html?scenario=13&step=2&article_id=$article&seqno=$j" "$sets$($number)L$($i+1)Q$j.mp3" | Out-Null
-            }
+            $text = $node.innerText -replace ("`n"+ " " * 8),"</p><p>"
+            $text = "<main class=`"w3-container`"><section id=`"reading-text`"><h3>Reading Text</h3><article><p>" + $text + 
+            "</p></article></section><hr/></main>"
         }
     }
-    $html = Invoke-WebRequest "$website/speak/$location.html"
-    $test = $html.ParsedHtml.body.getElementsByClassName("div") | `
-    ForEach-Object {if($_.className -eq "title" -and $_.innerText.split(" ")[0] -eq "$sets$number"){$_}} 
-    $articles = $test.nextSibling.nextSibling.GetElementsByTagName("div") | ForEach-Object { foreach($attribute in $_.Attributes){ if($attribute.Name -eq "data-id") {$attribute.textContent } } }
-    for ($i = 0; $i -lt $articles.Count; $i++) 
-    {
-        if ($i -ne 0 -and $i -ne 1) 
+    $node = (Select-Xml "//PassageText" $xml).Node
+    if ($node) 
+    { 
+        $text = $node.InnerXml.Replace("System.__ComObject ", "")
+        $title = (Select-Xml "//Title" $xml).Node
+        $text = "<main class=`"w3-container`"><div id=`"reading-text`"><article><h4 class=`"w3-center`">" + $title.InnerText + "</h4><p>" + $text + "</p></article></div></main>"
+    }
+    $node = (Select-Xml "//AudioText" $xml).Node
+    if ($node) 
+    { 
+        $audioText = ($node.innerText -replace "\[.{8}\]", "" -replace (" " * 8), "")
+        $audioText = $audioText -replace "`n","</p><p>"
+        
+        $text += "<main class=`"w3-container`"><div><audio src=`"" + $xmlName.Replace(".xml", ".mp3") + "`" controls=`"controls`"></audio></div>" + 
+        "<section id=`"listening-text`"><h3>Listening Text</h3><article><p>" + $audioText + "</p></article></section></main>"
+    }
+    $node = (Select-Xml "//SampleResponse" $xml).Node
+    if ($node) 
+    { 
+        $main = "<main class=`"w3-container`">"
+        if ($xmlName -like "*S[12].xml" -or $xmlName -like "*W[12].xml") 
         {
-            "$sets$($number)S$($i+1).mp3"
-            Get-Audio "$website/speak/feedback-$($articles[$i])-13.html" "$sets$($number)S$($i+1).mp3" | Out-Null
+            $text += "<main class=`"w3-container`"><hr/><section id=`"question`"><h4>Question</h4><p>" + $node.ParentNode.Stem + "</p></section>"
+            $main = ""
         }
-
-        if ($i -eq 2 -or $i -eq 3) 
-        {
-            "$sets$($number)S$($i+1)P.mp3"
-            Get-Audio "$website/speak/start-$($articles[$i])-13.html?step=getpaper" ("$sets$($number)S$($i+1)P.mp3") | Out-Null
-        }
-        "$sets$($number)S$($i+1)Q.mp3"
-        Get-Audio "$website/speak/start-$($articles[$i])-13.html?step=getquestion" ("$sets$($number)S$($i+1)Q.mp3") | Out-Null
+        $text += "$main<hr/><section id=`"sample-response`"><h4>Sample Response</h4><article><p>" + $node.innerText + "</p></article></section></main>"
+        $text = $text.Replace("`n","</p><p>")
     }
 
-    $html = Invoke-WebRequest "$website/write/$location.html"
-    $test = $html.ParsedHtml.body.getElementsByClassName("div") | `
-    ForEach-Object {if($_.className -eq "title" -and $_.innerText.split(" ")[0] -eq "$sets$number"){$_}} 
-    $articles = $test.nextSibling.nextSibling.GetElementsByTagName("div") | ForEach-Object { foreach($attribute in $_.Attributes){ if($attribute.Name -eq "data-id") {$attribute.textContent } } }
-    "$sets$($number)W1.mp3"
-    Get-Audio "$website/write/practice-review.html?article_id=$($articles[0])" "$sets$($number)W1.mp3" | Out-Null
-
-    $links | Export-Csv "$PSScriptRoot\$sets$number-AudioLinks.csv"
-    $links = Import-Csv "$PSScriptRoot\$sets$number-AudioLinks.csv"
-    $links.Audiolink | ForEach-Object  {
-        $_.Replace("?????", "%EF%BC%88%E9%87%8D%E5%90%AC%E9%A2%98%EF%BC%89") -replace "\?\?", "%E9%87%8D%E5%A4%8D"
-    } | Set-Clipboard
+    $path = "$htmlPath\$($xmlName.Substring(0,5).ToLower())"
+    New-Item $path -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
+    if($text) 
+    { 
+        New-Html ($text -replace "<p></p>", "" -replace "</main><main class=`"w3-container`">", "") "$path\$(ConvertTo-HtmlName $xmlName)"
+    }
 }
 
-function Get-Resources()
-{
-    $xmlFiles = Get-ChildItem "$projectPath\$sets$number\*.xml" -Recurse
-    foreach ($xmlFile in $xmlFiles) 
-    {
-        $content = Get-Content $xmlFile
-        [xml]$xml = $content
-        $node = (Select-Xml "/TestItem[@CLASS!='lecture']//AudioText" $xml).Node
-        if ($node) 
-        { 
-            $path = "$env:USERPROFILE\Downloads\Documents\$($xmlFile.Name.TrimEnd(".xml")).txt"
-            if (Test-Path $path)
-            {
-                $text = ""
-                foreach($line in (Get-Content $path) )
-                {
-                    $text += $line + "`n"
-                }
-                $node.innerText = Format-Paragraphs $text
-            }
-        }
-        $node = (Select-Xml "//LecturePicture" $xml).Node
-        if ($node) 
-        { 
-            $path = "$imagePath\$($node.innerText.Split("\\")[-1])"
-            if (Test-Path $path)
-            {
-                Copy-Item $path "$projectPath\$filePath.jpg"
-            }
-        }
-        
-        $xml.Save($xmlFile.FullName) 
+function Test-Denpendency () {
+
+    # Check Denpendency
+    if (!(Test-Path $idmExe)) { 
+        "$idmExe Does not Exist"
+        exit 
+    }
+
+    if (!(Test-Path $switchExe)) { 
+        "$switchExe Does not Exist"
+        exit
+    }
+
+    if (!(Test-Path $xmlPath)) { 
+        "$xmlPath Does not Exist"
+        exit
+    }
+
+    if (!(Test-Path $htmlPath)) { 
+        "$htmlPath Does not Exist"
+        exit
     }
 }
 
@@ -500,10 +382,10 @@ function Get-Reading() {
     $section = $MyInvocation.MyCommand.Name.Split("-")[1]
     $letter = $section.substring(0, 1)
     $prefix = "$sets$number\$section\$sets$number$letter"
-    New-Item -Path "$projectPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
+    New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
     
     $type = $section.Remove($section.Length - 3, 3).ToLower()
-    $html = Invoke-WebRequest "$website/$type/$location.html"
+    $html = (Invoke-WebRequest "$website/$type/$location.html")
 
     # Get 3 Passage question number 
     foreach ($item in $html.ParsedHtml.body.getElementsByClassName("title")) {
@@ -512,15 +394,35 @@ function Get-Reading() {
 
     # Get question number 14 14 14
     $articles = @()
-    foreach ($item in $test.nextSibling.nextSibling.GetElementsByClassName("total")) {
-        $articles += "$($item.previousSibling.previousSibling.id.split("-")[1]),$($item.innerText)"
+    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("total")) {
+        $articles += "$($item.previousSibling.previousSibling.id.Split("-")[1]),$($item.innerText)"
     }
+    
+    $practiceLinks = $html.ParsedHtml.body.getElementsByClassName("btnn1")
+    $reviewLinks = $html.ParsedHtml.body.getElementsByClassName("btnn2")
 
-    for ($i = 1; $i -le $articles.Count; $i++) {
-        $article = $articles[$i-1].split(",")[0]
+    for ($i = 1; $i -le $articles.Count; $i++) 
+    {
+        $article = $articles[$i-1].Split(",")[0]
+        foreach ($item in $practiceLinks) {
+            if($item.getAttribute("data-url") -like "*$article*") {
+                $practiceLink = $website + $item.getAttribute("data-url").Remove(0,6)
+            }
+        }
+        
+        foreach ($item in $reviewLinks) {
+            if($item.parentNode.href -like "*$article*") {
+                $reviewLink = $website + $item.parentNode.href.Remove(0,12)
+            }
+        }
+
+        $linkNames = "PracticeLink", "ReviewLink"
+        $linkNodes = $practiceLink, $reviewLink
+
+        $article = $articles[$i-1].Split(",")[0]
         "$sets$number$letter$i"
         $filePath = "$prefix$i"
-        $html = Invoke-WebRequest "$website/$type/practicereview-$article-13.html"
+        $html = (Invoke-WebRequest $reviewLink)
 
         # Create passage xml and text
         $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].innerText
@@ -528,19 +430,21 @@ function Get-Reading() {
 
         $text = Format-Paragraphs $text 
         $xml = Add-XmlTestItemNode @{CLASS = "view_this_passage_noquest"}
-        Add-XmlChildNodes $xml @("TPPassage", "Title", "PassageText") @("$filePath.txt", $title, $text)
-        New-File $xml "$projectPath\$filePath.xml"
+        Add-XmlChildNodes $xml $linkNames $linkNodes "Links"
+        Add-XmlChildNodes $xml @("TPPassage", "Title", "PassageText") @("$filePath.txt", $title, "")
 
-        
-        $text = $text.Insert(0, "}")
-        $text = $text.Insert($text.IndexOf("`n"), "}")
+        (Select-Xml "//PassageText" $xml).Node.InnerXml = Get-Passage $reviewLink
+        New-File $xml "$xmlPath\$filePath.xml"
+
+        $text = "}$title}`n        $text"
         $text = $text.Insert(0, " " * (60 - [int]($title.Length/2) ) )
         $text = $text.Replace("[", "(")
         $text = $text.Replace("]", ")")
-        New-File $text "$projectPath\$filePath.txt"
+        New-File $text "$xmlPath\$filePath.txt"
 
+        New-TPOHtml $xml $filePath.Split("\\")[-1]
         <#
-        for ($j = 1; $j -le [int]$articles[$i-1].split(",")[1]; $j++) {
+        for ($j = 1; $j -le [int]$articles[$i-1].Split(",")[1]; $j++) {
             # Add question passage text file
             if ($j -lt 10) {$k = "0$j"} else {$k = $j}
             "$sets$($number)$letter$($i)Q$k"
@@ -555,31 +459,26 @@ function Get-Reading() {
             $xml = Add-XmlTestItemNode @{CLASS = "passage_ssmc"}
 
             # Question Text
-            $html = Invoke-WebRequest "$website/$type/practicereview-$article-13.html?index=$($j-1)"
+            $html = (Invoke-WebRequest "$website/$type/practicereview-$article-13.html?index=$($j-1)")
             $text = $html.ParsedHtml.body.getElementsByClassName("article")[0]
             $passageText = $text.innerText
             $passageText = Format-Paragraphs $passageText 
-
-            $title = $html.ParsedHtml.body.getElementsByClassName("article_tit").innerText
-            $passageText = $passageText.Insert(0, "}")
-            $passageText = $passageText.Insert($passageText.IndexOf("`n"), "}")
+            $passageText = "}$title}`n        $passageText"
             $passageText = $passageText.Insert(0, " " * (60 - [int]($title.Length/2) ) )
             $passageText = $passageText.Replace("[", "(")
             $passageText = $passageText.Replace("]", ")")
 
-            $questionText = $html.ParsedHtml.body.getElementsByClassName("q_tit")[0]
+            $questionText = $html.ParsedHtml.body.getElementsByClassName("left text")[0]
 
             # Add paragraph mark and paragraph element if question text has "(P|p)aragraph 2" or "paragraphs 3 and 4" 
             $match = ($questionText.innerText | Select-String "aragraphs? ?(?<Paragraph1>[0-9])( and (?<Paragraph2>[0-9]))?").Matches
-            if ($match) 
-            {
+            if ($match) {
                 $names += "Paragraph"
                 $paragraphs = $match[0].Groups["Paragraph1"].Value
                 $indexes = Get-AllIndexesOf $passageText ("`n" + " " * 8)
                 $passageText = $passageText.Insert($indexes[[int]$paragraphs - 1] + 1, "^6")
                 $paragraph2 = $match[0].Groups["Paragraph2"].Value
-                if ($paragraph2) 
-                {
+                if ($paragraph2) {
                     $passageText = $passageText.Insert($indexes[[int]$paragraph2 - 1] + 3, "^6")
                     $paragraphs += " and $paragraph2"
                 }
@@ -587,50 +486,44 @@ function Get-Reading() {
             }
  
             # highlighted Question
-            $startIndexes = Get-AllIndexesOf $text.innerHTML '<span class="light">'
-            
-            for($k = 0; $k -lt $startIndexes.Count; $k++)
-            {
-                $highlight = $text.getElementsByClassName("light")
+            $textHighlight = $text.getElementsByClassName("light")
+            for($k = 0; $k -lt $textHighlight.Length; $k++) {
+                $highlight = $textHighlight[0]
                 $passageText = Add-Shading $passageText $highlight "["
                 
-                $match = ($questionText.innerHTML | Select-String '<span class="light">(?<highlight>.*)</span>').Matches
-                if ($match) 
-                {
-                    $highlight = $questionText.getElementsByClassName("light")
-                    $questionText = Add-Shading $questionText.innerText $highlight "|"
+                $questionHighlight = $questionText.getElementsByClassName("light")
+                if ($questionHighlight.Length -gt 0) {
+                    $highlight = $questionHighlight[0]
+                    $questionText = Add-Shading (Update-Character $questionText.innerText) $highlight "|"
                 }
             }
             if($questionText.innerText) { $questionText = $questionText.innerText }
             
             # Insert Text Question
             $index = $questionText.IndexOf("[")
-            if ($index -ne -1) 
-            {
+            if ($index -ne -1) {
                 $xml.TestItem.CLASS = "passage_insertText"
 
                 # Add question sauare
-                $questionText = $questionText -replace "\[.*\]", "[]"
-                $questionText = $questionText.Insert($index + 1, " |    | ")
+                $questionText = [regex]::Replace($questionText, "\u2587", "")
+                $questionText = [regex]::Replace($questionText, "\u25A0", "")
+                $questionText = $questionText.Replace("[]", "[ |    | ]")
 
                 # Add passage square 
-                $highlights = $text.getElementsByClassName("insert-area").parentNode.innerText
-                for ($k = 0; $k -lt $highlights.Count; $k++) 
-                {
-                    $indexes = Get-AllIndexesOf (Remove-Characters $highlights[$k]) "["
-                    $sentence = Remove-Characters $highlights[$k].Replace("[","(").Replace("]",")")
+                $highlights = $text.getElementsByClassName("insert-area")
+                for ($k = 0; $k -lt $highlights.Length; $k++)  {
+                    $indexes = Get-AllIndexesOf (Remove-Characters $highlights[$k].innerText) "["
+                    $sentence = Remove-Characters $highlights[$k].innerText.Replace("[","(").Replace("]",")")
 
                     $startPosition = $passageText.IndexOf($sentence)
-                    if ($indexes.Count -gt 1) # 2 squares in one sentence
-                    {
+                    if ($indexes.Count -gt 1) { # 2 squares in one sentence
                         $passageText = $passageText.Remove($startPosition, 3)
                         $passageText = $passageText.Remove($startPosition + $indexes[1] - 3, 3)
                         $passageText = $passageText.Insert($startPosition + $indexes[1] - 3, " |]    ]| ")
                         $passageText = $passageText.Insert($startPosition, " |]    ]| ")
                         $k++
                     }
-                    else # square in start 
-                    {
+                    else { # square in start 
                         $passageText = $passageText.Remove($startPosition + $indexes, 3)
                         $passageText = $passageText.Insert($startPosition + $indexes, " |]    ]| ")
                     }
@@ -639,12 +532,11 @@ function Get-Reading() {
 
             # Add question text node
             $names += "Stem"
-            $nodes += Remove-Characters $questionText "question"
+            $nodes += (Remove-Characters $questionText).Replace("[ | | ]", "[ |    | ]")
             Add-XmlChildNodes $xml $names $nodes
 
             # Draggy question
-            if ($questionText.Contains("points.")) # Draggy question
-            {
+            if ($questionText.Contains("points.")) { 
                 Add-XmlNodes $xml $xml.FirstChild @{Name = "TPviewtext"; Attributes = @{PASSAGE = "$filePath.txt"}} | Out-Null
                 
                 $names = "tpFont", "QuestBmp"
@@ -656,17 +548,15 @@ function Get-Reading() {
                 $yCoordinates = "570"
                 $bucketNames = "tpBucket", "tpBucket", "tpBucket"
 
-                if ($questionText.Contains("brief summary")) 
-                {
+                if ($questionText.Contains("brief summary")) {
                     $xml.TestItem.CLASS = "draggy"
-                    #Copy-Item "$projectPath\Sampler\draggy.bmp" "$projectPath\$filePath.bmp"
+                    Copy-Item "$xmlPath\Sampler\draggy.bmp" "$xmlPath\$filePath.bmp"
     
                     $bucketNodes = "300,320", "300,400", "300,480"
                 }
-                else 
-                {
+                else {
                     $xml.TestItem.CLASS = "draggy_table"
-                    #Copy-Item "$projectPath\Sampler\draggy_table.bmp" "$projectPath\$filePath.bmp"
+                    Copy-Item "$xmlPath\Sampler\draggy_table.bmp" "$xmlPath\$filePath.bmp"
     
                     $bucketNodes = "410,300", "410,350", "410,430", "410,480", "410,530"
                     $bucketNames += "tpBucket", "tpBucket", "tpBucket", "tpBucket"
@@ -676,32 +566,25 @@ function Get-Reading() {
             # Options
             $names = @()
             $nodes = @()
-            $options = $html.ParsedHtml.body.getElementsByClassName("ops").innerText
-            if ($questionText.Contains("points.")) # Draggy question
-            {
-                for($k = 1; $k -le $options.Count; $k++)
-                {
+            $options = $html.ParsedHtml.body.getElementsByClassName("ops")
+            
+            # Draggy question
+            if ($questionText.Contains("points.")) {
+                for($k = 1; $k -le $options.Length; $k++) {
                     $names += "tpObject"
-                    if ($questionText.Contains("brief summary"))
-                    {
-                        $step = 75
-                    }
-                    else 
-                    {
-                        $step = 45
-                    }
+                    if ($questionText.Contains("brief summary")) { $step = 75 }
+                    else { $step = 45 }
                     $coordinates = "$($xCoordinates[$k % 2]),$([int]$yCoordinates + $step * ([Math]::Ceiling($k / 2) - 1))"
-                    $nodes += "$coordinates,450,0,$(Remove-Characters ($options[$k-1] -replace "[A-I]\.", '') "selection")"
+                    $nodes += "$coordinates,450,0,$(Remove-Characters $options[$k-1].innerText)"
                     $bucketNames += "tpBucket"
                     $bucketNodes += $coordinates
                 }
             }
             else 
             {
-                foreach($option in $options)
-                {
+                foreach($option in $options) {
                     $names += "Distractor"
-                    $nodes += Remove-Characters ($option -replace "[A-I]\. ", "") "selection"
+                    $nodes += Remove-Characters $option.innerText
                 }
 
                 Add-XmlChildNodes $xml $names $nodes "Distractor_list"
@@ -709,36 +592,39 @@ function Get-Reading() {
             
 
             # Add Draggy Question Summary or category
-            if ($questionText.Contains("points.")) # Draggy question
-            {
-                $index = $questionText.IndexOf("brief summary") + 15
-                if ($index -ne 14)
-                {
-                    $summary = $questionText
-                    $sentence = " Drag your answer choices to the space where they belong. To remove an answer choice, double click on it. "
-                    if ($questionText.IndexOf($sentence) -ne -1) 
-                    {
-                        $summary = $questionText.Remove($questionText.IndexOf($sentence), $sentence.Length)
+            if ($questionText.Contains("points.")) {
+                $index = $questionText.IndexOf("points.") + 15
+                if ($index -ne 14) {
+                    if (!$questionText.EndsWith(".")) {
+                        $questionText += "."
                     }
-                    $summary = $summary.Remove(0, $index)
+
+                    $summary = $questionText.Split(".")[-2]
+                    $count = 0
+                    while($summary.Length -lt 20 -or $summary.IndexOf("answer choice") -gt 0) { 
+                        $count--
+                        $summary = "$($questionText.Split(".")[$count-2])"
+                    }
                     $names += "tpObject"
-                    $nodes += "150,240,800,0,$(Remove-Characters $summary)"
+                    $nodes += "150,240,800,0,$(Remove-Characters $summary)." 
+                    # tpObjects[-1].Substring(tpObjects[-1].IndexOf(",0,") + 3)
                 }
-                else 
-                {
-                    $category = $html.ParsedHtml.body.getElementsByClassName("grouptext").innerText
+                else {
+                    $category = @()
+                    foreach ($item in $html.ParsedHtml.body.getElementsByClassName("grouptext")) {
+                        $category += $item.innerText
+                    }
                     $questionText = $questionText.Remove(0, $questionText.IndexOf("Directions") + "Directions".Length + 2)
                     $index = $category.IndexOf("ANSWER CHOICE")
                     $category = if($index -ne -1) { $category[0..($index-1)] }
                     
                     $index = $questionText.IndexOf($category[1].Split(" ")[0].ToLower())
                     if($index -eq -1) { $index = $questionText.IndexOf($category[1].Split(" ")[0]) }
-                    if($questionText.Substring(0, $index).Contains("two"))
-                    {
+                    if($questionText.Substring(0, $index).Contains("two")) {
+                    
                         [Array]::Reverse($category)
                     }
-                    for($k = 0; $k -lt $category.Count; $k++)
-                    {
+                    for($k = 0; $k -lt $category.Count; $k++) {
                         $nodes += "160,$(280 + $k * 140),800,0,$($category[$k])"
                     }
                     $names += "tpObject", "tpObject", "tpObject"
@@ -749,28 +635,20 @@ function Get-Reading() {
             }
 
             # Key
-            $answer = $html.ParsedHtml.body.getElementsByClassName("left correctAnswer").innerHTML
-            $start = $answer.IndexOf("<span>") + 6
-            $end = $answer.IndexOf("</span>")
-            $answers = $answer.Substring($start, $end - $start)
-            
+            $answer = $html.ParsedHtml.body.getElementsByClassName("left correctAnswer")[0].children[0].innerText        
             $keys = ""
-            foreach($answer in $answers.ToCharArray())
-            {
-                if([int][char]$answer -lt 60 -or [int][char]$answer -gt 80) 
-                { 
+            foreach($item in $answer.ToCharArray()) {
+                if([int][char]$item -lt 60 -or [int][char]$item -gt 80) { 
                     $keys += "0" 
                 }
-                else
-                {
-                    $keys += ([int][char]$answer - 64).ToString()
+                else {
+                    $keys += ([int][char]$item - 64).ToString()
                 }
             }
             Add-XmlChildNodes $xml @("Key") @($keys)
 
             # Add draggy question special answer
-            if ($questionText.Contains("points.")) # Draggy question
-            {
+            if ($questionText.Contains("points.")) {
                 if ($questionText.Contains("brief summary")) 
                 {
                     $answers = "1234567"
@@ -782,7 +660,7 @@ function Get-Reading() {
                 }
                 else 
                 {
-                    $pairs = $keys -split "0"
+                    $pairs = $keys -Split "0"
                     $answers = "123456789"
                     $keys = "00000"
                     foreach($pair in $pairs)
@@ -819,8 +697,8 @@ function Get-Reading() {
                 Add-XmlChildNodes $xml @("specialShowAnswer") @($keys)
             }
     
-            New-File $xml "$projectPath\$filePath.xml" 
-            New-File $passageText "$projectPath\$filePath.txt"
+            New-File $xml "$xmlPath\$filePath.xml" 
+            New-File $passageText "$xmlPath\$filePath.txt"
         }
         #>
     }
@@ -832,10 +710,10 @@ function Get-Listening() {
     $letter = $section.Substring(0, 1)
 
     $prefix = "$sets$number\$section\$sets$number$letter"
-    New-Item -Path "$projectPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
+    New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
     
     $type = $section.Remove($section.Length - 3, 3).ToLower()
-    $html = Invoke-WebRequest "$website/$type/$location.html"
+    $html = (Invoke-WebRequest "$website/$type/$location.html")
 
     # Get 3 Passage question number 
     foreach ($item in $html.ParsedHtml.body.getElementsByClassName("title")) {
@@ -844,111 +722,110 @@ function Get-Listening() {
 
     # Get question number 14 14 14
     $articles = @()
-    foreach ($item in $test.nextSibling.nextSibling.GetElementsByClassName("total")) {
-        $articles += "$($item.previousSibling.previousSibling.id.split("-")[1]),$($item.innerText)"
+    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("total")) {
+        $articles += "$($item.previousSibling.previousSibling.id.Split("-")[1]),$($item.innerText)"
     }
 
-    if (!$isNew) 
-    {
-        $wavFiles = Get-ChildItem $wavPath -Include "$sets$([int]$number)_$section*.wav"
-    }
     $questionNumber = 0
 
-    for ($i = 1; $i -le $articles.Count; $i++) 
+    $links = @()
+    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("btnn2 aspan")) { 
+        $links += $website + $item.parentNode.href.Remove(0,12) }
+
+    for ($i = 1; $i -le $links.Count; $i++) 
     {
-        
-        $article = $articles[$i-1].split(",")[0]
         "$sets$number$letter$i"
         $filePath = "$prefix$i"
-        $html = Invoke-WebRequest "$website/$type/review-$article-13.html" 
 
+        #if (Test-Path "$xmlPath\$filePath.xml") { continue }
+
+        $html = (Invoke-WebRequest $links[$i-1])
+        $document = $html.ParsedHtml.body
+        
         $questions = @()
-        foreach ($item in $html.ParsedHtml.body.getElementsByClassName("undone")) {
+        foreach ($item in $document.getElementsByClassName("undone")) {
             $questions += "$website$($item.parentNode.href.Remove(0,12))"
         }
 
         # Create passage xml
-        $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].innerText 
+        $text = $document.getElementsByClassName("article")[0].innerText 
         $xml = Add-XmlTestItemNode @{CLASS = "lecture"}
         $text = Format-Paragraphs $text
         $names = "LecturePicture", "LectureSound", "LecturePicture", "AudioText"
-        $nodes = "$filePath.jpg", "$filePath.wav", "Sampler\GetReady.gif", $text
+        $nodes = "$filePath.jpg", "$filePath.wav", "Sampler\GetReady.gif", ""
         Add-XmlChildNodes $xml $names $nodes
-        New-File $xml "$projectPath\$filePath.xml"
+        (Select-Xml "//AudioText" $xml).Node.InnerXml = Get-Passage $links[$i-1]
+
+        Get-Audio $links[$i-1] "$xmlPath\$filePath.mp3"
+        New-File $xml "$xmlPath\$filePath.xml"
 
         <#
-        # Copy wav and jpg files
-        if ($isNew) 
-        {
-            #Copy-Item "$($wavPath.TrimEnd("\*"))\$($filePath.Split("\")[-1]).wav" "$projectPath\$filePath.wav"
-        }
-        else 
-        {
-            $wavSet = "$([Math]::Ceiling($i/3))"
-            $passageNumber = if ($i % 3 -eq 0) {3} else {$i % 3}
-            Copy-ResourceItem "*passage$($wavSet)_$passageNumber.wav" "$projectPath\$filePath.wav" $wavFiles
-        }
-        
-        for ($j = 1; $j -le [int]$articles[$i-1].split(",")[1]; $j++) 
+        for ($j = 1; $j -le [int]$articles[$i-1].Split(",")[1]; $j++) 
         {
             $questionNumber++
-            "$sets$($number)$($section.Substring(0,1))$($i)Q$j"
+            "$sets$number$letter$($i)Q$j"
             $filePath = "$prefix$($i)Q$j"
-            $audioPath = "$projectPath\$($filePath)R.wav"
-
-            if ($isNew) 
-            {
-                if(Test-Path "$($wavPath.TrimEnd("\*"))\$($filePath.Split("\")[-1])R.wav")
-                { #Copy-Item "$($wavPath.TrimEnd("\*"))\$($filePath.Split("\")[-1])R.wav" $audioPath }
-            }
-            else 
-            {
-                $questionSet = if ($questionNumber % 17 -eq 0) {17} else {$questionNumber % 17}
-                Copy-ResourceItem "*repeat$($wavSet)_$questionSet.wav" $audioPath $wavFiles
-                Copy-ResourceItem "*question$($wavSet)_$questionSet*" "$projectPath\$filePath.wav" $wavFiles
-            }
+            
             $xml = Add-XmlTestItemNode @{CLASS = "ssmc_simple"}
-
-            if (Test-Path $audioPath) 
-            {
-                "$sets$($number)$($section.Substring(0,1))$($i)Q$($j)R"
-                $names = "LecturePicture", "LectureSound"
-                $nodes = "Sampler\RplayLec.gif", "$($filePath)R.wav"
-                Add-XmlChildNodes $xml $names $nodes "miniLecture"
-            }
-
+            
             # question Text
-            $html = Invoke-WebRequest "$($questions[$j-1])"
-            $questionText = $html.ParsedHtml.body.getElementsByClassName("div") | ForEach-Object {if($_.className -eq "q_tit"){$_.innerText}} 
+            $html = (Invoke-WebRequest "$($questions[$j-1])")
+            $questionText = $document.getElementsByClassName("left text")[0].innerText
             $names = "Stem", "StemWav"
-            $nodes = (Remove-Characters $questionText "question"), "$filePath.wav"
+            $nodes = (Remove-Characters $questionText), "$filePath.wav"
             Add-XmlChildNodes $xml $names $nodes
 
+            # option
             $names = @()
             $nodes = @()
-            $options = $html.ParsedHtml.body.getElementsByClassName("p") | ForEach-Object {if($_.className -like "ops *"){$_.innerText}}
-            foreach($option in $options)
-            {
+            $options = @()
+            foreach($item in $document.getElementsByClassName("ops")) {
+                $options += $item.innerText
+            }
+
+            foreach($option in $options) {
                 $names += "Distractor"
-                $nodes += Remove-Characters ($option -replace "[A-I]\. ", "") "selection"
+                $nodes += Remove-Characters $option
             }
             Add-XmlChildNodes $xml $names $nodes "Distractor_list"
 
-            # Key
-            $answer = $html.ParsedHtml.body.getElementsByClassName("div") | `
-            ForEach-Object {if($_.className -eq "left correctAnswer"){$_.innerHTML}}
-            $start = $answer.IndexOf("<span>") + 6
-            $end = $answer.IndexOf("</span>")
-            $answers = $answer.Substring($start, $end - $start)
-            
+            # Key .children[0]
+            $answer = $document.getElementsByClassName("left correctAnswer")[0].children[0].innerText
             $keys = ""
-            foreach($answer in $answers.ToCharArray())
-            {
-                $keys += ([int][char]$answer - 64).ToString()
+            foreach($item in $answer.ToCharArray()) {
+                $keys += ([int][char]$item - 64).ToString()
             }
             Add-XmlChildNodes $xml @("Key") @($keys)
 
-            New-File $xml "$projectPath\$filePath.xml" 
+            # box
+            if($keys.Length -gt 2) {
+                $names = @()
+                $nodes = @()
+                foreach ($item in $document.getElementsByClassName("name")) {
+                    $names += "Category"
+                    $nodes += $item.innerText
+                }
+                Add-XmlChildNodes $xml $names $nodes "Box"
+            }
+
+            # audio link
+            
+            Get-Audio "$website/$type/answer.html?&article_id=$article&seqno=$j" 
+            $flag = $audioLink.IndexOf("%E9%87%8D") -gt 0
+            $audioName = if($flag) { "$sets$number$letter$($i)Q$($j)R.mp3" } else { "$sets$number$letter$($i)Q$j.mp3" }
+
+            
+            # repeat question
+            if($flag) {
+                Get-Audio "$website/$type/answer.html?step=2&article_id=$article&seqno=$j"  "$xmlPath\$prefix$($i)Q$j.mp3"
+                "$sets$number$letter$($i)Q$($j)R"
+                $names = "LecturePicture", "LectureSound"
+                $nodes = "Sampler\RplayLec.gif", "$($filePath)R.wav"
+                Add-XmlChildNodes $xml $names $nodes "miniLecture"
+
+            }
+
+            New-File $xml "$xmlPath\$filePath.xml" 
         }
         #>
     }
@@ -960,10 +837,10 @@ function Get-Speaking() {
     $letter = $section.Substring(0, 1)
 
     $prefix = "$sets$number\$section\$sets$number$letter"
-    New-Item -Path "$projectPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
+    New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
 
     $type = $section.Remove($section.Length - 3, 3).ToLower()
-    $html = Invoke-WebRequest "$website/$type/$location.html"
+    $html = (Invoke-WebRequest "$website/$type/$location.html")
 
     # Get 3 Passage question number 
     foreach ($item in $html.ParsedHtml.body.getElementsByClassName("title")) {
@@ -971,15 +848,22 @@ function Get-Speaking() {
     }
 
     $articles = @()
-    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("tpo_talking_item")) { $articles += $item.id.split("-")[1] }
+    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("tpo_talking_item")) { $articles += $item.id.Split("-")[1] }
 
-    # Get-Audio 
-    #$wavFiles = Get-ChildItem $wavPath -Include "$sets$([int]$number)_$section*.wav"
+    $links = @()
+    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("btnn blue")) { 
+        $links += $website + $item.href.Remove(0,12) }
 
-    for ($i = 1; $i -le $articles.Count; $i++) 
+    for ($i = 1; $i -le $links.Count; $i++) 
     {
-        "$sets$($number)$($section.Substring(0,1))$i"
+        "$sets$number$letter$i"
         $filePath = "$prefix$i"
+
+        #if (Test-Path "$xmlPath\$filePath.xml") { continue }
+
+        $html = (Invoke-WebRequest $links[$i-1])
+        $document = $html.ParsedHtml.body
+        
         $xml = Add-XmlTestItemNode `
         @{
             CLASS          = "speaking_paced"; 
@@ -988,47 +872,51 @@ function Get-Speaking() {
             SHOWDIRECTIONS = "FALSE"
         }
         
-        $html = Invoke-WebRequest "$website/speak/feedback-$($articles[$i-1])-13.html" 
-
         if ($i -ne 1 -and $i -ne 2) 
         {
             if ($i -eq 3 -or $i -eq 4) 
             {
-                #Copy-Item "$($wavPath.TrimEnd("\*"))\$($filePath.Split("\")[-1])P.wav" "$projectPath\$($filePath)P.wav"
-
-                $title = $html.ParsedHtml.body.getElementsByClassName("article_tit")[0].innerText 
-                $article = $html.ParsedHtml.body.getElementsByClassName("article")[0].innerText
+                # "miniPassage" 
+                $title = $document.getElementsByClassName("article_tit")[0].innerText 
+                $article = $document.getElementsByClassName("article")[0].innerText
                 
                 $names = "miniPassageIntroSound", "miniPassageIntroPic", "miniPassageDuration", "miniPassageTitle", "miniPassageText"
-                $nodes = "$($filePath)P.wav", "Sampler\headphon.jpg", 45, $title, $article
+                $nodes = "$($filePath)P.wav", "Sampler\headphon.jpg", 45, $title, (Remove-Characters $article)
                 Add-XmlChildNodes $xml $names $nodes "miniPassage"     
-            }
 
-            #Copy-Item "$($wavPath.TrimEnd("\*"))\$($filePath.Split("\")[-1]).wav" "$projectPath\$filePath.wav" 
+                Get-Audio "$website/$type/start-$($articles[$i-1])-13.html?step=getpaper" "$xmlPath\$prefix$($i)P.mp3"
+            }
             
+            # "miniLecture"
             $names = "LecturePicture", "LectureSound", "LecturePicture"
             $nodes = "$filePath.jpg", "$filePath.wav", "Sampler\SGetReady.gif"
             Add-XmlChildNodes $xml $names $nodes "miniLecture"
 
+            # "AudioText"
             Add-XmlNodes $xml $xml.FirstChild `
             @{
                 Name      = "AudioText";
-                innerText = $html.ParsedHtml.body.getElementsByClassName("audio_topic")[0].innerText
+                innerText = Remove-Characters $document.getElementsByClassName("audio_topic")[0].innerText
             } | Out-Null
 
             # question text
-            $text = $html.ParsedHtml.body.getElementsByClassName("article ques")[0].innerText
+            $text = $document.getElementsByClassName("article ques")[0].innerText
+
+            #Get Question Audio
+            Get-Audio $Links[$i-1] "$xmlPath\$filePath.mp3"
+
         }
         else # independent speaking
         {
             # question text
-            $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].innerText
-            if (!$text) { $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].nextSibling.innerText }
+            $text = $document.getElementsByClassName("article")[0].innerText
+            if (!$text) { $text = $document.getElementsByClassName("article")[0].nextSibling.innerText }
         }
 
-        #Copy-Item "$($wavPath.TrimEnd("\*"))\$($filePath.Split("\")[-1])Q.wav" "$projectPath\$($filePath)Q.wav"
+        # Get Question Audio
+        Get-Audio "$website/$type/start-$($articles[$i-1])-13.html?step=getquestion" "$xmlPath\$prefix$($i)Q.mp3"
 
-        $sampleText = $html.ParsedHtml.body.getElementsByClassName("ansart")[0].innerText
+        $sampleText = $document.getElementsByClassName("ansart")[0].innerText
 
         $names = "Stem", "StemWav", "SampleResponse"
         $nodes = `
@@ -1038,7 +926,8 @@ function Get-Speaking() {
             (Remove-Characters $sampleText)
         )
         Add-XmlChildNodes $xml $names $nodes 
-        New-File $xml "$projectPath\$filePath.xml"
+
+        New-File $xml "$xmlPath\$filePath.xml"
     }
 }
 
@@ -1046,77 +935,197 @@ function Get-Writing () {
     $section = $MyInvocation.MyCommand.Name.Split("-")[1]
     $letter = $section.Substring(0, 1)
     $prefix = "$sets$number\$section\$sets$number$letter"
-    New-Item -Path "$projectPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
+    New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
 
-    $html = Invoke-WebRequest "$website/write/$location.html"
+    $html = (Invoke-WebRequest "$website/write/$location.html")
 
     # Get 3 Passage question number 
     foreach ($item in $html.ParsedHtml.body.getElementsByClassName("title")) {
         if($item.innerText -like "*$sets$([int]$number)*") { $test = $item }
     }
 
-    $articles = @()
-    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("tpo_talking_item")) { $articles += $item.id.split("-")[1] }
+    $links = @()
+    foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName("btnn blue")) { 
+        $links += $website + $item.href.Remove(0,12) }
 
-    for ($i = 1; $i -le $articles.Count; $i++) 
+    for ($i = 1; $i -le $links.Count; $i++) 
     {
-        "$sets$($number)$($section.Substring(0,1))$i"
+        "$sets$number$letter$i"
         $filePath = "$prefix$i"
-        $html = Invoke-WebRequest "$website/write/practice-review.html?article_id=$($articles[$i-1])&write_type=$i"
+
+        #if (Test-Path "$xmlPath\$filePath.xml") { continue }
+
+        $html = (Invoke-WebRequest $links[$i-1])
+        $document = $html.ParsedHtml.body
+
         if ($i -eq 1) # Integrated Writing Xml 
         {
+            # miniPassage
             $xml = Add-XmlTestItemNode @{CLASS = "writelisten_paced"; TIMELIMIT = "20"; SHOWDIRECTIONS = "FALSE"} 
-            $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].innerText 
+            $text = $document.getElementsByClassName("article")[0].innerText 
             if (!$text) 
-            { $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].nextSibling.innerText }
+            { $text = $document.getElementsByClassName("article")[0].nextSibling.innerText }
             $names = "miniPassageDuration", "miniPassageText"
             $nodes = 180, (Format-Paragraphs $text)
             Add-XmlChildNodes $xml $names $nodes "miniPassage"
-        
-            # Get Audio
-            #Copy-Item "$($wavPath.TrimEnd("\*"))\$sets$([int]$number)_$($section)_question.wav" "$projectPath\$filePath.wav"
-            
+
+            # "LecturePicture", "LectureSound"
             $names = "LecturePicture", "LectureSound", "LecturePicture"
             $nodes = "$filePath.jpg", "$filePath.wav", "Sampler\WGetReady.gif"
             Add-XmlChildNodes $xml $names $nodes "miniLecture"
         
+            # "AudioText", "Stem", "StemWav"
             $names = "AudioText", "Stem", "StemWav"
             $nodes = `
             @(
-                $html.ParsedHtml.body.getElementsByClassName("audio_topic")[0].innerText,
+                (Remove-Characters $document.getElementsByClassName("audio_topic")[0].innerText),
                 "Summarize the points made in the lecture, being sure to explain how they oppose specific points made in the reading passage.",
                 "Sampler\SAWQ.wav"
             )  
 
+            # Audio Link
+            Get-Audio $links[$i-1] "$xmlPath\$filePath.mp3"
+
         }
         else # Independent Writing Xml
         {
+            
             $xml = Add-XmlTestItemNode @{CLASS = "independentwriting_paced"; TIMELIMIT = "30"}
-            $questionText = $text = $html.ParsedHtml.body.getElementsByClassName("article")[0].innerText
+            $questionText = $document.getElementsByClassName("article")[0].innerText
+            
             # Question
             $names = @("Stem") 
             $nodes = @($questionText) 
         }
 
-        $sampleText = $html.ParsedHtml.body.getElementsByClassName("noedit fanwen")[0].innerText
-
+        # sample Text
+        $sampleText = $document.getElementsByClassName("noedit fanwen")[0].innerText
         $names += "SampleResponse"
         $nodes += Format-Paragraphs $sampleText
-
         Add-XmlChildNodes $xml $names $nodes
-        New-File $xml "$projectPath\$filePath.xml"
+
+        New-File $xml "$xmlPath\$filePath.xml"
+        #New-TPOHtml "$xmlPath\$filePath.xml"
     }
 }
 
-$global:links = @()
-$global:sets = "TPO"
+
+function Update-SamplerXml () 
+{
+    
+    $path = "$($xmlPath.Substring(0, $xmlPath.Length - 7))\sampler.xml"
+    $content = Get-Content $path
+    $content = $content -replace "$sets[0-9]*", "$sets$number"
+    [xml]$xml = $content
+
+    foreach ($section in $sections[0..1]) 
+    {
+        $xmlPrefix = "$xmlPath\$sets$number\$section\$sets$number$($section.Chars(0))"
+        $nodes = Select-Xml -Xml $xml -XPath "/TestItem/TESTLET[@LABEL=`"$section`" and @NUMBQUESTS]"
+        for ($i = 1; $i -le $nodes.Count; $i++) 
+        {
+            $count = (Get-ChildItem "$xmlPrefix$($i)Q*.xml").Count
+            $node = $nodes[$i - 1].Node
+            if ($section -eq "Reading") { $node.NUMBQUESTS = $count.ToString() }
+            else 
+            {
+                if ($i -lt 4) { $question = "123" }
+                else { $question = "456" }
+                $node.NUMBQUESTS = (Get-ChildItem "$xmlPrefix[$question]Q*.xml").Count.ToString()
+            }
+            if ($node.QUESTBEGIN) 
+            {
+                $length = $nodes[$i - 2].Node.TestItemName.Count
+                if ($i -eq 3 -or $i -eq 6) { $length += $nodes[$i - 3].Node.TestItemName.Count - 1 }
+                $node.QUESTBEGIN = ($length).ToString()
+            }
+            while ($node.TestItemName.Count - 1 -lt $count) 
+            { 
+                Add-XmlNodes $xml $node `
+                @{
+                    Name = "TestItemName"; 
+                    innerText = "$sets$number\$section\$sets$number$($section.Chars(0))$($i)Q$($node.TestItemName.Count).xml"
+                }
+            }
+            while ($node.TestItemName.Count - 1 -gt $count)
+            { $node.RemoveChild($node.LastChild) }
+        }
+    }
+    New-File $xml "$($xmlPath.Substring(0, $xmlPath.Length - 7))\sampler.xml" 
+}
+
+function Get-Score () 
+{
+    <#
+    $scores = @(
+        @(23, 23, 24, 25, 26, 26, 26, 27, 27, 28, 28, 29, 29, 30, 30, 30),
+        @()
+    )#>
+    $keys = 
+    @(
+        @(
+            @(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 123),
+            @(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 123),
+            @(1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 123)
+        ),
+        @(
+            @(1, 2, 3, 4, 1),
+            @(1, 2, 3, 4, 1, 2),
+            @(1, 2, 3, 4, 1, 2),
+            @(1, 2, 3, 4, 1),
+            @(1, 2, 3, 4, 1, 2),
+            @(1, 2, 3, 4, 1, 2)
+        )
+    )
+
+    $totalPoints = @(45, 34)
+    for ($i = 0; $i -lt $keys.Count; $i++) 
+    {
+        for ($j = 1; $j -le $keys[$i].Count; $j++) 
+        {
+            for ($k = 1; $k -le $keys[$i][$j - 1].Count; $k++) 
+            {
+                if ($k -lt 10 -and $i -eq 0) { $l = "0$k" }
+                else {$l = $k}
+                [xml]$xml = Get-Content "$xmlPath\$sets$number\$($sections[$i])\$sets$number$($sections[$i].Chars(0))$($j)Q$l.xml"
+                
+                if ($xml.TestItem.Key -ne $keys[$i][$j - 1][$k - 1]) 
+                {
+                    $totalPoints[$i]--
+                    if ($k -eq 14) 
+                    {
+                        $string = $xml.TestItem.Key
+                        $point = -3
+                        foreach ($character in $string.ToCharArray()) 
+                        {
+                            if (($keys[$i][$j - 1][$k - 1]).ToString().ToCharArray() -contains $character) { $point++ }
+                        }
+                        $totalPoints[$i] += $point 
+                    }
+                    Write-Host "$($sections[$i]) passage $j question $k"
+                    Write-Host "Correct answer is: $($xml.TestItem.Key)"
+                    Write-Host "Your Answer is: $($keys[$i][$j-1][$k-1])"
+                }
+            }
+        }
+        Write-Host "$($sections[$i]) raw points: $($totalPoints[$i])"
+    }
+}
+
+
+
 $global:website = "https://top.zhan.com/toefl"
 $global:sections = "Reading", "Listening", "Speaking", "Writing"
-$global:projectPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\Sampler\forml1"
-$global:wavPath = "$env:USERPROFILE\Music\*"
-$global:jpgPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\$sets\resources\cache\*"
-$global:imagePath = "$env:USERPROFILE\Pictures\*"
 $global:time = @("45", "60", "60"), @("15", "30", "20")
+$global:sets = "TPO"
+
+$global:xmlPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\Sampler\forml1"
+$global:htmlPath = "C:\github\toefl\$($sets.ToLower())"
+$global:idmExe = "C:\Program Files (x86)\Internet Download Manager\IDMan.exe"
+$global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
+
+
+Test-Denpendency
 
 for ($n = 52; $n -le 53; $n++) 
 {
@@ -1125,24 +1134,20 @@ for ($n = 52; $n -le 53; $n++)
     else {"$($number - $number % 4 + 4)"}
     if ($sets -eq "TPO") { $location = "alltpo$tpos" } else { $location = $sets.ToLower()}
     if ($number -lt 10) {$number = "0$number"}
-    #New-Item -Path "$projectPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue
-    
-    #Get-QuestionAudio
-    Get-Reading
-    #Get-Listening 
+    New-Item -Path "$xmlPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
+
+    #Get-Reading
+    Get-Listening 
     #Get-Speaking 
     #Get-Writing
-    #Update-SamplerXml 
-    #Update-Audio #"test"
-    #Get-Resources
-    #Get-Text
     #Get-Audios
+    #Update-Audio #"test"
+    #Update-SamplerXml 
+    
 }
+
 <#
-(Get-ChildItem "$env:USERPROFILE\Downloads\$sets\*.txt" -Recurse).foreach{
-    $content = Get-Content $_.FullName
-    Set-Content $_.FullName $content #-Encoding "UTF8"
-}
+$global:imagePath = "$env:USERPROFILE\Pictures\*"
 (Get-ChildItem "$env:USERPROFILE\Pictures\*.jpg").foreach{ 
     #Resize-Image -InputFile $_ -OutputFile ("$env:USERPROFILE\Pictures\Feedback\"+$_.Name) -Width 600 -Height 450
 }

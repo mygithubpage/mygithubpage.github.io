@@ -28,7 +28,7 @@ if (($content -like "*jquery*js*" -split "/")[-1] -like "*$($jQueryVersion.TrimS
 {$content -replace ($content -like "*jquery*js*" -split "/")[-1], "jquery-$($jQueryVersion.TrimStart("v")).js\`""}
 #>
 
-$content = Get-Content .\..\initialize.js
+#$content = Get-Content .\..\initialize.js
 #$content -like "*/github*")
 <#
 if (($content -like "*/github*" -split "/")[-1] -like "*$($jQueryVersion.TrimStart("v"))*")

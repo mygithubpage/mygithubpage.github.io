@@ -111,112 +111,12 @@ function Get-Barrons ()
     }
 }
 
-function Get-TPO ()
-{
-    for ($n = 52; $n -le 53; $n++) 
-    {
-        $n
-        $tpoNumber = $n
-        if ($tpoNumber -lt 10) {$tpoNumber = "0$tpoNumber"}
-        
-        $xmlFiles = Get-ChildItem "$projectPath\TPO$tpoNumber\???????.xml" -Recurse
-        foreach ($xmlFile in $xmlFiles) 
-        {
-            $text = ""
-            $content = Get-Content $xmlFile
-            [xml]$xml = $content
-            $node = (Select-Xml "//miniPassageText" $xml).Node
 
-            $type = $xmlFile.Name.Substring(5,1)
-            $sections.ForEach{
-                if($_.Substring(0,1).ToUpper() -eq $type) { 
-                    $fileName = $xmlFile.Name.Replace($type, "-$_").ToLower()
-                }
-            }
-
-            if ($node) 
-            { 
-                if ($xmlFile.Name -like "*S[34].xml") 
-                {
-                    $text = "<main class=`"w3-container`"><section id=`"reading-text`"><h3>Reading Text</h3><article><h4 class=`"w3-center`">" + $node.ParentNode.miniPassageTitle + "</h4><p>" + $node.innerText + "</p></article></section><hr/></main>"
-                }
-                else 
-                {
-                    $text = $node.innerText -replace ("`n"+ " " * 8),"</p><p>"
-                    $text = "<main class=`"w3-container`"><section id=`"reading-text`"><h3>Reading Text</h3><article><p>" + $text + 
-                    "</p></article></section><hr/></main>"
-                }
-            }
-            $node = (Select-Xml "//PassageText" $xml).Node
-            if ($node) 
-            { 
-                $index = $node.innerText.IndexOf("`n" + " "*8)
-                $text = $node.InnerText.Remove($index, 9)
-                $title = (Select-Xml "//Title" $xml).Node
-                #$text = $text.Insert($index, "</h4><p>")
-                $text = $text -replace ("`n"+ " " * 8),"</p><p>"
-                $text = "<main class=`"w3-container`"><div id=`"reading-text`"><article><h4 class=`"w3-center`">" + $title.InnerText + "</h4><p>" + $text + "</p></article></div></main>"
-            }
-            $node = (Select-Xml "//AudioText" $xml).Node
-            if ($node) 
-            { 
-                $audioText = ($node.innerText -replace "\[.{8}\]", "" -replace (" " * 8), ":")
-                $audioText = $audioText -replace "`n","</p><p>"
-                
-                $text += "<main class=`"w3-container`"><div><audio src=`"" + $fileName.TrimEnd(".xml") + ".mp3`" controls=`"controls`"></audio></div>" + 
-                "<section id=`"listening-text`"><h3>Listening Text</h3><article><p>" + $audioText + "</p></article></section></main>"
-            }
-            $node = (Select-Xml "//SampleResponse" $xml).Node
-            if ($node) 
-            { 
-                $main = "<main class=`"w3-container`">"
-                if ($xmlFile.Name -like "*S[12].xml" -or $xmlFile.Name -like "*W[12].xml") 
-                {
-                    $text += "<main class=`"w3-container`"><hr/><section id=`"question`"><h4>Question</h4><p>" + $node.ParentNode.Stem + "</p></section>"
-                    $main = ""
-                }
-                $text += "$main<hr/><section id=`"sample-response`"><h4>Sample Response</h4><article><p>" + $node.innerText + "</p></article></section></main>"
-                $text = $text.Replace("`n","</p><p>")
-            }
-            $path = ".\..\toefl\tpo\$($xmlFile.Name.Substring(0,5).ToLower())"
-            New-Item $path -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
-            if($text) 
-            { 
-                New-Html ($text -replace "<p></p>", "" -replace "</main><main class=`"w3-container`">", "") "$path\$($fileName.TrimEnd(".xml")).html"
-            }
-        }
-    }
-}
-
-function Set-TPO ()
-{
-    for ($n = 1; $n -le 1; $n++) 
-    {
-        $tpoNumber = $n
-        if ($tpoNumber -lt 10) {$tpoNumber = "0$tpoNumber"}
-        
-        $mp3Files = Get-ChildItem "$PSScriptRoot\TPO\TPO$tpoNumber\??????.mp3" -Recurse
-        foreach ($mp3File in $mp3Files) 
-        {
-            $path = $mp3File.FullName.Replace('.mp3', "") + ".html"
-            $content = Get-Content $path
-            [xml]$xml = $content
-            $node = (Select-Xml "//section[@id=`"Listening Text`"]" $xml).Node
-            $audio = $xml.CreateElement('audio')
-            $audio.InnerText = ""
-            $audio.SetAttribute('src', $mp3File.Name)
-            $audio.SetAttribute('controls', 'controls')
-            $node.InsertBefore($audio, $node.FirstChild)
-            (Format-Xml $xml) | Out-File $path
-        }
-    }
-}
 $global:folder = "$HOME\Downloads\ETS\TOEFL Programs"
 $global:projectPath = "$HOME\Downloads\ETS\TOEFL Programs\Sampler\forml1"
 $global:sections = "reading", "listening", "speaking", "writing"
 #Get-Barrons
-Get-TPO
-#Set-TPO
+
 
 <#
 (Get-AllIndexesOf $article " ").Count
