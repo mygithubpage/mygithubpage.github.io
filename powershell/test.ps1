@@ -46,14 +46,6 @@ $global:htmlPath = "C:\github\toefl\$($sets.ToLower())"
 
 #$ie = Invoke-InternetExplorer "https://top.zhan.com/toefl/read/alltpo.html"
 #$ie.Document.queryselectorAll(".title")
-$ie = Invoke-InternetExplorer "https://top.zhan.com/toefl/read/practicereview-1312-13.html"
-while ($ie.Busy -or $ie.ReadyState -ne 4) {
-    
-}
-$text = ""
-foreach($item in $ie.Document.IHTMLDocument3_getElementsByTagName("span"))
-{
-    if ($item.className -ne "text" -or $item.tagName -ne "span") { continue }
-    $text += $item.innerHtml
-}
-$text
+
+
+Test-NetConnection "https://top.zhan.com/toefl/listen/answer.html?workflow_id=0&step=2&article_id=1316&seqno=6&scenario=13"

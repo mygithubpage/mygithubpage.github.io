@@ -124,17 +124,23 @@ function New-Html ($Content, $Path) {
     $div.AppendChild($a) | Out-Null
     (Select-Xml "//main" $xml).Node.AppendChild($div) | Out-Null
 
-    $string = (Format-Xml $xml 2).Tostring().Replace("$($title[0])/","")
+    $string = (Format-Xml $xml 2).ToString().Replace("$($title[0])/","")
     ("<!DOCTYPE html>`n" + $string) | Out-File $Path -Encoding "utf8"
 }
 
-function Update-Character($string) {
+function Update-Characters($string) {
     # unicode-table.com
     $string = [regex]::Replace($string, "\u2018", "'") 
     $string = [regex]::Replace($string, "\u2019", "'") 
     $string = [regex]::Replace($string, "\u201C", "`"") 
     $string = [regex]::Replace($string, "\u201D", "`"") 
     $string = [regex]::Replace($string, "\u2026", "...") 
+    $string = [regex]::Replace($string, "\u91CD", "%E9%87%8D") # CJK double 
+    $string = [regex]::Replace($string, "\u590D", "%E5%A4%8D") # CJK repeat
+    $string = [regex]::Replace($string, "\u542C", "%E5%90%AC") # CJK hear
+    $string = [regex]::Replace($string, "\u9898", "%E9%A2%98") # CJK question
+    $string = [regex]::Replace($string, "\u90E8", "%E9%83%A8") # CJK part
+    $string = [regex]::Replace($string, "\u5206", "%E5%88%86") # CJK divide
     $string
 }
 
@@ -143,7 +149,7 @@ function Format-Paragraphs($string) {
     $string = $string -replace "`r`n`r`n", "`r"
     while($string.Contains("  ")) { $string = $string.Replace("  ", " ") }
     $string = $string.Replace("`r", "`n" + " " * 8)
-    Update-Character $string
+    Update-Characters $string
 }
 
 function Add-Shading($text, $highlight, $character) {
@@ -195,7 +201,7 @@ function Remove-Characters($string) {
     while ($string.Substring($string.Length - 1, 1) -eq " ") { $string = $string.Remove($string.Length - 1, 1) } 
     while ($string.Contains("  ")) { $string = $string.Replace("  ", " ") }
     #>
-    Update-Character $string.Replace("&nbsp;", "") 
+    Update-Characters $string.Replace("&nbsp;", "") 
 }
 
 function Update-Audio ($test) {
@@ -237,7 +243,7 @@ function Update-Audio ($test) {
 }
 
 function Get-Audio ($Link, $Path) {
-    
+    $global:flag = $false
     $audioName = $Path.Split("\")[-1]
     # Download mp3
     $mp3 = "$htmlPath\$(($sets + $number).ToLower())\" + (ConvertTo-HtmlName $audioName)
@@ -252,10 +258,16 @@ function Get-Audio ($Link, $Path) {
             $end = $line.IndexOf(".mp3") + 4
             $start = $line.IndexOf("https://")
             if($end -ne 3 -and $start -ne -1 -and $line.IndexOf("speaking_beep_prepare") -eq -1) {
-                $audioLink = $line.Substring($start, $end - $start)
+                $audioLink = Update-Characters $line.Substring($start, $end - $start)
                 Remove-Item $file
                 break
             }
+        }
+        $global:flag = if($audioLink.IndexOf("%E9%87%8D") -gt 0) { $true }
+        if($flag) { 
+            $audioName = $audioName.Insert($audioName.Length - 4, "R") 
+            $mp3 = $mp3.Insert($mp3.Length - 4, "-replay") 
+            $Path = $Path.Insert($Path.Length - 4, "R") 
         }
 
         Write-Host "Downloading" $audioName
@@ -279,23 +291,35 @@ function Get-Audio ($Link, $Path) {
 }
 
 function Get-Passage ($Uri) {
-    $ie = Invoke-InternetExplorer $Uri
-    $passageHtml = ""
-    foreach($item in $ie.Document.IHTMLDocument3_getElementsByTagName("span"))
-    {
-        if ($item.className -ne "text" -or $item.tagName -ne "span") { continue }
-        if($item.firstChild.tagName -eq "img") {
-            $item.removeChild($item.firstChild)
-            $passageHtml = "<span id=`"arrow`"></span>"
-        }
-        $passageHtml += $item.innerHTML
-        if($item.parentNode.nextSibling.tagName -eq "br") { 
-            $passageHtml += "</p><p>"
-        }
-    }
-    $passageHtml = $passageHtml.Replace("</span><span class=`"underline`">", "</span> <span class=`"underline`">")
-    Remove-Characters "<p>$passageHtml".Remove($passageHtml.Length, 3)
+    
+    $job = Start-Job { 
+        param($Uri)
+        . C:\github\powershell\Utility.ps1
+        $ie = Invoke-InternetExplorer $Uri 
+        $passageHtml = ""
 
+        foreach($item in $ie.Document.IHTMLDocument3_getElementsByTagName("span"))
+        {
+            if ($item.className -ne "text" -or $item.tagName -ne "span") { continue }
+            if($item.firstChild.tagName -eq "img") {
+                $item.removeChild($item.firstChild)
+                $passageHtml = "<span id=`"arrow`"></span>"
+            }
+            $passageHtml += $item.innerHTML
+            if($item.parentNode.nextSibling.tagName -eq "br") { 
+                $passageHtml += "</p><p>"
+            }
+        }
+        $passageHtml = $passageHtml.Replace("</span><span class=`"underline`">", "</span> <span class=`"underline`">")
+        "<p>$passageHtml".Remove($passageHtml.Length, 3)
+        #New-Item "C:\github\powershell\test.txt" -Value "<p>$passageHtml".Remove($passageHtml.Length, 3)
+    } -Arg $Uri
+
+    Wait-Job $job
+    $result = Receive-Job $job
+    Remove-Job $job
+    
+    Remove-Characters $result
 }
 
 function New-TPOHtml($XmlFile) {
@@ -494,7 +518,7 @@ function Get-Reading() {
                 $questionHighlight = $questionText.getElementsByClassName("light")
                 if ($questionHighlight.Length -gt 0) {
                     $highlight = $questionHighlight[0]
-                    $questionText = Add-Shading (Update-Character $questionText.innerText) $highlight "|"
+                    $questionText = Add-Shading (Update-Characters $questionText.innerText) $highlight "|"
                 }
             }
             if($questionText.innerText) { $questionText = $questionText.innerText }
@@ -748,18 +772,16 @@ function Get-Listening() {
         }
 
         # Create passage xml
-        $text = $document.getElementsByClassName("article")[0].innerText 
         $xml = Add-XmlTestItemNode @{CLASS = "lecture"}
-        $text = Format-Paragraphs $text
         $names = "LecturePicture", "LectureSound", "LecturePicture", "AudioText"
         $nodes = "$filePath.jpg", "$filePath.wav", "Sampler\GetReady.gif", ""
         Add-XmlChildNodes $xml $names $nodes
-        (Select-Xml "//AudioText" $xml).Node.InnerXml = Get-Passage $links[$i-1]
+        (Select-Xml "//AudioText" $xml).Node.InnerXml = (Get-Passage $links[$i-1])[1]
 
         Get-Audio $links[$i-1] "$xmlPath\$filePath.mp3"
         New-File $xml "$xmlPath\$filePath.xml"
 
-        <#
+        $article = $articles[$i-1].Split(",")[0]
         for ($j = 1; $j -le [int]$articles[$i-1].Split(",")[1]; $j++) 
         {
             $questionNumber++
@@ -770,6 +792,7 @@ function Get-Listening() {
             
             # question Text
             $html = (Invoke-WebRequest "$($questions[$j-1])")
+            $document = $html.ParsedHtml.body
             $questionText = $document.getElementsByClassName("left text")[0].innerText
             $names = "Stem", "StemWav"
             $nodes = (Remove-Characters $questionText), "$filePath.wav"
@@ -810,11 +833,8 @@ function Get-Listening() {
 
             # audio link
             
-            Get-Audio "$website/$type/answer.html?&article_id=$article&seqno=$j" 
-            $flag = $audioLink.IndexOf("%E9%87%8D") -gt 0
-            $audioName = if($flag) { "$sets$number$letter$($i)Q$($j)R.mp3" } else { "$sets$number$letter$($i)Q$j.mp3" }
+            Get-Audio "$website/$type/answer.html?&article_id=$article&seqno=$j" "$xmlPath\$prefix$($i)Q$j.mp3"
 
-            
             # repeat question
             if($flag) {
                 Get-Audio "$website/$type/answer.html?step=2&article_id=$article&seqno=$j"  "$xmlPath\$prefix$($i)Q$j.mp3"
