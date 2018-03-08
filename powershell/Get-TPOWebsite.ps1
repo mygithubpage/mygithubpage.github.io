@@ -1098,7 +1098,7 @@ function Get-Score ()
 $global:website = "https://top.zhan.com/toefl"
 $global:sections = "Reading", "Listening", "Speaking", "Writing"
 $global:time = @("45", "60", "60"), @("15", "30", "20")
-$global:sets = "OG"
+$global:sets = "TPO"
 $global:setsLength = if($sets -eq "OG") {3} else {5}
 
 $global:xmlPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\Sampler\forml1"
@@ -1108,7 +1108,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 1; $n -le 3; $n++) 
+for ($n = 1; $n -le 1; $n++) 
 {
     $global:number = $n
     $global:tpos = if($number % 4 -eq 0) {"$number"} 
