@@ -295,7 +295,8 @@ function New-Html ($Content, $Path) {
     $div.AppendChild($a) | Out-Null
     (Select-Xml "//main" $xml).Node.AppendChild($div) | Out-Null
 
-    $string = (Format-Xml $xml 2).ToString().Replace("$($title[0])/","")
+    $string = (Format-Xml $xml 2).ToString()
+    $string = $string.Replace("$($title[0])/","").Replace("</span><span class=`"underline`">", "</span> <span class=`"underline`">")
     ("<!DOCTYPE html>`n" + $string) | Out-File $Path -Encoding "utf8"
 }
 
@@ -1107,7 +1108,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 2; $n -le 3; $n++) 
+for ($n = 1; $n -le 3; $n++) 
 {
     $global:number = $n
     $global:tpos = if($number % 4 -eq 0) {"$number"} 
