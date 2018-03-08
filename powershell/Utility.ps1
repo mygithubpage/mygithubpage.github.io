@@ -162,12 +162,6 @@ function Invoke-InternetExplorer {
     if ($ie.LocationURL -ne $Uri) { $ie.Navigate($Uri) }
 
     while ($ie.Busy) { Start-Sleep -Milliseconds 100 }
-    <#
-    $ie.Visible = $true
-    Initialize-SendKeys "Internet Explorer" 0
-    Send-Keys "% " 1
-    Send-Keys "x" 1
-    #>
     $ie
 }
 

@@ -114,6 +114,14 @@ function initialize() {
         element.classList.add(color);
     });
 
+    document.querySelectorAll(".underline").forEach(element => {
+        element.style.fontWeight = "bold"
+    });
+
+    document.querySelectorAll(".time").forEach(element => {
+        element.classList.add("w3-hide")
+    });
+    
     // Add Top Navigation Button Click Event and Tag Click Event.
     topNavBtn.addEventListener('click', function () { toggleTopNav(topNavBtn) });
 

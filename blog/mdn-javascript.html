@@ -4,15 +4,14 @@
 <head>
   <title>Mozilla Developer Network JavaScript Programming Notes</title>
   <script src="/initialize.js"></script>
-  <script src="highlight.js"></script>
 </head>
 
 <body class="w3-light-gray">
 
-  <main>
+  <main class="w3-container">
 
     <!-- Ariticle tags -->
-    <div class="w3-card w3-margin w3-padding w3-white">
+    <div class="w3-card w3-white w3-padding" id="tags">
       <span>Tags:</span> 
 
       <a class="w3-tag w3-black w3-btn w3-padding-small my-margin-small" href="blog.html">MDN</a>
@@ -21,10 +20,10 @@
       <a class="w3-tag w3-black w3-btn w3-padding-small my-margin-small" href="blog.html">Notes</a>        
     </div>
 
-    <div class="w3-card w3-margin w3-white w3-container">
+    <div class="w3-card w3-white w3-padding w3-margin-top" id="entry">
 
       <!-- Event -->
-      <section class="w3-container">
+      <section>
         <h3><b>Events</b></h3>
 
         <section>
@@ -62,7 +61,7 @@
       <hr />
 
       <!-- Object -->
-      <section class="w3-container">
+      <section>
         <h3><b>Object</b></h3>
         <p>a fairly common pattern for more object definitions is to define the properties inside the constructor, and the methods on the prototype. This makes the code easier to read, as the constructor only contains the property definitions, and the methods are split off into separate blocks. For example:</p>
 
@@ -86,7 +85,7 @@
       <hr />
 
       <!-- Declaration -->
-      <section class="w3-container">
+      <section>
         <h3><b>Declaration</b></h3>
         <p>a fairly common pattern for more object definitions is to define the properties inside the constructor, and the methods on the prototype. This makes the code easier to read, as the constructor only contains the property definitions, and the methods are split off into separate blocks. For example:</p>
 
@@ -111,9 +110,6 @@
 
   </main>
 
-  <script>
-    hljs.initHighlightingOnLoad();
-  </script>
 </body>
 
 </html>

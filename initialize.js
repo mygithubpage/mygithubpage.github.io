@@ -1,10 +1,12 @@
 /* 
-
+meta = document.createElement("meta");
+    meta.setAttribute("charset", "utf-8");
+    document.head.appendChild(meta);
 my initialize javascript
 comes before any other script 
 
 */
-
+folder = ""
 // Execute script after window load
 window.addEventListener("load", function () { 
     
@@ -28,9 +30,17 @@ function addColor() {
     
     if(!color) { 
         if(path[path.length - 1].startsWith("tpo")) { color = colors.tpo }
-        if(path[path.length - 1].startsWith("index")) { color = colors.barrons; }
-        if(path[path.length - 1].startsWith("toefl")) { color = colors.og; }
+        if(path[path.length - 1].startsWith("og")) { color = colors.og; }
+        if(path[path.length - 1].startsWith("index")) { color = colors.og; }
     }
+}
+
+function createNode (element) {
+    var node = document.createElement(element.tagName);
+    for (let index = 0; index < Object.keys(element.attributes).length; index++) {
+        node.setAttribute(Object.keys(element.attributes)[index], Object.values(element.attributes)[index]);
+    }
+    element.parent.appendChild(node);
 }
 
 // Add <meta> <link> <script> element in head
@@ -41,27 +51,32 @@ function addHead() {
     var script;
 
     // UTF-8 charset
-    meta = document.createElement("meta");
-    meta.setAttribute("charset", "utf-8");
-    document.head.appendChild(meta);
+    createNode( {
+            parent : document.head,
+            tagName : "meta",
+            attributes : {
+                charset : "utf-8"
+            }
+        }
+    );
+    
 
     // Mobile first
     meta = document.createElement("meta");
     meta.name = "viewport";
     meta.content = "width=device-width, initial-scale=1";
     document.head.appendChild(meta);
-
     
     // My CSS
     link = document.createElement("link");
     link.setAttribute("rel", "stylesheet");
-    link.href = "/style.css";
+    link.href = folder + "/style.css";
     document.head.appendChild(link);
 
     // W3Schools W3 CSS
     link = document.createElement("link");
     link.setAttribute("rel", "stylesheet");
-    link.href = "https://www.w3schools.com/w3css/4/w3.css";
+    link.href = folder + "/w3.css";
     document.head.appendChild(link);
 
     // Website Icon
@@ -79,7 +94,7 @@ function addHead() {
 
     // My javascript
     script = document.createElement("script")
-    script.src = "/external.js"
+    script.src = folder + "/external.js"
     document.head.appendChild(script);
 }
 
@@ -92,12 +107,12 @@ function addFooter(color) {
     var p = document.createElement("p");
     var footer = document.createElement("footer");
 
-    span.textContent = "Powered by ";
+    span.textContent = "Made by";
 
     a.href = "https://mygithubpage.github.io"
     a.textContent = "GitHubPages"
 
-    p.textContent = "Find me on social media."
+    p.textContent = "This is my social media."
     footer.appendChild(p);
 
     icons.forEach(element => {
@@ -129,7 +144,7 @@ function addTopNav(color) {
     for (let index = 0; index < barItems.length; index++) {
         const element = barItems[index];
         let a = document.createElement("a");
-        a.href = "/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html";
+        a.href = folder + "/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html";
         a.className = "w3-bar-item w3-button";
         a.textContent = element;
         if(index > 3) { a.className += " w3-hide-small" }
