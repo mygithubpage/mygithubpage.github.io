@@ -89,7 +89,7 @@ function addHead() {
 
     // jQuery
     script = document.createElement("script")
-    script.src = "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js"
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
     document.head.appendChild(script);
 
     // My javascript

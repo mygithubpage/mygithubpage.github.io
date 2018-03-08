@@ -2,4 +2,4 @@ toefl/test-big
 *.mp3
 test*
 highlight*.js
-blog
+blog/*
