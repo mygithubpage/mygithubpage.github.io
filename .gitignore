@@ -1,5 +1,6 @@
 toefl/test-big
-*.mp3
+toefl/tpo/*/*.mp3
+toefl/og/*/*question*.mp3
 test*
 highlight*.js
-blog/*
+blog/
