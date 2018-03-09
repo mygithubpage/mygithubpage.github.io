@@ -132,7 +132,7 @@ Get-ChildItem @parameters
 # Pipeline Operator can be an indicator of line breaker
 Get-ChildItem -Path $env:windir\*.log |
 Select-String -List error |
-Format-Table Path,LineNumber �AutoSize
+Format-Table Path, LineNumber -AutoSize
 
 <#
 	1. Start your scripts with a standard set of comments (name, date, author, purpose and keywords) to easily find them later.

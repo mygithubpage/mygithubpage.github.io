@@ -17,3 +17,12 @@ for ($i = 2; $i -le 53; $i++) {
     [xml](Get-Content $_)
 }
 #>
+
+
+#05R2Q14 596 
+#41R1
+<#
+Cannot convert value "System.Object[]" to type "System.Xml.XmlDocument". Error: "Reference to undeclared entity 'shy'. Line 8,
+position 1381."
+At C:\github\powershell\Get-TPOWebsite.ps1:316 char:9
+#>

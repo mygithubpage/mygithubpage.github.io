@@ -7,6 +7,7 @@ sidebar = document.querySelector("#sidebar");
 topNavBtn = document.querySelector("#topNavBtn");
 topNav = document.querySelector("#topNav"); 
 
+
 function toggleTopNav(thisElem) {
 
     // toggle sidebar button
@@ -141,8 +142,9 @@ function initialize() {
 
     if(sidebarBtn) { sidebarBtn.addEventListener('click', function () { sidebar.classList.toggle("w3-hide"); }); }
     window.onscroll = function () { toggleFixed(topNav);}
+    
     removeLeadingWhiteSpace(); // Remove Leading WhiteSpace in pre tag.
-
+    
 }
 
 initialize(); 

@@ -6,7 +6,7 @@ my initialize javascript
 comes before any other script 
 
 */
-folder = ""
+folder = "/github"
 // Execute script after window load
 window.addEventListener("load", function () { 
     
@@ -14,6 +14,7 @@ window.addEventListener("load", function () {
     addColor();
     addTopNav(color);
     addFooter(color);
+    // 
 });
 
 function addColor() {
@@ -96,6 +97,7 @@ function addHead() {
     script = document.createElement("script")
     script.src = folder + "/external.js"
     document.head.appendChild(script);
+    
 }
 
 

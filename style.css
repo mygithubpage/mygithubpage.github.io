@@ -78,11 +78,11 @@ Original One Light Syntax theme from https:/.com/atom/one-light-syntax
 
 /* My Class */
 /* My link style */
-.link:link, .link:visited {
+.my-link:link, .my-link:visited {
     text-decoration: none;
 }
 
-.link:hover, .link:active {
+.my-link:hover, .my-link:active {
     text-decoration: underline;
 }
 
