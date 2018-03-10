@@ -1,58 +1,141 @@
 . .\Utility.ps1
+function ConvertTo-HtmlCharSets($string)
+{
+    $string = [regex]::Replace($string, "\u2103", "&#8451;") # ℃
+    $string = [regex]::Replace($string, "\u2013", "&#8211;") # –
+    $string
+}
 
-$path = "GitHub/TOEFL/Essay/essay.html"
-[xml]$essay = Update-Entity $path "Add"
-#$node = (Select-Xml "//article" $essay).Node
-#links = Select-Xml "//nav[@id='sidebar']/div/a" $essay | ForEach-Object {$_.Node}
+function Update-Xml()
+{
+    param($content)
+    $content = $content -replace "<!\[CDATA\[", "" -replace "\]\]>", ""
+    $content = $content -replace "&amp;", "&" -replace "&lt;", "<" -replace "&gt;", ">" 
+    $content = $content -replace " description=`".*?`"", ""
+    $content = $content.Replace(" `$pstart ", "<p>").Replace(" `$pend ", "</p>")
+    $content = $content.Replace(" `$hstart ", "<span style=`"background: #D3D3D3`">").Replace(" `$hend ", "</span>")
+    $content = $content.Replace("`$nv ", "").Replace("`$ ", "")
+    $content = $content -replace "</?(st1|font|w:r|w:t).*?>", ""
+    $content = $content -replace "_____", "&#9724;"
+    #$content = ConvertTo-HtmlCharSets $content
+    while($content.Contains("  ")) { $content = $content -replace "  ", " "}
+    Format-Xml ([xml]$content)
+}
 
-for ($i = 1; $i -lt -51; $i++) {
-    #$files = Get-ChildItem "GitHub/TOEFL/Essay/topic$($i)-*.html" -Recurse -File
+function New-Html () 
+{
+    param($Content, $Path) 
+    $xml = ConvertTo-Xml -InputObject $xml
+    $xml.RemoveAll()
+
+    # Create html Node and Set Attribute lang="en" <html lang="en"></html>
+    $htmlNode = $xml.CreateElement("html")
+    $htmlNode.innerText = ""
+    $htmlNode.SetAttribute("lang", "en")
+    $htmlNode = $xml.AppendChild($htmlNode)
+
+    # Create head Node
+    $headNode = $xml.CreateElement("head")
+    $headNode.innerText = ""
+    $htmlNode.AppendChild($headNode) | Out-Null
+ 
+    # Create title Node and Add title
+    $titleNode = $xml.CreateElement("title")
+    $title = $Path.Split('\\')[-1].TrimEnd('.html').Split('-')
+    $titleNode.InnerText = $title[0].ToUpper() + " " + ($title[1].Substring(0,1).ToUpper() + 
+    $title[1].Substring(1,$title[1].length - 1)).insert($title[1].length - 1, " ")
+    $headNode.AppendChild($titleNode) | Out-Null
+
+    # Create Script Element
+    $scriptNode = $xml.CreateElement("script")
+    $scriptNode.SetAttribute("src", "/initialize.js") 
+    $scriptNode.InnerText = ""
+    $headNode.AppendChild($scriptNode) | Out-Null
+
+
+    # Create body Node
+    $bodyNode = $xml.CreateElement("body") 
+    $bodyNode.InnerText = ""
+    $htmlNode.AppendChild($bodyNode) | Out-Null
+
+    # Add Content
+    $cdata = $xml.CreateCDataSection($Content)
+    $bodyNode.AppendChild($cdata) | Out-Null
+    $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[", "").Replace("]]>", "")
+
+    # Add Navigation
+    $node = (Select-Xml "//div[@id='$($title[0])']" ([xml](Get-Content .\..\toefl\tpo\tpo.html))).Node
+    $div = $xml.CreateElement("div")
+    $div.SetAttribute("class", "w3-bar w3-margin-bottom")
+    $div.SetAttribute("id", $title[0])
+    $div.InnerXml = $node.InnerXml
+    $div.RemoveChild($div.FirstChild) | Out-Null
+    (Select-Xml "//main" $xml).Node.InsertBefore($div, (Select-Xml "//main" $xml).Node.FirstChild) | Out-Null
     
-    $number = if($i -lt 10) { "0$i" } else { $i }
-    # Add Sidebar Page
-    $element = $essay.CreateElement("button")
-    $element.InnerText = "tpo$number"
-    $element.SetAttribute("class", "w3-button w3-block w3-left-align")
-    $element.SetAttribute("onclick", "accFunc('tpo$number')")
-    $node.AppendChild($element) | Out-Null
-
-    $element = $essay.CreateElement("div")
-    $element.InnerText = ""
-    $element.SetAttribute("id", "tpo$number")
-    $element.SetAttribute("class", "w3-hide w3-white w3-card")
-    $node.AppendChild($element) | Out-Null
-    #>
-
+    # Add Previous Next Button
+    $htmls = Get-ChildItem ".\..\toefl\tpo\$($title[0])\*.html" | ForEach-Object {$_.Name}
+    $index = $htmls.IndexOf($Path.Split('\\')[-1])
+    $div = $xml.CreateElement("div")
+    $div.SetAttribute("class", "w3-bar")
     
-    for($j = 1; $j -le $files.Count; $j++) {
+    $a = $xml.CreateElement("a")
+    $a.SetAttribute("href", $htmls[$index - 1])
+    $a.SetAttribute("class", "w3-btn w3-left my-color")
+    $a.InnerText = "Previous"
+    $div.AppendChild($a) | Out-Null
 
-        [xml]$xml = Update-Entity $files[$j-1].FullName "Add"
+    $a = $xml.CreateElement("a")
+    $a.SetAttribute("href", $htmls[$index + 1])
+    $a.SetAttribute("class", "w3-btn w3-right my-color")
+    $a.InnerText = "Next"
+    $div.AppendChild($a) | Out-Null
+    (Select-Xml "//main" $xml).Node.AppendChild($div) | Out-Null
 
-        <#
-        # Add Previous and Next
-        $previousNodes = Select-Xml "//a[. = 'Previous']" $essay
-        $nextNodes = Select-Xml "//a[. = 'Next']" $essay
-        $index = $links.IndexOf($files[$j-1].Name)
-        for ($k = 0; $k -lt 2; $k++) {
-            $previousNodes[$k].Node.href = $links[$index - 1]
-            $nextNodes[$k].Node.href = $links[$index + 1]
+    $string = (Format-Xml $xml 2).Tostring().Replace("$($title[0])/","")
+    ("<!DOCTYPE html>`n" + $string) | Out-File $Path -Encoding "utf8"
+}
+
+function Get-Barrons () 
+{
+    for($i = 1; $i -le 7; $i++)
+    {
+        $xmls = Get-ChildItem "$folder\Barrons\test$i\assets\pages\*.xml"
+        $xmls += Get-ChildItem "$folder\Barrons\test$i\toc.xml"
+        foreach($xml in $xmls)
+        {
+            "test$i\" + $xml.Name
+            $content = Get-Content $xml
+            $file = Update-Xml $content 
+            $file | Out-File "$HOME\Downloads\ETS\Box\Barrons\test$i\pages\$($xml.Name)" -Encoding "utf8"
         }
-        $node.InnerXml = $xml.html.body.article.InnerXml
-        
-        # Add Sidebar Page links
-        $child = $essay.CreateElement("a")
-        $child.InnerText = "%emsp%" + "Essay $j"
-        $child.SetAttribute("class", "w3-bar-item w3-button")
-        $child.SetAttribute("href", $files[$j-1].Name)
-        $element.AppendChild($child) | Out-Null
-        #>
-        $xml.html.head.InnerXml = $essay.html.head.InnerXml
-        (Select-Xml "//title" $xml).Node.InnerText = $links.ForEach{if ($_.href -eq $files[$j-1].Name) { $xml.html.body.main.section.article.h3 + " " + $_.InnerText.Replace("%emsp%","")} }
-        $xml.html.body.InnerXml = $xml.html.body.InnerXml + $essay.html.body.footer.OuterXml
-        (Format-Xml $xml.InnerXml 2) -replace ">`r`n\s+</sc", "></sc" -replace ">`r`n\s+</i", "></i" | Out-File $files[$j-1].FullName -Encoding utf8
-        $content = Update-Entity $files[$j-1].FullName
-        $content | Out-File $files[$j-1].FullName -Encoding utf8
     }
 }
-#$content = Format-Xml $xml.InnerXml 2
-#$content -replace ">`r`n\s+</sc", "></sc" -replace ">`r`n\s+</i", "></i"
+
+
+$global:folder = "$HOME\Downloads\ETS\TOEFL Programs"
+$global:projectPath = "$HOME\Downloads\ETS\TOEFL Programs\Sampler\forml1"
+$global:sections = "reading", "listening", "speaking", "writing"
+#Get-Barrons
+
+
+<#
+(Get-AllIndexesOf $article " ").Count
+$article.Split("-")[4]
+#$xml.html.body.InnerText
+
+<#
+if ($false) {
+#$tests = "Barrons", "Cambridge", "Longman CD", "Longman EBook"
+foreach($test in $tests[0]){
+    (Get-ChildItem "C:\Users\decisactor\Box Sync\TOEFL\$test\*.mp3" -Recurse).foreach{
+        Copy-Item "$folder\$test\$($_.Name)" $_.Directory.FullName
+    }
+}
+#$mp3s = Get-ChildItem "$HOME\Downloads\ETS\TOEFL Programs\Cambridge\?S?S.mp3"
+foreach($mp3 in $mp3s)
+{
+    $number = $mp3.Name.Substring(0,1)
+    Copy-Item $mp3 "$HOME\Box Sync\TOEFL\Cambridge\test$number\audio\"
+}
+}
+#>

@@ -1,30 +1,31 @@
 
-# Install Visual Studio Code
+# Install VS Code
 # https://github.com/PowerShell/vscode-powershell/blob/master/scripts/Install-VSCode.ps1
 
 # Download Installer
-$codePath = "C:\Program Files\Microsoft VS Code\Code.exe"
-$installerFile = "$HOME\Downloads\Visual Studio Code.exe"
-if (!(Test-Path $codePath)) 
+$name = "VS Code"
+$path = "C:\Program Files\Microsoft VS Code\Code.exe"
+$installer = "$HOME\Downloads\$name.exe"
+if (!(Test-Path $path)) 
 { 
-    if (!(Test-Path $installerFile)) 
+    if (!(Test-Path $installer)) 
     {
-        Write-Host "`nDownloading latest stable Visual Studio Code..."
+        Write-Host "`nDownloading latest stable $name..."
         $html = Invoke-WebRequest "https://code.visualstudio.com/docs/setup/windows"
         $uri = $html.ParsedHtml.body.getElementsByTagName("a") | `
-        ForEach-Object {if($_.innerText -eq "Visual Studio Code installer"){$_.href}}
-        Invoke-WebRequest $uri -OutFile $installerFile
+        ForEach-Object {if($_.innerText -eq "$name installer"){$_.href}}
+        Invoke-WebRequest $uri -OutFile $installer
     }
     else 
     {
-        Write-Host "`nVisual Studio Code is already downloaded."
+        Write-Host "`n$name is already downloaded."
     }
-    Write-Host "`nInstalling Visual Studio Code..."
-    Invoke-Item $installerFile 
+    Write-Host "`nInstalling $name..."
+    Invoke-Item $installer 
 }
 else 
 {
-    Write-Host "`nVisual Studio Code is already installed." 
+    Write-Host "`n$name is already installed." 
 }
 
 # Install Extensions
@@ -38,12 +39,12 @@ foreach($extension in $extensions)
 }
 
 # Change Settings
-$settingsFile = "$env:APPDATA\Code\User\settings.json"
+$setting= "$env:APPDATA\Code\User\settings.json"
 
-if (!(Test-Path $settingsFile)) 
+if (!(Test-Path $setting)) 
 { 
-    New-Item $settingsFile 
-    Set-Content $settingsFile -Value `
+    New-Item $setting
+    Set-Content $setting-Value `
     '{
         "editor.minimap.enabled": false,
         "editor.wordWrap": "on",
@@ -56,5 +57,5 @@ if (!(Test-Path $settingsFile))
     }'
 }
 
-Write-Host "`nInstallation complete, starting Visual Studio Code...`n`n"
+Write-Host "`nInstallation complete, starting $name...`n`n"
 code.cmd

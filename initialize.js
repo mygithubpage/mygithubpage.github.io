@@ -6,7 +6,7 @@ my initialize javascript
 comes before any other script 
 
 */
-folder = "/github"
+folder = ""
 // Execute script after window load
 window.addEventListener("load", function () { 
     

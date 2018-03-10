@@ -29,26 +29,6 @@ $form.Controls.Add($button)
 #endregion
 
 
-#region # ComObject 
-
-# Word
-$word = New-Object -ComObject Word.Application 
-$file = $word.Documents.Add()
-$range = $file.Content
-$range.Find.Execute("<h?>*</h?>", $default, $default, $true) | Out-Null
-
-# WdParagraphAlignment Enumeration
-$range.ParagraphFormat.Alignment = 1 # Center-Alighed
-# https://msdn.microsoft.com/en-us/vba/word-vba/articles/wdparagraphalignment-enumeration-word
-
-$file.Content = $range.Paragraphs(1).Range.Text
-#$file.SaveAs2($name)
-$word.Quit() 
-[void][Runtime.Interopservices.Marshal]::ReleaseComObject($word)
-
-#endregion
-
-
 #region # PowerShell Object 
 
 # Test-CSharpFiles.ps1
