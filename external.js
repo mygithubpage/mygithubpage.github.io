@@ -299,7 +299,7 @@ function startTest( ) {
 
     if (uri.indexOf("speaking") > 0) {
         article.classList.toggle("w3-margin-top")
-        if (!navigator.mediaDevices.getUserMedia) { endTest(); }
+        if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
         recordAudio();
         
         playListening = function () { 
