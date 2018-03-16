@@ -1,5 +1,6 @@
 toefl/test-big
-toefl/*/*/*question*.mp3
+powershell/*.json
 test*
 highlight*.js
 blog/
+*csv

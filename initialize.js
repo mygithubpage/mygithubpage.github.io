@@ -1,12 +1,24 @@
-/* 
-meta = document.createElement("meta");
-    meta.setAttribute("charset", "utf-8");
-    document.head.appendChild(meta);
-my initialize javascript
-comes before any other script 
-
+/**
+ * my initialize javascript
+ * comes before any other script 
 */
 folder = ""
+function createNode (element, parent, before) {
+    /** element format
+     * <[><tagName>, {[attributeName : attributeValue[, attributeName : attributeValue]...]}, [textContent]<]>
+     */
+    
+    if(!parent) { parent = document.head; }
+    var node = document.createElement(element[0]);
+    for (let index = 0; index < Object.keys(element[1]).length; index++) {
+        node.setAttribute(Object.keys(element[1])[index], Object.values(element[1])[index]);
+    }
+    if(element[2]) {node.textContent = element[2];}
+    if(!before) {parent.appendChild(node);}
+    else {parent.insertBefore(node, parent.firstElementChild);}
+    return node;
+}
+
 // Execute script after window load
 window.addEventListener("load", function () { 
     
@@ -14,11 +26,21 @@ window.addEventListener("load", function () {
     addColor();
     addTopNav(color);
     addFooter(color);
+    
     // 
 });
 
 function addColor() {
-    colors = { 
+    
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+    colors = ["w3-red", "w3-pink", "w3-purple", "w3-indigo", "w3-blue", "w3-teal", "w3-green", "w3-brown", "w3-deep-orange"];
+    let random = getRandomInt(colors.length);
+    color = colors[random];
+    /**
+     * 
+     * colors = { 
         blog : "w3-black",
         notes : "w3-black",  
         essay : "w3-brown",
@@ -30,151 +52,104 @@ function addColor() {
     color = colors[path[path.length - 2]];
     
     if(!color) { 
+        color = "w3-black"
         if(path[path.length - 1].startsWith("tpo")) { color = colors.tpo }
         if(path[path.length - 1].startsWith("og")) { color = colors.og; }
         if(path[path.length - 1].startsWith("index")) { color = colors.og; }
     }
-}
-
-function createNode (element) {
-    var node = document.createElement(element.tagName);
-    for (let index = 0; index < Object.keys(element.attributes).length; index++) {
-        node.setAttribute(Object.keys(element.attributes)[index], Object.values(element.attributes)[index]);
-    }
-    element.parent.appendChild(node);
+     */
+    
 }
 
 // Add <meta> <link> <script> element in head
 function addHead() {
 
-    var meta;
-    var link;
-    var script;
-
     // UTF-8 charset
-    createNode( {
-            parent : document.head,
-            tagName : "meta",
-            attributes : {
-                charset : "utf-8"
-            }
-        }
-    );
+    createNode( ["meta", {charset : "utf-8"}] );
     
-
     // Mobile first
-    meta = document.createElement("meta");
-    meta.name = "viewport";
-    meta.content = "width=device-width, initial-scale=1";
-    document.head.appendChild(meta);
+    createNode( ["meta", {name : "viewport", content : "width=device-width, initial-scale=1"}] );
     
     // My CSS
-    link = document.createElement("link");
-    link.setAttribute("rel", "stylesheet");
-    link.href = folder + "/style.css";
-    document.head.appendChild(link);
+    createNode( ["link", {rel : "stylesheet", href : folder + "/style.css"}] );
 
     // W3Schools W3 CSS
-    link = document.createElement("link");
-    link.setAttribute("rel", "stylesheet");
-    link.href = folder + "/w3.css";
-    document.head.appendChild(link);
+    createNode( ["link", {rel : "stylesheet", href : folder + "/w3.css"}] );
 
     // Website Icon
-    link = document.createElement("link");
-    link.setAttribute("rel", "icon");
-    link.setAttribute("sizes", "16x16");
-    link.type = "image/png";
-    link.href = "https://png.icons8.com/color/50/ffffff/external-link.png"; // from icons8.com
-    document.head.appendChild(link);
+    createNode( ["link", {
+        rel : "icon", 
+        href : "https://png.icons8.com/color/50/ffffff/external-link.png",
+        size : "16x16",
+        type : "image/png"
+    }] );
 
     // jQuery
-    script = document.createElement("script")
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
-    document.head.appendChild(script);
+    createNode( ["script", {src : "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"}] );
 
     // My javascript
-    script = document.createElement("script")
-    script.src = folder + "/external.js"
-    document.head.appendChild(script);
+    createNode( ["script", {src : folder + "/external.js"}] );
     
 }
-
 
 function addFooter(color) {
     
     var icons = ["youtube", "twitter", "facebook", "instagram", "linkedin", "pinterest"]
-    var span = document.createElement("span");
-    var a = document.createElement("a");
-    var p = document.createElement("p");
-    var footer = document.createElement("footer");
+    var a;
+    var p;
 
-    span.textContent = "Made by";
+    var footer = createNode( ["footer", {class : color + " w3-container w3-center w3-margin-top"}], document.body);
 
-    a.href = "https://mygithubpage.github.io"
-    a.textContent = "GitHubPages"
-
-    p.textContent = "This is my social media."
-    footer.appendChild(p);
+    createNode( ["p", {}, "This is my social media."], footer);
 
     icons.forEach(element => {
-        var img = document.createElement("img");
-        img.src = "https://png.icons8.com/metro/20/ffffff/" + element + ".png";
-        img.className = "my-margin-small"
-        var a = document.createElement("a");
-        a.href = "";
-        a.appendChild(img);
-        footer.appendChild(a);
+        a = createNode( ["a", {href : "https://www." + element + ".com"}], footer);
+        createNode( ["img", {
+            src : "https://png.icons8.com/metro/20/ffffff/" + element + ".png",
+            class : "my-margin-small"
+        }], a);
     });
 
-    p = document.createElement("p");
-    p.appendChild(span);
-    p.appendChild(a);
-    footer.appendChild(p);
-
-    footer.className = color + " w3-container w3-center w3-margin-top";
-    document.body.appendChild(footer);
+    p = createNode( ["p", {}, ""], footer);
+    createNode( ["span", {}, "Made by "], p);
+    createNode( ["a", {href : "https://mygithubpage.github.io"}, "GitHubPages"], p);
 }
-
 
 function addTopNav(color) {
     var barItems = ["TPO", "Notes", "Essay", "OG", "Barrons", "Cambridge", "Longman"]
+    var nav = createNode( ["nav", {
+        class : color + " w3-bar w3-card w3-center w3-margin-bottom", 
+        id: "topNav"
+    }], document.body, "before");
     
-    var button = document.createElement("button");
-    var nav = document.createElement("nav");
 
     for (let index = 0; index < barItems.length; index++) {
         const element = barItems[index];
-        let a = document.createElement("a");
-        a.href = folder + "/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html";
-        a.className = "w3-bar-item w3-button";
-        a.textContent = element;
-        if(index > 3) { a.className += " w3-hide-small" }
-        nav.appendChild(a);
-    }
-    button.className = "w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium";
-    button.id = "topNavBtn";
-    button.textContent = "\u25BC";
-    nav.appendChild(button);
+        let suffix = "";
+        if(index > 3) { suffix = " w3-hide-small" }
+        createNode( ["a", {
+            href : folder + "/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html",
+            class : "w3-bar-item w3-button" + suffix
+        }, element], nav);
 
-    nav.className = color + " w3-bar w3-card w3-center w3-margin-bottom";
-    nav.id = "topNav";
-    document.body.insertBefore(nav, document.body.firstElementChild);
+    }
+
+    createNode( ["button", {
+        id : "topNavBtn",
+        class : "w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium"
+    }, "\u25BC"], nav);
+
 }
 
 function toggleFixed(element) {
     if (window.pageYOffset !== element.offsetTop) {
-        topNav.classList.add("my-fixed")
+        element.classList.add("my-fixed")
     } else { // Remove "my-fixed" when you leave the scroll position
-        topNav.classList.remove("my-fixed"); 
+        element.classList.remove("my-fixed"); 
     }
 }
 
 function addSiderbarBtn() {
     var button = document.createElement("button");
-    button.className = "w3-button w3-left";
-    button.id = "sidebarBtn";
-    button.textContent = "\u2630";
-
-    document.querySelector("#topNav").insertBefore(button, document.querySelector("#topNav").firstElementChild);
+    createNode( ["button", { id : "sidebarBtn", class : "w3-button w3-left" }, "\u2630"], document.querySelector("#topNav"), "before");
 }

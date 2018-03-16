@@ -77,35 +77,6 @@ Original One Light Syntax theme from https:/.com/atom/one-light-syntax
 }
 
 /* My Class */
-/* My link style */
-.my-link:link, .my-link:visited {
-    text-decoration: none;
-}
-
-.my-link:hover, .my-link:active {
-    text-decoration: underline;
-}
-
-
-/* My Radio Button*/
-/* Hide the browser's default checkbox */
-.my-radio {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  border: 2px solid lightgray;
-  transition: 0.2s all linear;
-  outline: none;
-  position: relative;
-  top: 4px;
-}
-
-/* When the checkbox is checked, add a black background */ 
-.my-radio:checked  {
-  border: 7px solid black;
-}
 
 /* My Slider */
 .my-slider {
@@ -125,7 +96,93 @@ Original One Light Syntax theme from https:/.com/atom/one-light-syntax
   cursor: pointer;
 }
 
+/* My Checkmark*/
+/* The label */
+.my-label {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 
+/* Hide the browser's default checkmark */
+.my-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom checkmark */
+.my-checkbox, .my-radio {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 22px;
+  width: 22px;
+  background-color: lightgray;
+}
+
+.my-radio {
+	border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.my-label:hover input ~ .my-checkbox, .my-label:hover input ~ .my-radio {
+  background-color: darkgray;
+}
+
+/* When the checkmark is checked, add a blue background */
+.my-label input:checked ~ .my-checkbox, .my-label input:checked ~ .my-radio {
+  background-color: "";
+}
+
+/* Show the checkmark when checked */
+.my-label input:checked ~ .my-checkbox:after, .my-label input:checked ~ .my-radio:after {
+  display: block;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.my-checkbox:after, .my-radio:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Style the checkbox/indicator */
+.my-checkbox:after {
+  left: 8px;
+  top: 3px;
+  width: 7px;
+  height: 14px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+/* Style the radio/indicator */
+.my-radio:after {
+ 	top: 7px;
+	left: 7px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: white;
+}
+
+/* My link style */
+.my-link:link, .my-link:visited {
+  text-decoration: none;
+}
+
+.my-link:hover, .my-link:active {
+  text-decoration: underline;
+}
 
 /* My Margin Small */
 .my-margin-top-small {
@@ -157,14 +214,14 @@ Original One Light Syntax theme from https:/.com/atom/one-light-syntax
 /* My Element */
 @media (min-width:600px) {
   #sidebar {
-    margin-top:-16px; 
+    margin-top:-16; 
     width:25%;
   }
 }
 
 @media (max-width:600px) {
   #sidebar {
-    margin-top:-16px; 
+    margin-top:-16; 
     width:75%;
   }
 }
