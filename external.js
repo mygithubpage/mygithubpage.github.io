@@ -78,7 +78,7 @@ function setTimer(second) {
 
 function startTest( ) {
     
-    let num = parseInt(uri.substr(uri.indexOf(".") - 1, 1));
+    let num = parseInt(html.substr(html.indexOf(".") - 1, 1));
     let seconds = [["45", "60", "60"], ["15", "30", "20"]];
     let questionText = document.querySelector("#question p").innerText;
     let reading = document.querySelector("#reading-text article");
@@ -271,6 +271,12 @@ function startTest( ) {
                     if(node.children[0].checked) { node.children[0].click(); }
                 }
                 element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
+                if(element.children[0].checked) {
+                    //element.children[0].click();
+                }
+                else {
+                    
+                }
             }
             else {
                 if (element.querySelector("input").checked) {
@@ -409,9 +415,12 @@ function startTest( ) {
                 });
             }
         }
-        
-        playAudio(html.replace(".html", ".mp3"), function() { setTimer(180); });
-        showQuestion(0);
+        button.classList.add("w3-hide");
+        playAudio(html.replace(".html", ".mp3"), function() { 
+            setTimer(180); 
+            showQuestion(0);
+        });
+
     }
     else {
         document.querySelectorAll(".underline").forEach(element => {
