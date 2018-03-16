@@ -312,11 +312,11 @@ function startTest( ) {
             article.classList.remove("w3-hide");
             playAudio(html.replace(".html", "-question.mp3"), startPreparation); 
         }
-        startPreparation = function () { playAudio("../../speaking_beep_prepare.mp3", waitPreparation) }
+        startPreparation = function () { playAudio("/toefl/speaking_beep_prepare.mp3", waitPreparation) }
         waitPreparation = function () { 
             time.classList.remove("w3-hide");
             waitTime(seconds[1][Math.ceil(num / 2) - 1], startSpeak); }
-        startSpeak = function () { playAudio("../../speaking_beep_answer.mp3", waitSpeak); }
+        startSpeak = function () { playAudio("/toefl/speaking_beep_answer.mp3", waitSpeak); }
         waitSpeak = function () { 
             mediaRecorder.start();
             waitTime(seconds[0][Math.ceil(num / 2) - 1], function() { mediaRecorder.stop(); waitTime(1,showModal);}) 
@@ -418,6 +418,7 @@ function startTest( ) {
         button.classList.add("w3-hide");
         playAudio(html.replace(".html", ".mp3"), function() { 
             setTimer(180); 
+            button.classList.remove("w3-hide");
             showQuestion(0);
         });
 
