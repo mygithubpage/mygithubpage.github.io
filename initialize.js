@@ -26,7 +26,9 @@ window.addEventListener("load", function () {
     addColor();
     addTopNav(color);
     addFooter(color);
-    
+    mobileFlag = screen.width < 600 ? true : false;
+    uri = document.location.href;
+    html = uri.split("/").slice(-1)[0];
     // 
 });
 
@@ -38,27 +40,7 @@ function addColor() {
     colors = ["w3-red", "w3-pink", "w3-purple", "w3-indigo", "w3-blue", "w3-teal", "w3-green", "w3-brown", "w3-deep-orange"];
     let random = getRandomInt(colors.length);
     color = colors[random];
-    /**
-     * 
-     * colors = { 
-        blog : "w3-black",
-        notes : "w3-black",  
-        essay : "w3-brown",
-        tpo : "my-crimson",
-        og : "my-dark-blue",
-        barrons : "w3-green"
-    };
-    var path = location.pathname.split("/");
-    color = colors[path[path.length - 2]];
-    
-    if(!color) { 
-        color = "w3-black"
-        if(path[path.length - 1].startsWith("tpo")) { color = colors.tpo }
-        if(path[path.length - 1].startsWith("og")) { color = colors.og; }
-        if(path[path.length - 1].startsWith("index")) { color = colors.og; }
-    }
-     */
-    
+
 }
 
 // Add <meta> <link> <script> element in head

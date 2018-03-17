@@ -262,6 +262,7 @@ function Add-XmlNode ($Node, $Xml, $Parent, $Before) {
 }
 
 function New-Html ($Content, $Path) {
+    
 
     $xml = ConvertTo-Xml -InputObject $xml
     $xml.RemoveAll()
@@ -286,12 +287,15 @@ function New-Html ($Content, $Path) {
     # Create body Node
     $main = Add-XmlNode ("main", @{class = "w3-container"}, $Content) $xml $body
 
-    $file = "$htmlPath\$($sets.ToLower()).html"
+    <#
     # Add Navigation
+    $file = "$htmlPath\$($sets.ToLower()).html"
+    
     $node = (Select-Xml "//div[@id='$($titles[0])']" ([xml](Get-Content $file))).Node
     $node.RemoveChild($node.FirstChild) | Out-Null
     $div = Add-XmlNode ("div", @{class = "w3-bar w3-margin-bottom"; id = $titles[0]}, $node.InnerXml) $xml $main "before"
-
+    #>
+    
     # Add Select Question 
     if($titles[1].indexOf("reading") -ge 0 -or $titles[1].indexOf("listening") -ge 0) {
         $prefix = "$($titles[0])\*\$($titles[0] + $titles[1].Substring(0,1) + $titles[1].Substring($titles[1].Length - 1, 1))"
@@ -344,6 +348,7 @@ function New-Html ($Content, $Path) {
                 if($questionXml.TestItem.Stem.indexOf("brief summary") -gt 0) {
                     for ($i = 0; $i -lt $nodes.Count - 1; $i++) {
                         $innerText = $nodes[$i].Node.InnerText
+                        if(!$innerText) { continue }
                         $innerText = $innerText.Substring($innerText.IndexOf(",0,") + 3)
                         $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $div
                         Add-XmlNode ("span", @{}, $innerText) $xml $label | Out-Null
@@ -414,7 +419,7 @@ function New-Html ($Content, $Path) {
             $n++
         }
     }
-    
+    <#
     # Add Previous Next Button
     $htmls = Get-ChildItem "$htmlPath\$($titles[0])\*.html" | ForEach-Object {$_.Name}
     $index = $htmls.IndexOf($Path.Split('\\')[-1])
@@ -424,8 +429,7 @@ function New-Html ($Content, $Path) {
 
     if ($index -eq $htmls.Count - 1) { $index = -1 }
     Add-XmlNode ("a", @{class = "w3-btn w3-right my-color"; href = $htmls[$index - 1]}, "Next") $xml $div | Out-Null
-
-    #Write-Host $Path
+    #>
     $string = (Format-Xml $xml 2).ToString()
     $string = $string.Replace("`"|", "`"<span class=`"highlight`">").Replace("|`"", "</span>`"")
     $string = $string.Replace("$($titles[0])/","").Replace("</span><span class=`"highlight`">", "</span> <span class=`"highlight`">")
@@ -477,7 +481,14 @@ function New-TPOHtml() {
 }
 
 function Add-Highlight($file) {
-    #$file = "C:\Users\decisactor\Downloads\ETS\TOEFL Programs\Sampler\forml1\og3\*\og3r2Q01.xml"
+    function Get-Match ($match) {
+        $highlight = $match.Replace(",", "").Replace("`"", "").Replace(".", "\.?").Replace("(", "\(?").Replace(")", "\)?").Replace("'", "(</span>)?'").Replace("-", "(</span>)?-").Replace(" ", $pattern)
+        $highlight = "$highlight$pattern"
+        $content = Get-Content $path -Raw
+        $matches = ($content | Select-String $highlight).Matches
+        if($matches) { $matches = $matches.Value }
+        $matches
+    }
     foreach ($item in Get-ChildItem $file.Replace(".xml", ".txt")) {
         $num = $item.Name.Substring($setsLength + 1, 1)
         $path = "$htmlPath\$sets$number\$sets$number-reading$num.html"
@@ -493,23 +504,27 @@ function Add-Highlight($file) {
             continue
         }
 
-        $content = Get-Content $item.FullName -Raw
-        $flag = (Get-AllIndexesOf $content $match).Length -gt 1
+        $text = Get-Content $item.FullName -Raw
+        $flag = (Get-AllIndexesOf $text $match).Length -gt 1
         if($flag) {
             $temp = $match
-            $match = $content.Substring($content.IndexOf("[") - 10, 11 + $match.Length).Replace("[", "")
+            $match = $text.Substring($text.IndexOf("[") - 10, 11 + $match.Length).Replace("[", "")
         }
-        $pattern = "(</span>)?\.?,? ?(<span class=`"highlight`">)?"
-        $highlight = $match.Replace(",", "").Replace(".", "").Replace("(", "\(").Replace(")", "\)").Replace(" ", $pattern)
-        $highlight = "$highlight$pattern"
-        $content = Get-Content $path -Raw
-        $matches = ($content | Select-String $highlight).Matches
-        if($matches) { $matches = $matches.Value }
-        else {
-            $matches
+        $pattern = "(</span>)?\.?\)?,?;?`"? ?`"?\(?(<span class=`"(highlight|question[0-9])`">)?"
+        $matches = Get-Match $match
+        if(!$matches) {
+            if($flag) {
+                $match = $text.Substring($text.IndexOf("["), 11 + $temp.Length).Replace("[", "")
+                $matches = Get-Match $match
+            }
+            if(!$matches) {
+                $item.Name
+            }
         }
         if($flag) { $content = $content.Replace($matches, $matches.Replace($temp, "<span class=`"question$num`">$temp</span>")) }
         else { $content = $content.Replace($matches, "<span class=`"question$num`">$matches</span>") }
+        $content = $content.Replace("<script src=`"/<span class=`"question$num`">initial</span>ize.js`">", "<script src=`"/initialize.js`">")
+            $content = $content.Replace("-s<span class=`"question$num`">peak</span>ing", "-speaking")
         Set-Content $path $content
     }
 }
@@ -1279,7 +1294,7 @@ function Get-Score ()
 $global:website = "https://top.zhan.com/toefl"
 $global:sections = "Reading", "Listening", "Speaking", "Writing"
 $global:time = @("45", "60", "60"), @("15", "30", "20")
-$global:sets = "OG"
+$global:sets = "TPO"
 $global:setsLength = if ($sets -eq "OG") {3} else {5}
 
 $global:xmlPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\Sampler\forml1"
@@ -1289,7 +1304,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 1; $n -le 3; $n++) 
+for ($n = 53; $n -le 53; $n++) 
 {
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) {"$number"} 
@@ -1297,7 +1312,7 @@ for ($n = 1; $n -le 3; $n++)
     if ($sets -eq "TPO") { $location = "alltpo$tpos" } else { $location = $sets.ToLower()}
     if ($number -lt 10 -and $sets -eq "TPO") {$number = "0$number"}
     New-Item -Path "$xmlPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
-
+    #Write-Host "$sets$number"
     #Get-Reading
     #Get-Listening 
     #Get-Speaking 
