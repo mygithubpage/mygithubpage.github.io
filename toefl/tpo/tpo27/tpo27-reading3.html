@@ -1,5 +1,543 @@
-<!DOCTYPE html><html lang="en"><head><title>TPO27 Reading 3</title><script src="/initialize.js"></script></head><body><main class="w3-container"><div id="reading-text"><article><h4 class="w3-center highlight"><b>Predator-Prey Cycles</b></h4><p><span id="arrow"></span>How do predators <span class="highlight">affect</span> populations of the <span class="highlight">prey</span> animals? The answer is not as simple as might be thought. Moose reached Isle Royale in Lake <span class="highlight">Superior</span> by <span class="highlight">crossing</span> over winter ice and multiplied freely there in isolation without predators. When wolves later reached the island, naturalists widely assumed that the wolves would play a key role in controlling the moose <span class="highlight">population</span>. Careful studies have demonstrated, however, that this is not the case. The wolves eat mostly old or diseased animals that would not <span class="highlight">survive</span> long anyway. In general, the moose <span class="highlight">population</span> is controlled by food <span class="highlight">availability</span>, <span class="highlight">disease</span> and other factors rather than by wolves.</p><p>When <span class="highlight">experimental</span> populations are set up under simple <span class="highlight">laboratory</span> conditions, the <span class="highlight">predator</span> often exterminates its pre and then becomes <span class="highlight">extinct</span> itself, having nothing left to eat. However, if safe areas like those <span class="highlight">prey</span> animals have in the wild are provided, the <span class="highlight">prey</span><span class="highlight">population</span> drops to low <span class="highlight">level</span> but not <span class="highlight">extinction</span>. Low <span class="highlight">prey</span><span class="highlight">population</span> levels then provide inadequate food for the predators, causing the <span class="highlight">predator</span><span class="highlight">population</span> to <span class="highlight">decrease</span>. When this occurs, the <span class="highlight">prey</span><span class="highlight">population</span> can <span class="question2">rebound. </span>In this situation the <span class="highlight">predator</span> and <span class="highlight">prey</span><span class="highlight">population</span> may continue in this cyclical <span class="highlight">pattern</span> for some time.</p><p><span class="highlight">Population</span> cycles are <span class="highlight">characteristic</span> of small mammals, and they sometimes <span class="highlight">appear</span> to be brought about by predators. Ecologists studying hare populations have found that the North American snow shoe hare follows a <span class="highlight"><span class="question5">roughly</span></span>ten-year <span class="highlight">cycle</span>. Its numbers fall tenfold to thirty in a <span class="highlight">typical</span><span class="highlight">cycle</span>, and a hundredfold change can <span class="highlight">occur</span>. Two factors <span class="highlight">appear</span> to be <span class="question6">generating </span>the cycle: food plants and predators.</p><p>The preferred foods of snowshoe hares are <span class="highlight">willow</span> and <span class="highlight">birch</span> twigs. As hare <span class="highlight">density</span> increases, the <span class="highlight">quantity</span> of these twigs decreases, forcing the hares to feed on low-quality high-fiber food. <span class="highlight">Lower</span> birth rates, low <span class="highlight">juvenile</span> survivorship, and low growth rates follow, so there is a corresponding <span class="highlight">decline</span> in hare <span class="highlight">abundance</span>. Once the hare <span class="highlight">population</span> has declined, it takes two to three year for the <span class="highlight">quantity</span> of twigs to <span class="highlight">recover</span>.</p><p>A key <span class="highlight">predator</span> of the snowshoe hare is the Canada lynx. The Canada lynx shows a ten-year <span class="highlight">cycle</span> of <span class="highlight">abundance</span> that parallels the <span class="highlight">abundance</span><span class="highlight">cycle</span> of hares. As hare numbers fall, so do lynx numbers, as their food <span class="highlight">supply</span><span class="highlight">depleted</span>.</p><p>What causes the predator-prey oscillations? Do increasing number of hares <span class="highlight">lead</span> to overharvesting of plants, which in turn results in reduced hare populations, or do increasing numbers of lynx <span class="highlight">lead</span> to overharvesting hares? <span class="highlight">Field</span> experiments carried out by Charles Krebs and coworkers in 1992 provide an answer. Krebs investigated <span class="highlight">experimental</span> plots in Canada's Yukon <span class="highlight">territory</span> that contained hare populations. When food was added to those plots (no food effect) and predators were excluded (no <span class="highlight">predator</span> effect) from an <span class="highlight">experimental</span> area, hare numbers increased tenfold and stayed there-the <span class="highlight">cycle</span> was lost. However, the <span class="highlight">cycle</span> was retained if either of the factors was allowed to <span class="highlight">operate</span> alone: if predators were excluded but food was not added (food effect alone), or if food was added in the presence of predators (<span class="highlight">predator</span> effect alone). Thus both factors can <span class="highlight">affect</span> the <span class="highlight">cycle</span>, which, in practice, seems to be generated by <span class="highlight"><span class="question8">conjunction</span></span>of the two factors.</p><p>Predators are an <span class="highlight">essential</span><span class="highlight">factor</span> in maintaining communities that are rich and <span class="highlight">diverse</span> in <span class="highlight">species</span>. Without predators, the <span class="highlight">species</span> that is the best competitor for food, <span class="highlight">shelter</span>, 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TPO27 Reading 3</title>
+    <script src="/initialize.js">
+    </script>
+  </head>
+  <body>
+    <main class="w3-container">
+      <div id="reading-text">
+        <article>
+          <h4 class="w3-center highlight">
+            <b>Predator-Prey Cycles</b>
+          </h4>
+          <p>
+            <span id="arrow">
+            </span>How do predators <span class="highlight">affect</span> populations of the <span class="highlight">prey</span> animals? The answer is not as simple as might be thought. Moose reached Isle Royale in Lake <span class="highlight">Superior</span> by <span class="highlight">crossing</span> over winter ice and multiplied freely there in isolation without predators. When wolves later reached the island, naturalists widely assumed that the wolves would play a key role in controlling the moose <span class="highlight">population</span>. Careful studies have demonstrated, however, that this is not the case. The wolves eat mostly old or diseased animals that would not <span class="highlight">survive</span> long anyway. In general, the moose <span class="highlight">population</span> is controlled by food <span class="highlight">availability</span>, <span class="highlight">disease</span> and other factors rather than by wolves.</p>
+          <p>When <span class="highlight">experimental</span> populations are set up under simple <span class="highlight">laboratory</span> conditions, the <span class="highlight">predator</span> often exterminates its pre and then becomes <span class="highlight">extinct</span> itself, having nothing left to eat. However, if safe areas like those <span class="highlight">prey</span> animals have in the wild are provided, the <span class="highlight">prey</span> <span class="highlight">population</span> drops to low <span class="highlight">level</span> but not <span class="highlight">extinction</span>. Low <span class="highlight">prey</span> <span class="highlight">population</span> levels then provide inadequate food for the predators, causing the <span class="highlight">predator</span> <span class="highlight">population</span> to <span class="highlight">decrease</span>. When this occurs, the <span class="highlight">prey</span> <span class="highlight">population</span> can <span class="question2">rebound. </span>In this situation the <span class="highlight">predator</span> and <span class="highlight">prey</span> <span class="highlight">population</span> may continue in this cyclical <span class="highlight">pattern</span> for some time.</p>
+          <p>
+            <span class="highlight">Population</span> cycles are <span class="highlight">characteristic</span> of small mammals, and they sometimes <span class="highlight">appear</span> to be brought about by predators. Ecologists studying hare populations have found that the North American snow shoe hare follows a <span class="highlight"><span class="question5">roughly</span> </span>ten-year <span class="highlight">cycle</span>. Its numbers fall tenfold to thirty in a <span class="highlight">typical</span> <span class="highlight">cycle</span>, and a hundredfold change can <span class="highlight">occur</span>. Two factors <span class="highlight">appear</span> to be <span class="question6">generating </span>the cycle: food plants and predators.</p>
+          <p>The preferred foods of snowshoe hares are <span class="highlight">willow</span> and <span class="highlight">birch</span> twigs. As hare <span class="highlight">density</span> increases, the <span class="highlight">quantity</span> of these twigs decreases, forcing the hares to feed on low-quality high-fiber food. <span class="highlight">Lower</span> birth rates, low <span class="highlight">juvenile</span> survivorship, and low growth rates follow, so there is a corresponding <span class="highlight">decline</span> in hare <span class="highlight">abundance</span>. Once the hare <span class="highlight">population</span> has declined, it takes two to three year for the <span class="highlight">quantity</span> of twigs to <span class="highlight">recover</span>.</p>
+          <p>A key <span class="highlight">predator</span> of the snowshoe hare is the Canada lynx. The Canada lynx shows a ten-year <span class="highlight">cycle</span> of <span class="highlight">abundance</span> that parallels the <span class="highlight">abundance</span> <span class="highlight">cycle</span> of hares. As hare numbers fall, so do lynx numbers, as their food <span class="highlight">supply</span> <span class="highlight">depleted</span>.</p>
+          <p>What causes the predator-prey oscillations? Do increasing number of hares <span class="highlight">lead</span> to overharvesting of plants, which in turn results in reduced hare populations, or do increasing numbers of lynx <span class="highlight">lead</span> to overharvesting hares? <span class="highlight">Field</span> experiments carried out by Charles Krebs and coworkers in 1992 provide an answer. Krebs investigated <span class="highlight">experimental</span> plots in Canada's Yukon <span class="highlight">territory</span> that contained hare populations. When food was added to those plots (no food effect) and predators were excluded (no <span class="highlight">predator</span> effect) from an <span class="highlight">experimental</span> area, hare numbers increased tenfold and stayed there-the <span class="highlight">cycle</span> was lost. However, the <span class="highlight">cycle</span> was retained if either of the factors was allowed to <span class="highlight">operate</span> alone: if predators were excluded but food was not added (food effect alone), or if food was added in the presence of predators (<span class="highlight">predator</span> effect alone). Thus both factors can <span class="highlight">affect</span> the <span class="highlight">cycle</span>, which, in practice, seems to be generated by <span class="highlight"><span class="question8">conjunction</span> </span>of the two factors.</p>
+          <p>Predators are an <span class="highlight">essential</span> <span class="highlight">factor</span> in maintaining communities that are rich and <span class="highlight">diverse</span> in <span class="highlight">species</span>. Without predators, the <span class="highlight">species</span> that is the best competitor for food, <span class="highlight">shelter</span>, 
 nesting sites, and other <span class="highlight">environmental</span> resources tends to <span class="highlight">dominate</span> and <span class="highlight">exclude</span> the <span class="highlight">species</span> with which it competes. <span class="insert-area" data-answer="A"></span>This <span class="highlight">phenomenon</span> is known as "competitor exclusion". 
- <span class="insert-area" data-answer="B"></span>However, if the <span class="highlight">community</span> contains a <span class="highlight">predator</span> of the strongest competitor <span class="highlight">species</span>, then the <span class="highlight">population</span> of that competitor is controlled. <span class="insert-area" data-answer="C"></span>Thus <span class="highlight">even</span> the less <span class="highlight">competitive</span><span class="highlight">species</span> are able to <span class="highlight">survive</span>.
+ <span class="insert-area" data-answer="B"></span>However, if the <span class="highlight">community</span> contains a <span class="highlight">predator</span> of the strongest competitor <span class="highlight">species</span>, then the <span class="highlight">population</span> of that competitor is controlled. <span class="insert-area" data-answer="C"></span>Thus <span class="highlight">even</span> the less <span class="highlight">competitive</span> <span class="highlight">species</span> are able to <span class="highlight">survive</span>.
  <span class="insert-area" data-answer="D"></span>For example, sea stars <span class="highlight">prey</span> on a <span class="highlight">variety</span> of bivalve mollusks and prevent these bivalves from monopolizing habitats on the sea floor. This opens up <span class="highlight">space</span> for many other organisms. When sea stars are 
-removed, <span class="highlight">species</span><span class="highlight">diversity</span> falls <span class="highlight">sharply</span>. <span class="highlight">Therefore</span>, from the stand point of <span class="highlight">diversity</span>, it is usually a mistake to <span class="highlight">eliminate</span> a <span class="highlight">major</span><span class="highlight">predator</span> from a <span class="highlight">community</span>.</p></article></div><div id="question"><div id="question1"><p>In paragraph 1, why does the author discuss the moose and wolves on Isle Royal?</p><label class="my-label"><span>A. To provide an example of predators moving to new habitats by following migrating prey</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. To show that the interactions between predator populations and prey populations are not always might be expected</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. To suggest that prey populations are more influenced by predation than food availability and disease</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. To argue that studies of geographically isolated populations tend not to be useful to naturalists</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">B</span></p></div><div id="question2"><p>The word "<span class="highlight">rebound</span>"in the passage (paragraph 2) is closest in meaning to</p><label class="my-label"><span>A. escape</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. recover</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. survive</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. resist</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">B</span></p></div><div id="question3"><p>Paragraph 2 implies which of the following about experimental environments in which predators become extinct?</p><label class="my-label"><span>A. They may yield results that do not accurate predict changes of populations in the wild.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. In these environments, the prey species is better adapted than the predator species.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. These environments are appropriate only for studying small populations of predators and prey.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. They are unrealistic because some predators are also the prey of other predators.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">A</span></p></div><div id="question4"><p>Which of the following can be inferred from paragraphs 2 and 3 about the small mammals that experience population cycles?</p><label class="my-label"><span>A. Their population cycles are not affected by predators.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. Their predators'populations periodically disappear.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. They typically undergo ten-year cycles.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. They have access to places safe from predators.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">D</span></p></div><div id="question5"><p>The word "<span class="highlight">roughly</span>"in the passage is closest in meaning to</p><label class="my-label"><span>A. usually</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. repeating</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. approximately</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. observable</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">C</span></p></div><div id="question6"><p>The word "<span class="highlight">generating</span>"in the passage is closest in meaning to</p><label class="my-label"><span>A. producing</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. changing</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. speeding up</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. smoothing out</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">A</span></p></div><div id="question7"><p>According to paragraph 4, all of the following are true of the food of snowshoe hares EXCEPT</p><label class="my-label"><span>A. The preferred food fore hares consists of willow and birch twigs.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. High fiber food is the most nutritious for hares.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. Depletion of the supply of willow and birch twigs cause low birth and growth rates.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. The food supply takes two or three years to recover after a peak in hare population density.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">B</span></p></div><div id="question8"><p>The word "<span class="highlight">conjunction</span>"in the passage (paragraph 6) is closest in meaning to</p><label class="my-label"><span>A. determination</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. combination</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. alternation</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. transformation</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">B</span></p></div><div id="question9"><p>According to paragraph 5, which of the following statements best characterizes the abundance cycle of the Canada lynx?</p><label class="my-label"><span>A. It closely follows the cycle the snowshoe hare.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. When the numbers of lynx fall, the numbers of snowshoe hares soon decrease.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. When hare numbers decrease, lynx numbers increase.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. It is not clearly related to the availability of lynx food.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">A</span></p></div><div id="question10"><p>According to paragraph 6, which of the following was true of the hare population cycle in Krebs's experiment?</p><label class="my-label"><span>A. The effects of providing food while at the same time introducing predators cancelled each other, so there was no cycle.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. The cycle existed when either the food supply was limited or there were predators.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. There was a cycle when there were no predators and food was supplied.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. If the hares had places to hide from the lynx, the hare population increased tenfold and then remained at that level.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">B</span></p></div><div id="question11"><p>According to paragraph 7, which of the following statements correctly characterizes the effect of sea stars on the ecosystem in which they are predators of bivalves?</p><label class="my-label"><span>A. Bivalve population are kept low, allowing species that compete with bivalves to survive.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. The numbers of most species of bivalves are greatly reduced, leaving the bivalve species that is the strongest competitor to dominate among the survivors.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. Biological diversity begins to decrease because many bivalve species disappear.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. Sea stars dominate at first but then die off because of the depleted food supply.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">A</span></p></div><div id="question12"><p>According to paragraph 7, which of the following is true of the phenomenon of competitor exclusion?</p><label class="my-label"><span>A. It results in more diverse communities.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B. It requires the presence of predators.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C. It affects all competitions equally.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D. It happens only when there is a dominant competitor.</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">D</span></p></div><div id="question13"><p>As a result, there are not enough of the strong competitions to monopolize the environment's resources..</p><label class="my-label"><span>A</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>B</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>C</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><label class="my-label"><span>D</span><input name="radio" type="radio"></input><span class="my-radio"></span></label><p><span>Answer: </span><span class="my-answer">C</span></p></div><div id="question14"><p>The relationships between predators and prey are complex.</p><label class="my-label"><span>A.Studies of the interactions between wolves and moose on Isle Royale in Lake Superior reveal that wolf predation is not the primary factor controlling the moose population.</span><input name="checkbox" type="checkbox"></input><span class="my-checkbox"></span></label><label class="my-label"><span>B.Ecologists are interested in studying predator-prey population cycles because understanding how predators and prey interact will allow better wildlife management programs</span><input name="checkbox" type="checkbox"></input><span class="my-checkbox"></span></label><label class="my-label"><span>C.. Predators help maintain biological diversity by limiting populations of a dominant competitor species, thereby preventing that species from excluding others.</span><input name="checkbox" type="checkbox"></input><span class="my-checkbox"></span></label><label class="my-label"><span>D.In predator-prey population cycles, predator populations increase or decrease following similar population changes in the species they prey on.</span><input name="checkbox" type="checkbox"></input><span class="my-checkbox"></span></label><label class="my-label"><span>E.A species' population tends to rise and falls in a cycle pattern if the food supply for the population is limited, or if the population has a major predator.</span><input name="checkbox" type="checkbox"></input><span class="my-checkbox"></span></label><label class="my-label"><span>F.The removal of sea stars reduces the diversity of the community in which they are predators, and is therefore a bad idea.</span><input name="checkbox" type="checkbox"></input><span class="my-checkbox"></span></label><p><span>Answer: </span><span class="my-answer">CDE</span></p></div></div></main></body></html>
+removed, <span class="highlight">species</span> <span class="highlight">diversity</span> falls <span class="highlight">sharply</span>. <span class="highlight">Therefore</span>, from the stand point of <span class="highlight">diversity</span>, it is usually a mistake to <span class="highlight">eliminate</span> a <span class="highlight">major</span> <span class="highlight">predator</span> from a <span class="highlight">community</span>.</p>
+        </article>
+      </div>
+      <div id="question">
+        <div id="question1">
+          <p>In paragraph 1, why does the author discuss the moose and wolves on Isle Royal?</p>
+          <label class="my-label">
+            <span>A. To provide an example of predators moving to new habitats by following migrating prey</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. To show that the interactions between predator populations and prey populations are not always might be expected</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. To suggest that prey populations are more influenced by predation than food availability and disease</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. To argue that studies of geographically isolated populations tend not to be useful to naturalists</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">B</span>
+          </p>
+        </div>
+        <div id="question2">
+          <p>The word "<span class="highlight">rebound</span>"in the passage (paragraph 2) is closest in meaning to</p>
+          <label class="my-label">
+            <span>A. escape</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. recover</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. survive</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. resist</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">B</span>
+          </p>
+        </div>
+        <div id="question3">
+          <p>Paragraph 2 implies which of the following about experimental environments in which predators become extinct?</p>
+          <label class="my-label">
+            <span>A. They may yield results that do not accurate predict changes of populations in the wild.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. In these environments, the prey species is better adapted than the predator species.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. These environments are appropriate only for studying small populations of predators and prey.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. They are unrealistic because some predators are also the prey of other predators.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">A</span>
+          </p>
+        </div>
+        <div id="question4">
+          <p>Which of the following can be inferred from paragraphs 2 and 3 about the small mammals that experience population cycles?</p>
+          <label class="my-label">
+            <span>A. Their population cycles are not affected by predators.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. Their predators'populations periodically disappear.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. They typically undergo ten-year cycles.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. They have access to places safe from predators.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">D</span>
+          </p>
+        </div>
+        <div id="question5">
+          <p>The word "<span class="highlight">roughly</span>"in the passage is closest in meaning to</p>
+          <label class="my-label">
+            <span>A. usually</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. repeating</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. approximately</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. observable</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">C</span>
+          </p>
+        </div>
+        <div id="question6">
+          <p>The word "<span class="highlight">generating</span>"in the passage is closest in meaning to</p>
+          <label class="my-label">
+            <span>A. producing</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. changing</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. speeding up</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. smoothing out</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">A</span>
+          </p>
+        </div>
+        <div id="question7">
+          <p>According to paragraph 4, all of the following are true of the food of snowshoe hares EXCEPT</p>
+          <label class="my-label">
+            <span>A. The preferred food fore hares consists of willow and birch twigs.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. High fiber food is the most nutritious for hares.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. Depletion of the supply of willow and birch twigs cause low birth and growth rates.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. The food supply takes two or three years to recover after a peak in hare population density.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">B</span>
+          </p>
+        </div>
+        <div id="question8">
+          <p>The word "<span class="highlight">conjunction</span>"in the passage (paragraph 6) is closest in meaning to</p>
+          <label class="my-label">
+            <span>A. determination</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. combination</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. alternation</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. transformation</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">B</span>
+          </p>
+        </div>
+        <div id="question9">
+          <p>According to paragraph 5, which of the following statements best characterizes the abundance cycle of the Canada lynx?</p>
+          <label class="my-label">
+            <span>A. It closely follows the cycle the snowshoe hare.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. When the numbers of lynx fall, the numbers of snowshoe hares soon decrease.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. When hare numbers decrease, lynx numbers increase.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. It is not clearly related to the availability of lynx food.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">A</span>
+          </p>
+        </div>
+        <div id="question10">
+          <p>According to paragraph 6, which of the following was true of the hare population cycle in Krebs's experiment?</p>
+          <label class="my-label">
+            <span>A. The effects of providing food while at the same time introducing predators cancelled each other, so there was no cycle.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. The cycle existed when either the food supply was limited or there were predators.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. There was a cycle when there were no predators and food was supplied.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. If the hares had places to hide from the lynx, the hare population increased tenfold and then remained at that level.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">B</span>
+          </p>
+        </div>
+        <div id="question11">
+          <p>According to paragraph 7, which of the following statements correctly characterizes the effect of sea stars on the ecosystem in which they are predators of bivalves?</p>
+          <label class="my-label">
+            <span>A. Bivalve population are kept low, allowing species that compete with bivalves to survive.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. The numbers of most species of bivalves are greatly reduced, leaving the bivalve species that is the strongest competitor to dominate among the survivors.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. Biological diversity begins to decrease because many bivalve species disappear.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. Sea stars dominate at first but then die off because of the depleted food supply.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">A</span>
+          </p>
+        </div>
+        <div id="question12">
+          <p>According to paragraph 7, which of the following is true of the phenomenon of competitor exclusion?</p>
+          <label class="my-label">
+            <span>A. It results in more diverse communities.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B. It requires the presence of predators.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C. It affects all competitions equally.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D. It happens only when there is a dominant competitor.</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">D</span>
+          </p>
+        </div>
+        <div id="question13">
+          <p>As a result, there are not enough of the strong competitions to monopolize the environment's resources..</p>
+          <label class="my-label">
+            <span>A</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D</span>
+            <input name="radio" type="radio">
+            </input>
+            <span class="my-radio">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">C</span>
+          </p>
+        </div>
+        <div id="question14">
+          <p>The relationships between predators and prey are complex.</p>
+          <label class="my-label">
+            <span>A.Studies of the interactions between wolves and moose on Isle Royale in Lake Superior reveal that wolf predation is not the primary factor controlling the moose population.</span>
+            <input name="checkbox" type="checkbox">
+            </input>
+            <span class="my-checkbox">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>B.Ecologists are interested in studying predator-prey population cycles because understanding how predators and prey interact will allow better wildlife management programs</span>
+            <input name="checkbox" type="checkbox">
+            </input>
+            <span class="my-checkbox">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>C.. Predators help maintain biological diversity by limiting populations of a dominant competitor species, thereby preventing that species from excluding others.</span>
+            <input name="checkbox" type="checkbox">
+            </input>
+            <span class="my-checkbox">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>D.In predator-prey population cycles, predator populations increase or decrease following similar population changes in the species they prey on.</span>
+            <input name="checkbox" type="checkbox">
+            </input>
+            <span class="my-checkbox">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>E.A species' population tends to rise and falls in a cycle pattern if the food supply for the population is limited, or if the population has a major predator.</span>
+            <input name="checkbox" type="checkbox">
+            </input>
+            <span class="my-checkbox">
+            </span>
+          </label>
+          <label class="my-label">
+            <span>F.The removal of sea stars reduces the diversity of the community in which they are predators, and is therefore a bad idea.</span>
+            <input name="checkbox" type="checkbox">
+            </input>
+            <span class="my-checkbox">
+            </span>
+          </label>
+          <p>
+            <span>Answer: </span>
+            <span class="my-answer">CDE</span>
+          </p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+
+
+

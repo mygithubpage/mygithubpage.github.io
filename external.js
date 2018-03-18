@@ -79,9 +79,11 @@ function startTest() {
     let questionText = document.querySelector("#question p").innerText;
     let reading = document.querySelector("#reading-text article");
     let questions = document.querySelectorAll("#question div");
+    
     let audio;
     let testDiv = createNode( ["div", {id:"testDiv", class:"w3-container"}, ""], document.body);
-    let time = createNode( ["p", {id:"time", class:"w3-center w3-jumbo my-margin-small",  contenteditable:"true"}, ""], testDiv);
+    let time = createNode( ["p", {id:"time", class:"w3-center w3-jumbo my-margin-small",  contenteditable:"true"}, ""]
+    , testDiv);
     let myAnswer = new Array(questions.length);
     
     toggleHighlight(time);
@@ -106,7 +108,7 @@ function startTest() {
     }
     
     function navigateQuestion (thisElem) {
-        if(uri.indexOf("listening") > 0) { id = thisElem.previousElementSibling.id; }
+        if(uri.includes("listening")) { id = thisElem.previousElementSibling.id; }
         index = (thisElem.innerText === "Previous" ? parseInt(id.split("n")[1] - 2) : parseInt(id.split("n")[1]));
         checkAnswer(id.split("n")[1]);
 
@@ -114,7 +116,7 @@ function startTest() {
             showModal(uri);
         }
         else { 
-            if(uri.indexOf("reading") > 0) {
+            if(uri.includes("reading")) {
                 if(index >= 0) {showQuestion(index);}
             }
             else { showQuestion(index); }
@@ -122,16 +124,16 @@ function startTest() {
     }
 
     function checkAnswer(id) {
-        
-        let labels = testDiv.querySelectorAll(".my-label input");
+
         let answer = testDiv.querySelector(".my-answer").innerText;
         let flag;
+        let selection;
+        if (!myAnswer[id-1] || !myAnswer[id-1].split("->")[0]) {  } 
+        myAnswer[id-1] = "";
         if (answer.length < 2) {
-            for (let index = 0; index < labels.length; index++) {
-                const element = labels[index];
+            for (let index = 0; index < inputs.length; index++) {
+                const element = inputs[index];
                 if (!element.checked) { continue }
-                let question = questions[id-1].querySelectorAll(".my-label input")[index];
-                if(!question.checked) { question.click(); }
                 myAnswer[id-1] = String.fromCharCode(65 + index);
             } 
             if (myAnswer[id-1] !== answer) { myAnswer[id-1] += "->" + answer };
@@ -154,7 +156,7 @@ function startTest() {
                     myAnswer[id-1] += "N";
                 }                
             }
-            if(uri.indexOf("reading") > 0) {
+            if(uri.includes("reading")) {
                 let category = answer.split("@")
                 let keys = new Array(answer.length + 1)
                 answer = ""
@@ -168,12 +170,9 @@ function startTest() {
             if (myAnswer[id-1] !== answer) { myAnswer[id-1] += "->" + answer };
         }
         else {
-            for (let index = 0; index < labels.length; index++) {
-                const element = labels[index];
+            for (let index = 0; index < inputs.length; index++) {
+                const element = inputs[index];
                 if (!element.checked) { continue }
-                let question = questions[id-1].querySelectorAll(".my-label input")[index];
-                if(!question.checked) { question.click(); }
-                if(!myAnswer[id-1]) { myAnswer[id-1] = "" }
                 myAnswer[id-1] += String.fromCharCode(65 + index);
             }
             if (myAnswer[id-1] !== answer) { myAnswer[id-1] += "->" + answer };
@@ -185,12 +184,14 @@ function startTest() {
         let modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
         let header = createNode( ["div", {class:"w3-container " + color}, ""], modalContent);
         createNode( ["p", {}, "Confirm"], header);
-        for (let i = 0; i < myAnswer.length; i++) { myAnswer[i] = " " + (i + 1) + ". " + myAnswer[i] }
+        for (let i = 0; i < myAnswer.length; i++) { 
+            myAnswer[i] = !myAnswer[i].includes(i + 1 + ".") ? " " + (i + 1) + ". " + myAnswer[i] : myAnswer[i];
+        }
         let p = createNode( ["p", {class:"w3-padding "}, myAnswer], modalContent);
         let div = createNode( ["div", {class:"w3-bar"}, ""], modalContent);
         let exitBtn = createNode( ["button", {class:"w3-btn w3-margin w3-left " + color}, "Save and Exit"], div);
         let cancelBtn = createNode( ["button", {class:"w3-btn w3-margin w3-right " + color}, "Cancel"], div);
-        if (uri.indexOf("speaking") > 0) {
+        if (uri.includes("speaking")) {
             p.innerHTML = testDiv.querySelector("audio").outerHTML
         }
         exitBtn.onclick = function () {
@@ -208,15 +209,18 @@ function startTest() {
                 download.click();
             }
 
-            if (uri.indexOf("speaking") > 0) {
+            if (uri.includes("speaking")) {
                 downloadResponse(audioURL, html.replace(".html", "-record.mp3"));
             }
-            else if ( uri.indexOf("writing") > 0) {
+            else if ( uri.includes("writing")) {
                 let text = testDiv.querySelector("textarea").value.replace("\n", "</p><p>");
                 text = "<p>" + text + "</p>"
 
                 let blob = new Blob([text], {type:'text/plain'});
                 downloadResponse(window.URL.createObjectURL(blob), html);
+            }
+            else {
+                
             }
         }
     }
@@ -243,10 +247,10 @@ function startTest() {
     }
 
     function addInputColor() {
+        let inputs = testDiv.getElementsByTagName("input");
         var addColor = function(element) {    
             if (element.querySelector("input").getAttribute("type") === "radio") {
                 let name = element.querySelector("input").getAttribute("name");
-                let inputs = testDiv.getElementsByTagName("input");
                 
                 for (let index = 0; index < inputs.length; index++) {
                     const node = inputs[index].parentNode;
@@ -257,7 +261,6 @@ function startTest() {
             }
             else if (element.parentNode.tagName == "TD") {
                 let name = element.querySelector("input").getAttribute("name");
-                let inputs = testDiv.getElementsByTagName("input");
                 
                 for (let index = 0; index < inputs.length; index++) {
                     const node = inputs[index].parentNode;
@@ -292,7 +295,7 @@ function startTest() {
     let article = createNode( ["article", {class:"show-article w3-half"}, ""], testDiv);
     
 
-    if (uri.indexOf("speaking") > 0) {
+    if (uri.includes("speaking")) {
         article.classList.toggle("w3-half");
         article.classList.toggle("w3-margin-top")
         if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
@@ -331,11 +334,11 @@ function startTest() {
             });
         }
     }
-    else if (uri.indexOf("writing") > 0) {
+    else if (uri.includes("writing")) {
         function addTextarea() {
             function getAllIndexes(arr, val) {
                 var indexes = [], i = -1;
-                while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
+                while ((i = arr.includes(val, i+1)) != -1){ indexes.push(i); }
                 return indexes;
             }
 
@@ -386,7 +389,7 @@ function startTest() {
             waitTime(1800, showModal);
         }
     }
-    else if (uri.indexOf("listening") > 0) {
+    else if (uri.includes("listening")) {
         article.classList.toggle("w3-half");
         let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top " + color}, "Next"], testDiv);
         button.addEventListener("click", function(e) { navigateQuestion (e.target); });
@@ -395,7 +398,7 @@ function startTest() {
         function showQuestion(index) {
             button.classList.toggle("w3-hide");
             const element = questions[index];
-            if (element.className.indexOf("replay") >= 0) {
+            if (element.className.includes("replay")) {
                 article.innerText = "Listen again to part of the lecture. Then answer the question."
                 playAudio(html.replace(".html", "-" + element.id + "-replay.mp3"), function() { playListening(); } );
             }
@@ -433,49 +436,78 @@ function startTest() {
         
         function showQuestion(index) {
             
-
             id = questions[index].id;
+            
             section.innerHTML = questions[index].innerHTML;
-            if(questions[index].innerText.indexOf("highlighted sentence") > 0) { 
+            if(questions[index].innerText.includes("highlighted sentence")) { 
                 section.children[0].innerText = "highlighted sentence in the passage?"
             }
             section.children[0].innerHTML = parseInt(id.split("n")[1]) + ". " + section.children[0].innerHTML;
             section.lastElementChild.classList.add("w3-hide");
+
             article.innerHTML = reading.innerHTML;
             
             article.querySelectorAll(".highlight").forEach(element => {
                 element.style.color = "black";
                 element.style.fontWeight = "normal";
             });
+            insertArea = article.querySelectorAll(".insert-area");
 
+            inputs = testDiv.querySelectorAll(".my-label input");    
+            let labels = section.querySelectorAll(".my-label");
+            if(mobileFlag) {
+                section.children[0].style.margin = "8px";
+                labels.forEach(elem => { elem.style.marginBottom = "4px"; });
+            }        
             testDiv.querySelector(".show-article h4").style.color = backgroundColor;
-
-            for (let i = 0; i < questions[index].querySelectorAll(".my-label input").length; i++) {
-                const element = questions[index].querySelectorAll(".my-label input")[i];
-                if(element.checked) { section.children[i+1].click(); }
+            addInputColor();
+            
+            let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container"}, ""], section);
+            createNode( ["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
+            if (mobileFlag) {
+                time.classList.add("w3-hide")
+                let timer = createNode( ["span", {class:"w3-display-middle w3-xlarge", id}, ""], div);
+                time.addEventListener('DOMSubtreeModified', function () {
+                    timer.innerText = time.innerText;
+                    addHighlight(timer);
+                });
             }
+            createNode( ["button", {class:"w3-btn w3-right " + color}, "Next"], div);
+            div.querySelectorAll("button").forEach( elem => { elem.onclick = function(e) { navigateQuestion (e.target); }});
 
+            if(mobileFlag) {
+                section.style.borderTop= "3px solid " + backgroundColor;
+                article.style.height = screen.height - section.offsetHeight - 64 + "px";
+                article.style.overflow = "scroll";
+            }
+            else{
+                article.style.height = "680px";
+                article.style.overflow = "scroll";
+                section.classList.add("w3-padding");
+            }
+            
             let regEx = /aragraph ./
             if(regEx.exec(section.children[0].innerText)){
                 let para = regEx.exec(section.children[0].innerText)[0].slice(-1);
                 article.querySelectorAll("p")[para - 1].scrollIntoView();
             }
 
-
+            // insert Text
             if(section.children[1].innerText.length < 5) {
                 toggleHighlight(section.children[0]);
-                let insertArea = article.querySelectorAll(".insert-area");
+                
                 insertArea.forEach( elem => { 
                     if(elem.getAttribute("data-answer") == "A") { elem.scrollIntoView(); }
+                    article.scrollTop = article.scrollTop - 6
                     elem.innerText = "[" + elem.getAttribute("data-answer") + "] "
                     toggleHighlight(elem);
                 });
-                for (let index = 0; index < section.querySelectorAll(".my-label").length; index++) {
-                    const element = section.querySelectorAll(".my-label")[index];
+                for (let index = 0; index < inputs.length; index++) {
+                    const element = inputs[index];
                     element.addEventListener("click", function () { 
                         insertArea.forEach(elem => {
                             elem.innerText = "[" + elem.getAttribute("data-answer") + "] "
-                            toggleHighlight(elem);
+                            addHighlight(elem);
                         });
                         insertArea[index].innerText = section.children[0].innerText.split(".")[1] + ". "
                     })
@@ -493,34 +525,24 @@ function startTest() {
                 highlight.querySelectorAll(".highlight").forEach( elem => { elem.style.fontWeight = "bold"; })
                 highlight.scrollIntoView();
                 article.scrollTop = article.scrollTop - (screen.height - section.offsetHeight) / 2
-                if(questions[index].innerText.indexOf("highlighted sentence") > 0) {
+                if(questions[index].innerText.includes("highlighted sentence")) {
+                    article.style.height = screen.height - section.offsetHeight - 32 + "px";
+                    section.children[0].innerText = "";
                     highlight.scrollIntoView();
                 }
             }
-            addInputColor();
             
-            let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container"}, ""], section);
-            createNode( ["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
-            if (mobileFlag) {
-                time.classList.add("w3-hide")
-                let timer = createNode( ["span", {class:"w3-display-middle w3-xlarge", id}, ""], div);
-                time.addEventListener('DOMSubtreeModified', function () {
-                    timer.innerText = time.innerText;
-                    addHighlight(timer);
-                });
-            }
-            createNode( ["button", {class:"w3-btn w3-right " + color}, "Next"], div);
-            div.querySelectorAll("button").forEach( elem => { elem.onclick = function(e) { navigateQuestion (e.target); }});
-            if(mobileFlag) {
-                section.style.borderTop= "3px solid " + backgroundColor;
-                article.style.height = screen.height - section.offsetHeight - 96 + "px";
-                article.style.overflow = "scroll";
-                //section.classList.add("w3-small");
-            }
-            else{
-                article.style.height = "680px";
-                article.style.overflow = "scroll";
-                section.classList.add("w3-padding");
+            
+            
+            if(myAnswer[index] && myAnswer[index].split("->")[0]) { 
+                options = myAnswer[index].split("->")[0];
+                if(myAnswer[index].includes(".")) { options = options.split(". ")[1] }
+                if(options) {options.split("").forEach(elem => { 
+                    inputs[elem.charCodeAt(0) - 65].click(); 
+                    if(section.children[1].innerText.length < 3) { 
+                        insertArea[elem.charCodeAt(0) - 65].innerText = section.children[0].innerText.split(".")[1] + ". "
+                    }
+                });}
             }
             
         }
@@ -531,7 +553,7 @@ function startTest() {
 
 function updateNav() {
     let length;
-    let setFlag = html.indexOf("-") > 0;
+    let setFlag = html.includes("-");
     sections = ["Reading:3", "Listening:6", "Speaking:6", "Writing:2"];
     document.querySelectorAll(".w3-dropdown-content").forEach(element => {
         element.style.minWidth = "auto";
@@ -543,15 +565,15 @@ function updateNav() {
     else { 
         let number = document.querySelector("#number");
         addHighlight(number);
-        length = html.indexOf("og") >= 0 ? 3 : parseInt(number.textContent); 
+        length = html.includes("og") ? 3 : parseInt(number.textContent); 
         sets = html.split(".")[0]; 
     }
     
     if(mobileFlag) {
         for (let i = 1; i <= length; i++) {
-            let number = (i < 10  && html.indexOf("og") < 0 ? "0" + i : i);
+            let number = (i < 10  && !html.includes("og") ? "0" + i : i);
             let set = setFlag ? sets : sets + number;
-            let before = setFlag || html.indexOf("og") >= 0 ? true : false;
+            let before = setFlag || html.includes("og") ? true : false;
             div = createNode( ["div", {class:"w3-bar w3-margin-top"}, ""], main, before);
             if(!setFlag) { div.style.fontSize = "13px"; }
             if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
@@ -571,9 +593,9 @@ function updateNav() {
     }
     else {
         for (let i = 1; i <= length; i++) {
-            let number = (i < 10  && html.indexOf("og") < 0 ? "0" + i : i);
+            let number = (i < 10  && !html.includes("og") ? "0" + i : i);
             let set = setFlag ? sets : sets + number;
-            let before = setFlag && html.indexOf("og") >= 0 ? true : false;
+            let before = setFlag && html.includes("og") ? true : false;
             div = createNode( ["div", {class:"w3-bar w3-margin-top"}, ""], main, before);
             div.style.fontSize = "14px";
             if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }

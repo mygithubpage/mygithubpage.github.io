@@ -503,6 +503,14 @@ function Add-Highlight($file) {
             Set-Content $path $content.Replace("class=`"light`"", "class=`"question$num`"")
             continue
         }
+        $nodes = (Select-Xml "//span[@class='highlight']" $xml).Node
+        foreach($node in $Nodes) {
+            if($node.InnerText -eq $match) {
+                $node.SetAttribute("class", "question$num")
+                Set-Content $path $xml.OuterXml
+                continue
+            }
+        }
 
         $text = Get-Content $item.FullName -Raw
         $flag = (Get-AllIndexesOf $text $match).Length -gt 1
@@ -510,7 +518,7 @@ function Add-Highlight($file) {
             $temp = $match
             $match = $text.Substring($text.IndexOf("[") - 10, 11 + $match.Length).Replace("[", "")
         }
-        $pattern = "(</span>)?\.?\)?,?;?`"? ?`"?\(?(<span class=`"(highlight|question[0-9])`">)?"
+        $pattern = " ?(</span>)?\.?\)?,?;?`"? ?`"?\(?(<span class=`"(highlight|question[0-9])`">)?"
         $matches = Get-Match $match
         if(!$matches) {
             if($flag) {
@@ -1304,7 +1312,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 53; $n -le 53; $n++) 
+for ($n = 42; $n -le 42; $n++) 
 {
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) {"$number"} 
