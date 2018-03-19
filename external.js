@@ -393,9 +393,10 @@ function startTest() {
         article.classList.toggle("w3-half");
         let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top " + color}, "Next"], testDiv);
         button.addEventListener("click", function(e) { navigateQuestion (e.target); });
-
+        
         
         function showQuestion(index) {
+            inputs = testDiv.querySelectorAll(".my-label input");
             button.classList.toggle("w3-hide");
             const element = questions[index];
             if (element.className.includes("replay")) {
@@ -415,12 +416,9 @@ function startTest() {
                 });
             }
         }
-        button.classList.add("w3-hide");
-        playAudio(html.replace(".html", ".mp3"), function() { 
-            setTimer(180); 
-            button.classList.remove("w3-hide");
-            showQuestion(0);
-        });
+        //button.classList.add("w3-hide");
+        
+        showQuestion(0);
 
     }
     else {
@@ -463,21 +461,21 @@ function startTest() {
             addInputColor();
             
             let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container"}, ""], section);
-            createNode( ["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
+            createNode( ["button", {class:"w3-btn w3-left w3-padding-small " + color}, "Previous"], div);
             if (mobileFlag) {
                 time.classList.add("w3-hide")
-                let timer = createNode( ["span", {class:"w3-display-middle w3-xlarge", id}, ""], div);
+                let timer = createNode( ["span", {class:"w3-display-middle w3-large", id}, ""], div);
                 time.addEventListener('DOMSubtreeModified', function () {
                     timer.innerText = time.innerText;
                     addHighlight(timer);
                 });
             }
-            createNode( ["button", {class:"w3-btn w3-right " + color}, "Next"], div);
+            createNode( ["button", {class:"w3-btn w3-right w3-padding-small " + color}, "Next"], div);
             div.querySelectorAll("button").forEach( elem => { elem.onclick = function(e) { navigateQuestion (e.target); }});
 
             if(mobileFlag) {
                 section.style.borderTop= "3px solid " + backgroundColor;
-                article.style.height = screen.height - section.offsetHeight - 64 + "px";
+                article.style.height = screen.height - section.offsetHeight - 80 + "px";
                 article.style.overflow = "scroll";
             }
             else{
@@ -522,18 +520,18 @@ function startTest() {
                     element.style.color = backgroundColor;
                 }
                 toggleHighlight(highlight);
-                highlight.querySelectorAll(".highlight").forEach( elem => { elem.style.fontWeight = "bold"; })
+                highlight.querySelectorAll(".highlight").forEach( elem => { addHighlight(elem); })
                 highlight.scrollIntoView();
                 article.scrollTop = article.scrollTop - (screen.height - section.offsetHeight) / 2
                 if(questions[index].innerText.includes("highlighted sentence")) {
-                    article.style.height = screen.height - section.offsetHeight - 32 + "px";
+                    //highlight.querySelectorAll(".highlight").forEach( elem => { elem.style.fontWeight = "bold"; })
+                    article.style.height = screen.height - section.offsetHeight + "px";
                     section.children[0].innerText = "";
                     highlight.scrollIntoView();
                 }
             }
             
-            
-            
+            // click Options
             if(myAnswer[index] && myAnswer[index].split("->")[0]) { 
                 options = myAnswer[index].split("->")[0];
                 if(myAnswer[index].includes(".")) { options = options.split(". ")[1] }
@@ -579,8 +577,8 @@ function updateNav() {
             if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
             sections.forEach( element => {
                 let section = element.split(":")[0];
-                let dropdown = createNode( ["div", {class:"w3-dropdown-hover"}, ""], div);
-                let button = createNode( ["button", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, section], dropdown);
+                let dropdown = createNode( ["div", {class:"w3-dropdown-click"}, ""], div);
+                let button = createNode( ["button", {class:"w3-bar-item w3-button w3-padding-small my-color"}, section], dropdown);
                 let dropdownContent = createNode( ["div", {class:"w3-dropdown-content w3-bar-block"}, ""], dropdown);
                 for (let index = 1; index <= parseInt(element.split(":")[1]); index++) {
                     let href = set + "-" + section.toLowerCase() + index + ".html";
@@ -589,6 +587,9 @@ function updateNav() {
                 }
             });
         }
+        document.querySelectorAll(".w3-dropdown-click button").forEach(elem => { 
+            elem.onclick = function (e) {e.target.nextElementSibling.classList.toggle("w3-show")}; 
+        });
         if(setFlag) { createNode( ["button", {class:"w3-btn w3-right w3-large " + color, id:"test"}, "Test"], div); }
     }
     else {
