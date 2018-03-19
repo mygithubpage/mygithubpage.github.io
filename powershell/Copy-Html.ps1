@@ -1,4 +1,4 @@
-$files = Get-ChildItem "C:\github\toefl\og\*\*.html"
+$files = Get-ChildItem "C:\github\toefl\*\*\*.html"
 foreach($file in $files) {
     $content = (Get-Content $file.FullName).Replace("/initialize.js", "/storage/sdcard1/toefl/initialize.js")
     if(!$content) { continue }

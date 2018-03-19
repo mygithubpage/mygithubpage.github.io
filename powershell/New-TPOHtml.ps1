@@ -462,7 +462,12 @@ function New-TPOHtml () {
                         }
 
                     }
-                    Set-Content $path (Update-Content $content.Replace("class=`"light`"", "class=`"highlight question$num`""))
+                    $content = if($innerText.Contains(" ")) { 
+                        $content.Replace("class=`"light`"", "class=`"question$num`"") }
+                    else {
+                        $content.Replace("class=`"light`"", "class=`"highlight question$num`"")
+                    }
+                    Set-Content $path (Update-Content $content)
                     $flag = $true
                     break
                 }

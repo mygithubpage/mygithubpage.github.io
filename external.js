@@ -391,13 +391,13 @@ function startTest() {
     }
     else if (uri.includes("listening")) {
         article.classList.toggle("w3-half");
-        let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top " + color}, "Next"], testDiv);
+        let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top w3-hide "+color}, "Next"], testDiv);
         button.addEventListener("click", function(e) { navigateQuestion (e.target); });
         
         
         function showQuestion(index) {
             inputs = testDiv.querySelectorAll(".my-label input");
-            button.classList.toggle("w3-hide");
+            
             const element = questions[index];
             if (element.className.includes("replay")) {
                 article.innerText = "Listen again to part of the lecture. Then answer the question."
@@ -408,17 +408,18 @@ function startTest() {
             function playListening() {
                 article.id = element.id;
                 article.innerText = element.firstElementChild.innerText
+                button.classList.add("w3-hide");
                 playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
                     article.innerHTML = element.innerHTML;
                     article.lastElementChild.classList.add("w3-hide");
-                    button.classList.toggle("w3-hide");
+                    button.classList.remove("w3-hide");
                     addInputColor();
                 });
             }
         }
-        //button.classList.add("w3-hide");
-        
-        showQuestion(0);
+        playAudio(html.replace(".html", ".mp3"), function() {
+            showQuestion(0);
+        });
 
     }
     else {
@@ -525,8 +526,8 @@ function startTest() {
                 article.scrollTop = article.scrollTop - (screen.height - section.offsetHeight) / 2
                 if(questions[index].innerText.includes("highlighted sentence")) {
                     //highlight.querySelectorAll(".highlight").forEach( elem => { elem.style.fontWeight = "bold"; })
-                    article.style.height = screen.height - section.offsetHeight + "px";
                     section.children[0].innerText = "";
+                    article.style.height = Math.max(highlight.offsetHeight, screen.height - section.offsetHeight) + "px";
                     highlight.scrollIntoView();
                 }
             }
