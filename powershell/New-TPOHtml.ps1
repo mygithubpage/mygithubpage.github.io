@@ -278,7 +278,7 @@ function New-TPOHtml () {
         $head = Add-XmlNode ("head", @{}, "") $xml $html
      
         # Create title Node and Add title
-        $titles = $Path.Split('\\')[-1].TrimEnd('.html').Split('-')
+        $titles = $Path.Split('\\')[-1].TrimEnd(".html").Split('-')
         $innerText = $titles[0].ToUpper() + " " + ($titles[1].Substring(0,1).ToUpper() + 
         $titles[1].Substring(1,$titles[1].length - 1)).insert($titles[1].length - 1, " ")
         Add-XmlNode ("title", @{}, $innerText) $xml $head | Out-Null
@@ -401,6 +401,13 @@ function New-TPOHtml () {
                         Add-XmlNode ("span", @{}, $node.Node.InnerText) $xml $label | Out-Null
                         Add-XmlNode ("input", @{type = $type; name = $type}, "") $xml $label | Out-Null
                         Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                    }
+                    if($titles[1].Contains("listening") -and $false) 
+                    { 
+                        Add-XmlNode ("audio", @{src = $Path.Split('\\')[-1].Replace(".html", "-question$n.mp3")}, "") $xml $div | Out-Null
+                        if(Test-Path $replay) {
+                            Add-XmlNode ("audio", @{src = $replay.Split('\\')[-1]}, "") $xml $div | Out-Null
+                        }
                     }
                 }
     
@@ -545,6 +552,13 @@ function New-TPOHtml () {
         }
         $node = (Select-Xml "//SampleResponse" $xml).Node
         if ($node) { 
+            if($_.BaseName.Contains("S") -and $false) {
+                $text += "<audio src=`"" + (ConvertTo-HtmlName $_.Name).Replace(".xml", "-question.mp3") + "`"></audio>"
+                if($_.Name -like "*S[34]*") {
+                    $text += "<audio src=`"" + (ConvertTo-HtmlName $_.Name).Replace(".xml", "-reading.mp3") + "`"></audio>"
+                }
+            }
+            
             $text += "<section id=`"question`"><h4>Question</h4><p>" + $node.ParentNode.Stem + "</p></section>"
             $text += "<section id=`"sample-response`"><h4>Sample Response</h4><article><p>" + $node.innerText.Replace("`n", "</p><p>") + "</p></article></section>"
         }

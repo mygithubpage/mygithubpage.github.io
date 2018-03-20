@@ -54,7 +54,6 @@ function addTagClick(tags) {
     }
 }
 
-// Set Timer
 
 function startTest() {
     
@@ -87,7 +86,9 @@ function startTest() {
     }
     
     function playAudio(audio, onEnd) {
-        audio = new Audio(audio);
+        //audio = new Audio(audio);
+        audio = document.createElement('audio');
+        testDiv.appendChild(audio);
         audio.play();
         audio.addEventListener("ended", function() { onEnd(); });
     }
@@ -178,27 +179,9 @@ function startTest() {
     }
 
     function showModal() {
-        let modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
-        let modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
-        let header = createNode( ["div", {class:"w3-container " + color}, ""], modalContent);
-        createNode( ["p", {}, "Confirm"], header);
-        for (let i = 0; i < myAnswer.length; i++) { 
-            myAnswer[i] = !myAnswer[i].includes(i + 1 + ".") ? " " + (i + 1) + ". " + myAnswer[i] : myAnswer[i];
-        }
-        let p = createNode( ["p", {class:"w3-padding "}, myAnswer], modalContent);
-        let div = createNode( ["div", {class:"w3-bar"}, ""], modalContent);
-        let exitBtn = createNode( ["button", {class:"w3-btn w3-margin w3-left " + color}, "Save and Exit"], div);
-        let cancelBtn = createNode( ["button", {class:"w3-btn w3-margin w3-right " + color}, "Cancel"], div);
-        if (uri.includes("speaking")) {
-            p.innerHTML = testDiv.querySelector("audio").outerHTML
-        }
-        exitBtn.onclick = function () {
-            saveExit();
-            endTest();
-        }
-        cancelBtn.onclick = function () {modal.style.display = "none";}
-        modal.style.display = "block";
+
         function saveExit() {
+
             function downloadResponse(url, fileName) {
                 let download = document.createElement('a');
                 download.href = url;
@@ -218,9 +201,42 @@ function startTest() {
                 downloadResponse(window.URL.createObjectURL(blob), html);
             }
             else {
-                
+                let text = testDiv.querySelector("table").outerHTML;
+
+                let blob = new Blob([text], {type:'text/plain'});
+                downloadResponse(window.URL.createObjectURL(blob), html);
             }
         }
+
+        if(uri.includes("speaking") || uri.includes("writing")) {
+            modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
+            modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
+            let header = createNode( ["div", {class:"w3-container " + color}, ""], modalContent);
+        }
+        else {
+            modal = reviewQuestions();
+            modalContent = modal.children[0]
+            let tr = modalContent.querySelectorAll("tbody tr");
+            for (let i = 0; i < tr.length; i++) { 
+                tr[i].children[1].innerText = myAnswer[i]; 
+            }
+        }
+        let buttonBar = testDiv.querySelector("#buttonBar");
+        if (!buttonBar) { 
+            let buttonBar = createNode( ["div", {class:"w3-bar", id:"buttonBar"}, ""], modalContent);
+            exitBtn = createNode( ["button", {class:"w3-btn w3-margin w3-left " + color}, "Save and Exit"], buttonBar);
+            cancelBtn = createNode( ["button", {class:"w3-btn w3-margin w3-right " + color}, "Cancel"], buttonBar);
+        }
+        if (uri.includes("speaking")) {
+            p.innerHTML = testDiv.querySelector("audio").outerHTML
+        }
+        exitBtn.onclick = function () {
+            saveExit();
+            endTest();
+        }
+        cancelBtn.onclick = function () {modal.style.display = "none";}
+        modal.style.display = "block";
+        
     }
 
     function recordAudio() {
@@ -287,6 +303,48 @@ function startTest() {
         });
     }
 
+    function reviewQuestions(id) {
+        if(id) { checkAnswer(id); }
+        let modal = testDiv.querySelector(".w3-modal");
+        if (!modal) {
+            modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
+            modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
+            let table = createNode( ["table", {class:"w3-table-all w3-padding-small"}, ""], modalContent);
+            let thead = createNode( ["thead", {}, ""], table);
+            let tr = createNode( ["tr", {class: color}, ""], thead);
+            createNode( ["td", {}, "Question"], tr);
+            createNode( ["td", {}, "Option"], tr);
+
+            let tbody = createNode( ["tbody", {}, ""], table);
+            for (let i = 0; i < questions.length; i++) {
+                const element = questions[i];
+                innerText = (i + 1) + ". " + element.children[0].innerText
+                let tr = createNode( ["tr", {}, ""], tbody);
+                
+                let td = createNode( ["td", {}, (i + 1) + ". " + element.children[0].innerText], tr);
+                td.style.maxWidth = "280px";
+                td.style.overflow = "hidden";
+                td.style.textOverflow = "ellipsis";
+                td.style.whiteSpace = "nowrap";
+
+                if(myAnswer[i]===undefined) { myAnswer[i] = "" }
+                createNode( ["td", {}, myAnswer[i].split("->")[0]], tr);
+                tr.onclick = function() {
+                    showQuestion(i);
+                    modal.style.display = "none";
+                };
+            }
+        }
+        modal.style.paddingTop = "10px";
+        let tr = modal.querySelectorAll("tbody tr");
+        for (let i = 0; i < tr.length; i++) { 
+            tr[i].children[1].innerText = myAnswer[i].split("->")[0]; 
+        }
+        
+        if(id) { modal.style.display = "block"; }
+        else { return modal }
+    }
+
     document.querySelector("nav").classList.toggle("w3-hide");
     document.querySelector("main").classList.toggle("w3-hide");
     document.querySelector("footer").classList.toggle("w3-hide");
@@ -337,18 +395,19 @@ function startTest() {
         function addTextarea() {
             function getAllIndexes(arr, val) {
                 var indexes = [], i = -1;
-                while ((i = arr.includes(val, i+1)) != -1){ indexes.push(i); }
+                while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
                 return indexes;
             }
-            let div = createNode( ["div", {class:"w3-half w3-padding"}, ""], testDiv);
-            let wordCount = createNode( ["span", {class:"w3-large"}, "Word Count: 0"], div);
-            toggleHighlight(wordCount);
-            let time = createNode( ["span", {id:"time", class:"w3-large w3-right"}, ""], div);
-            toggleHighlight(time);
-            let textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
 
-            textarea.oninput = function () {
-                wordCount.innerText = "Word Count: " + (getAllIndexes(textarea.value, " ").length + 1)
+            wordCountDiv = createNode( ["div", {class:"w3-half w3-padding"}, ""], testDiv);
+            wordCount = createNode( ["span", {class:"w3-large"}, "Word Count: 0"], wordCountDiv);
+            toggleHighlight(wordCount);
+            let time = createNode( ["span", {id:"time", class:"w3-large w3-right"}, ""], wordCountDiv);
+            toggleHighlight(time);
+            textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
+
+            textarea.oninput = function (e) {
+                wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1)
             }
             textarea.style.resize = "none";
             textarea.style.border = "2px solid " + backgroundColor;
@@ -372,15 +431,17 @@ function startTest() {
             waitTime(180, endReading);
             function playListening() { playAudio(html.replace(".html", ".mp3"), waitWriting); }
             function endReading() {
-                time.classList.toggle("w3-hide");
+                wordCountDiv.classList.toggle("w3-hide");
+                textarea.classList.toggle("w3-hide");
                 article.classList.toggle("w3-hide");
                 playListening();
             }
 
             function waitWriting() {
                 textarea.disabled = false;
-                time.classList.toggle("w3-hide");
-                article.classList.toggle("w3-hide");                
+                article.classList.toggle("w3-hide");   
+                textarea.classList.toggle("w3-hide");    
+                wordCountDiv.classList.toggle("w3-hide");         
                 waitTime(1200, showModal);
             }
             
@@ -395,7 +456,7 @@ function startTest() {
         article.classList.toggle("w3-half");
         let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top w3-hide "+color}, "Next"], testDiv);
         button.addEventListener("click", function(e) { navigateQuestion (e.target); });
-        
+        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center"}, ""], testDiv);
         
         function showQuestion(index) {
             inputs = testDiv.querySelectorAll(".my-label input");
@@ -409,76 +470,30 @@ function startTest() {
 
             function playListening() {
                 article.id = element.id;
-                article.innerText = element.firstElementChild.innerText
+                article.innerText = id.split("n")[1] + ". " + element.children[0].innerText
                 button.classList.add("w3-hide");
+                time.classList.add("w3-hide");
                 playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
                     article.innerHTML = element.innerHTML;
                     article.lastElementChild.classList.add("w3-hide");
                     button.classList.remove("w3-hide");
+                    time.classList.remove("w3-hide");
                     addInputColor();
                 });
             }
         }
         playAudio(html.replace(".html", ".mp3"), function() {
+            
+            second = 180
+            setTimer(second);
+            addHighlight(time);
             showQuestion(0);
         });
 
     }
     else if (uri.includes("reading")) {
-        
-        document.querySelectorAll(".underline").forEach(element => {
-            element.style.fontWeight = "normal"
-        });
-        
-        let section = createNode( ["section", {class:"show-question w3-half"}, ""], testDiv);
-        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center w3-half"}, ""], testDiv);
-        second = 1200
-        setTimer(second);
-        showQuestion(0);
-        
+         
         function showQuestion(index) {
-
-            function reviewQuestion(id) {
-                checkAnswer(id);
-                let modal = testDiv.querySelector(".w3-modal");
-                if (!modal) {
-                    modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
-                    
-                    modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
-                    let table = createNode( ["table", {class:"w3-table-all w3-padding-small"}, ""], modalContent);
-                    let thead = createNode( ["thead", {}, ""], table);
-                    let tr = createNode( ["tr", {class: color}, ""], thead);
-                    createNode( ["td", {}, "Question"], tr);
-                    createNode( ["td", {}, "Option"], tr);
-
-                    let tbody = createNode( ["tbody", {}, ""], table);
-                    for (let i = 0; i < questions.length; i++) {
-                        const element = questions[i];
-                        innerText = (i + 1) + ". " + element.children[0].innerText
-                        let tr = createNode( ["tr", {}, ""], tbody);
-                        
-                        let td = createNode( ["td", {}, (i + 1) + ". " + element.children[0].innerText], tr);
-                        td.style.maxWidth = "280px";
-                        td.style.overflow = "hidden";
-                        td.style.textOverflow = "ellipsis";
-                        td.style.whiteSpace = "nowrap";
-
-                        if(myAnswer[i]===undefined) { myAnswer[i] = "" }
-                        createNode( ["td", {}, myAnswer[i].split("->")[0]], tr);
-                        tr.onclick = function() {
-                            showQuestion(i);
-                            modal.style.display = "none";
-                        };
-                    }
-                }
-                modal.style.paddingTop = "10px";
-                let tr = modal.querySelectorAll("tbody tr");
-                for (let i = 0; i < tr.length; i++) { 
-                    tr[i].children[1].innerText = myAnswer[i].split("->")[0]; 
-                }
-
-                modal.style.display = "block";
-            }
 
             id = questions[index].id;
             
@@ -486,7 +501,7 @@ function startTest() {
             if(questions[index].innerText.includes("highlighted sentence")) { 
                 section.children[0].innerText = "highlighted sentence in the passage?"
             }
-            section.children[0].innerHTML = parseInt(id.split("n")[1]) + ". " + section.children[0].innerHTML;
+            section.children[0].innerHTML = id.split("n")[1] + ". " + section.children[0].innerHTML;
             section.lastElementChild.classList.add("w3-hide");
 
             article.innerHTML = reading.innerHTML;
@@ -507,7 +522,7 @@ function startTest() {
             addInputColor();
             
             let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container w3-margin-bottom "}, ""], section);
-            let previouBtn = createNode( ["button", {class:"w3-btn w3-left w3-padding-small " + color}, "Previous"], div);
+            let previouBtn = createNode( ["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
             
             if (mobileFlag) {
                 time.classList.add("w3-hide");
@@ -518,14 +533,17 @@ function startTest() {
                 });
             }
             addHighlight(time);
-            let nextBtn = createNode( ["button", {class:"w3-btn w3-right w3-padding-small " + color}, "Next"], div);
+            let nextBtn = createNode( ["button", {class:"w3-btn w3-right " + color}, "Next"], div);
             let reviewBtn = testDiv.querySelector("#review");
             if (!reviewBtn) {
-                reviewBtn = createNode(["button", {class:"w3-btn w3-block w3-half " + color, id:"review"}, "Review Question"], testDiv);
+                reviewBtn = createNode(["button", {class:"w3-btn w3-block w3-half " + color, id:"review"}, "Review Questions"], testDiv);
             }
 
-            reviewBtn.addEventListener("click", function () { reviewQuestion(id.split("n")[1]); });
-            div.querySelectorAll("button").forEach( elem => { elem.onclick = function(e) { navigateQuestion (e.target); }});
+            reviewBtn.addEventListener("click", function () { reviewQuestions(id.split("n")[1]); });
+            div.querySelectorAll("button").forEach( elem => { 
+                if(mobileFlag) { elem.classList.toggle("w3-padding-small"); }
+                elem.onclick = function(e) { navigateQuestion (e.target); }
+            });
 
             if(mobileFlag) {
                 section.style.borderTop= "3px solid " + backgroundColor;
@@ -598,6 +616,13 @@ function startTest() {
             }
             
         }
+
+        let section = createNode( ["section", {class:"show-question w3-half"}, ""], testDiv);
+        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center w3-half"}, ""], testDiv);
+        second = 1200
+        setTimer(second);
+        showQuestion(0);
+
     }
 
 
@@ -660,7 +685,7 @@ function updateNav() {
                     let href = set + "-" + section.toLowerCase() + index + ".html";
                     href = !setFlag ? set + "/" + href : href;
                     type = element.split(":")[0].replace("ing", "").replace("Writ","Write");
-                    let a = createNode( ["a", {class:"w3-padding-small w3-btn " + color, href: href}, type + " " + index], div);
+                    let a = createNode( ["a", {class:"w3-padding-small w3-button " + color, href: href}, type + " " + index], div);
                 }
             });
         }
