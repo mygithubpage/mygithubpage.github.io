@@ -558,10 +558,13 @@ function startTest() {
                 });
             }
         }
-        second = 180
+        playAudio(html.replace(".html", ".mp3"), function() {
+            
+            second = 180
             setTimer(second);
             addHighlight(time);
             showQuestion(0);
+        });
 
     }
     else if (uri.includes("speaking")) {
