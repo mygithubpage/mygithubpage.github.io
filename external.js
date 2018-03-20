@@ -86,7 +86,7 @@ function startTest() {
     }
     
     function playAudio(link, onEnd) {
-        //audio = new Audio(audio);
+        //audio = new Audio(link);
         audio = document.createElement('audio');
         audio.src = link;
         testDiv.appendChild(audio);
@@ -107,6 +107,70 @@ function startTest() {
         document.querySelector("footer").classList.toggle("w3-hide")
     }
     
+    function recordAudio() {
+        let constraints = { audio: true };
+        let data = [];
+    
+        let onFulfilled = function (stream) {
+            mediaRecorder = new MediaRecorder(stream);
+            
+            mediaRecorder.onstop = function (e) {
+                var audio = document.createElement('audio');
+                audio.setAttribute('controls', 'controls');
+                testDiv.appendChild(audio);
+    
+                var blob = new Blob(data, { 'type': 'audio/mp3' });
+                audioURL = window.URL.createObjectURL(blob);
+                audio.src = audioURL;
+            }
+            mediaRecorder.ondataavailable = event => data.push(event.data);
+        }
+        navigator.mediaDevices.getUserMedia(constraints).then(onFulfilled);
+    }
+
+    function addInputColor() {
+        let inputs = testDiv.getElementsByTagName("input");
+        var addColor = function(element) {    
+            if (element.querySelector("input").getAttribute("type") === "radio") {
+                let name = element.querySelector("input").getAttribute("name");
+                
+                for (let index = 0; index < inputs.length; index++) {
+                    const node = inputs[index].parentNode;
+                    if(inputs[index].getAttribute("name") !== name ) { continue }
+                    node.querySelector(".my-radio").style.backgroundColor = "lightgray";
+                }
+                element.querySelector(".my-radio").style.backgroundColor = backgroundColor;
+            }
+            else if (element.parentNode.tagName == "TD") {
+                let name = element.querySelector("input").getAttribute("name");
+                
+                for (let index = 0; index < inputs.length; index++) {
+                    const node = inputs[index].parentNode;
+                    if(inputs[index].getAttribute("name") !== name ) { continue }
+                    node.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
+                    if(node.children[0].checked) { node.children[0].click(); }
+                }
+                element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
+                if(element.children[0].checked) {
+                    //element.children[0].click();
+                }
+                else {
+                    
+                }
+            }
+            else {
+                if (element.querySelector("input").checked) {
+                    element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
+                }
+                else { element.querySelector(".my-checkbox").style.backgroundColor = "lightgray"; }
+            }
+        }
+
+        document.querySelectorAll(".my-label").forEach(element => {
+            element.addEventListener("click", function () { addColor(element); })
+        });
+    }
+
     function navigateQuestion (thisElem) {
         if(uri.includes("listening")) { id = thisElem.previousElementSibling.id; }
         index = (thisElem.innerText === "Previous" ? parseInt(id.split("n")[1] - 2) : parseInt(id.split("n")[1]));
@@ -241,70 +305,6 @@ function startTest() {
         
     }
 
-    function recordAudio() {
-        let constraints = { audio: true };
-        let data = [];
-    
-        let onFulfilled = function (stream) {
-            mediaRecorder = new MediaRecorder(stream);
-            
-            mediaRecorder.onstop = function (e) {
-                var audio = document.createElement('audio');
-                audio.setAttribute('controls', 'controls');
-                testDiv.appendChild(audio);
-    
-                var blob = new Blob(data, { 'type': 'audio/mp3' });
-                audioURL = window.URL.createObjectURL(blob);
-                audio.src = audioURL;
-            }
-            mediaRecorder.ondataavailable = event => data.push(event.data);
-        }
-        navigator.mediaDevices.getUserMedia(constraints).then(onFulfilled);
-    }
-
-    function addInputColor() {
-        let inputs = testDiv.getElementsByTagName("input");
-        var addColor = function(element) {    
-            if (element.querySelector("input").getAttribute("type") === "radio") {
-                let name = element.querySelector("input").getAttribute("name");
-                
-                for (let index = 0; index < inputs.length; index++) {
-                    const node = inputs[index].parentNode;
-                    if(inputs[index].getAttribute("name") !== name ) { continue }
-                    node.querySelector(".my-radio").style.backgroundColor = "lightgray";
-                }
-                element.querySelector(".my-radio").style.backgroundColor = backgroundColor;
-            }
-            else if (element.parentNode.tagName == "TD") {
-                let name = element.querySelector("input").getAttribute("name");
-                
-                for (let index = 0; index < inputs.length; index++) {
-                    const node = inputs[index].parentNode;
-                    if(inputs[index].getAttribute("name") !== name ) { continue }
-                    node.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
-                    if(node.children[0].checked) { node.children[0].click(); }
-                }
-                element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
-                if(element.children[0].checked) {
-                    //element.children[0].click();
-                }
-                else {
-                    
-                }
-            }
-            else {
-                if (element.querySelector("input").checked) {
-                    element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
-                }
-                else { element.querySelector(".my-checkbox").style.backgroundColor = "lightgray"; }
-            }
-        }
-
-        document.querySelectorAll(".my-label").forEach(element => {
-            element.addEventListener("click", function () { addColor(element); })
-        });
-    }
-
     function reviewQuestions(id) {
         if(id) { checkAnswer(id); }
         let modal = testDiv.querySelector(".w3-modal");
@@ -347,155 +347,54 @@ function startTest() {
         else { return modal }
     }
 
-    document.querySelector("nav").classList.toggle("w3-hide");
-    document.querySelector("main").classList.toggle("w3-hide");
-    document.querySelector("footer").classList.toggle("w3-hide");
-    let article = createNode( ["article", {class:"show-article w3-half"}, ""], testDiv);
-    
-
-    if (uri.includes("speaking")) {
-        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center"}, ""], testDiv);
-        addHighlight(time);
-        article.classList.toggle("w3-half");
-        article.classList.toggle("w3-margin-top")
-        if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
-        recordAudio();
-        
-        playListening = function () { 
-            article.classList.toggle("w3-hide");
-            time.classList.toggle("w3-hide");
-            playAudio(html.replace(".html", ".mp3"), playQuestion); 
-        }
-        playQuestion = function () {  
-            article.innerText = questionText
-            article.classList.remove("w3-hide");
-            playAudio(html.replace(".html", "-question.mp3"), startPreparation); 
-        }
-        startPreparation = function () { playAudio("../../speaking_beep_prepare.mp3", waitPreparation) }
-        waitPreparation = function () { 
-            time.classList.remove("w3-hide");
-            waitTime(seconds[1][Math.ceil(num / 2) - 1], startSpeak); }
-        startSpeak = function () { playAudio("../../speaking_beep_answer.mp3", waitSpeak); }
-        waitSpeak = function () { 
-            mediaRecorder.start();
-            waitTime(seconds[0][Math.ceil(num / 2) - 1], function() { mediaRecorder.stop(); waitTime(1,showModal);}) 
+    function addTextarea(note) {
+        function getAllIndexes(arr, val) {
+            var indexes = [], i = -1;
+            while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
+            return indexes;
         }
 
-        if (num < 3) {
-            playQuestion();    
-        }
-        else if (num > 4) {
-            playListening();
-        }
-        else {
-            playAudio(html.replace(".html", "-reading.mp3"), function () { 
-                article.innerHTML = reading.innerHTML
-                waitTime(45, playListening); 
-            });
-        }
-    }
-    else if (uri.includes("writing")) {
-        
-        function addTextarea() {
-            function getAllIndexes(arr, val) {
-                var indexes = [], i = -1;
-                while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
-                return indexes;
-            }
-
+        if(!note) {
             wordCountDiv = createNode( ["div", {class:"w3-half w3-padding"}, ""], testDiv);
             wordCount = createNode( ["span", {class:"w3-large"}, "Word Count: 0"], wordCountDiv);
             toggleHighlight(wordCount);
             let time = createNode( ["span", {id:"time", class:"w3-large w3-right"}, ""], wordCountDiv);
             toggleHighlight(time);
             textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
+        }
+        else {
 
+            textarea = createNode( ["textarea", {}, ""], testDiv);
+        }
+
+        if(!note) {
             textarea.oninput = function (e) {
                 wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1)
             }
-            textarea.style.resize = "none";
-            textarea.style.border = "2px solid " + backgroundColor;
-            textarea.style.height = screen.height - textarea.offsetTop - 192 + "px";
-            textarea.style.height = "-webkit-fill-available";
-
-            if(mobileFlag) {
-                textarea.style.width = "-webkit-fill-available";
-                textarea.style.width = "-moz-available";
-            }
-            else {
-                article.classList.add("w3-padding");
-                textarea.style.width = "none";
-            }
-            return textarea;
         }
-        if (num == 1) {
-            article.innerText = reading.innerText
-            textarea = addTextarea();
-            textarea.disabled = true;
-            waitTime(180, endReading);
-            function playListening() { playAudio(html.replace(".html", ".mp3"), waitWriting); }
-            function endReading() {
-                wordCountDiv.classList.toggle("w3-hide");
-                textarea.classList.toggle("w3-hide");
-                article.classList.toggle("w3-hide");
-                playListening();
-            }
 
-            function waitWriting() {
-                textarea.disabled = false;
-                article.classList.toggle("w3-hide");   
-                textarea.classList.toggle("w3-hide");    
-                wordCountDiv.classList.toggle("w3-hide");         
-                waitTime(1200, showModal);
-            }
-            
+        textarea.style.resize = "none";
+        textarea.style.border = "2px solid " + backgroundColor;
+        textarea.style.height = screen.height - textarea.offsetTop - 192 + "px";
+        textarea.style.height = "-webkit-fill-available";
+
+        if(mobileFlag) {
+            textarea.style.width = "-webkit-fill-available";
+            textarea.style.width = "-moz-available";
         }
         else {
-            article.innerText = questionText
-            addTextarea();
-            waitTime(1800, showModal);
+            article.classList.add("w3-padding");
+            textarea.style.width = note ? "-webkit-fill-available" : "none";
         }
+        return textarea;
     }
-    else if (uri.includes("listening")) {
-        article.classList.toggle("w3-half");
-        let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top w3-hide "+color}, "Next"], testDiv);
-        button.addEventListener("click", function(e) { navigateQuestion (e.target); });
-        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center"}, ""], testDiv);
-        
-        function showQuestion(index) {
-            inputs = testDiv.querySelectorAll(".my-label input");
-            
-            const element = questions[index];
-            if (element.className.includes("replay")) {
-                article.innerText = "Listen again to part of the lecture. Then answer the question."
-                playAudio(html.replace(".html", "-" + element.id + "-replay.mp3"), function() { playListening(); } );
-            }
-            else { playListening(); }
-
-            function playListening() {
-                article.id = element.id;
-                article.innerText = article.id.split("n")[1] + ". " + element.children[0].innerText
-                button.classList.add("w3-hide");
-                time.classList.add("w3-hide");
-                playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
-                    article.innerHTML = element.innerHTML;
-                    article.lastElementChild.classList.add("w3-hide");
-                    button.classList.remove("w3-hide");
-                    time.classList.remove("w3-hide");
-                    addInputColor();
-                });
-            }
-        }
-        playAudio(html.replace(".html", ".mp3"), function() {
-            
-            second = 180
-            setTimer(second);
-            addHighlight(time);
-            showQuestion(0);
-        });
-
-    }
-    else if (uri.includes("reading")) {
+    
+    document.querySelector("nav").classList.toggle("w3-hide");
+    document.querySelector("main").classList.toggle("w3-hide");
+    document.querySelector("footer").classList.toggle("w3-hide");
+    let article = createNode( ["article", {class:"show-article w3-half"}, ""], testDiv);
+    
+    if (uri.includes("reading")) {
          
         function showQuestion(index) {
 
@@ -628,7 +527,114 @@ function startTest() {
         showQuestion(0);
 
     }
+    else if (uri.includes("listening")) {
+        article.classList.toggle("w3-half");
+        let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top w3-hide "+color}, "Next"], testDiv);
+        button.addEventListener("click", function(e) { navigateQuestion (e.target); });
+        time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
+        addTextarea("note");
 
+        function showQuestion(index) {
+            inputs = testDiv.querySelectorAll(".my-label input");
+            
+            const element = questions[index];
+            if (element.className.includes("replay")) {
+                article.innerText = "Listen again to part of the lecture. Then answer the question."
+                playAudio(html.replace(".html", "-" + element.id + "-replay.mp3"), function() { playListening(); } );
+            }
+            else { playListening(); }
+
+            function playListening() {
+                article.id = element.id;
+                article.innerText = article.id.split("n")[1] + ". " + element.children[0].innerText
+                button.classList.add("w3-hide");
+                time.classList.add("w3-hide");
+                playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
+                    article.innerHTML = element.innerHTML;
+                    article.lastElementChild.classList.add("w3-hide");
+                    button.classList.remove("w3-hide");
+                    time.classList.remove("w3-hide");
+                    addInputColor();
+                });
+            }
+        }
+        second = 180
+            setTimer(second);
+            addHighlight(time);
+            showQuestion(0);
+
+    }
+    else if (uri.includes("speaking")) {
+        time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
+        addTextarea(true);
+        addHighlight(time);
+        article.classList.toggle("w3-half");
+        article.classList.toggle("w3-margin-top")
+        if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
+        recordAudio();
+        
+        playListening = function () { 
+            article.classList.toggle("w3-hide");
+            time.classList.toggle("w3-hide");
+            playAudio(html.replace(".html", ".mp3"), playQuestion); 
+        }
+        playQuestion = function () {  
+            article.innerText = questionText
+            article.classList.remove("w3-hide");
+            playAudio(html.replace(".html", "-question.mp3"), startPreparation); 
+        }
+        startPreparation = function () { playAudio("../../speaking_beep_prepare.mp3", waitPreparation) }
+        waitPreparation = function () { 
+            time.classList.remove("w3-hide");
+            waitTime(seconds[1][Math.ceil(num / 2) - 1], startSpeak); }
+        startSpeak = function () { playAudio("../../speaking_beep_answer.mp3", waitSpeak); }
+        waitSpeak = function () { 
+            mediaRecorder.start();
+            waitTime(seconds[0][Math.ceil(num / 2) - 1], function() { 
+                mediaRecorder.stop(); 
+                waitTime(1,showModal);
+            }) 
+        }
+
+        if (num < 3) {
+            playQuestion();    
+        }
+        else if (num > 4) {
+            playListening();
+        }
+        else {
+            playAudio(html.replace(".html", "-reading.mp3"), function () { 
+                article.innerHTML = reading.innerHTML
+                waitTime(45, playListening); 
+            });
+        }
+    }
+    else if (uri.includes("writing")) {
+        
+        if (num == 1) {
+            article.innerText = reading.innerText
+            addTextarea();
+            waitTime(180, endReading);
+            function playListening() { playAudio(html.replace(".html", ".mp3"), waitWriting); }
+            function endReading() {
+                wordCountDiv.classList.toggle("w3-hide");
+                article.classList.toggle("w3-hide");
+                playListening();
+            }
+
+            function waitWriting() {
+                article.classList.toggle("w3-hide");      
+                wordCountDiv.classList.toggle("w3-hide");         
+                waitTime(1200, showModal);
+            }
+            
+        }
+        else {
+            article.innerText = questionText
+            addTextarea();
+            waitTime(1800, showModal);
+        }
+    }
 
 }
 
