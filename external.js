@@ -85,9 +85,10 @@ function startTest() {
         startTimer();
     }
     
-    function playAudio(audio, onEnd) {
+    function playAudio(link, onEnd) {
         //audio = new Audio(audio);
         audio = document.createElement('audio');
+        audio.src = link;
         testDiv.appendChild(audio);
         audio.play();
         audio.addEventListener("ended", function() { onEnd(); });
@@ -212,6 +213,7 @@ function startTest() {
             modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
             modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
             let header = createNode( ["div", {class:"w3-container " + color}, ""], modalContent);
+            p = createNode( ["p", {}, ""], modalContent);
         }
         else {
             modal = reviewQuestions();
@@ -352,6 +354,8 @@ function startTest() {
     
 
     if (uri.includes("speaking")) {
+        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center"}, ""], testDiv);
+        addHighlight(time);
         article.classList.toggle("w3-half");
         article.classList.toggle("w3-margin-top")
         if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
@@ -470,7 +474,7 @@ function startTest() {
 
             function playListening() {
                 article.id = element.id;
-                article.innerText = id.split("n")[1] + ". " + element.children[0].innerText
+                article.innerText = article.id.split("n")[1] + ". " + element.children[0].innerText
                 button.classList.add("w3-hide");
                 time.classList.add("w3-hide");
                 playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
@@ -759,7 +763,7 @@ function initialize() {
     if(testBtn) { if(mobileFlag) { testBtn.className += " w3-block w3-margin"; } }
 
     let audio = document.querySelector("audio");
-    if(audio) {
+    if(audio && false) {
         n = 0;
         let listening = document.querySelector("#listening-text article");
         listening.style.overflow = "scroll";
