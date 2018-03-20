@@ -55,22 +55,6 @@ function addTagClick(tags) {
 }
 
 // Set Timer
-function setTimer(second) {
-    var time = document.querySelector("#time");
-    var timer = second, min = 0, sec = 0;
-
-    function startTimer(params) {
-        min = parseInt(timer / 60);
-        sec = parseInt(timer % 60);
-
-        if (timer < 0) { return }
-        let secStr = sec < 10 ? "0" + sec.toString() : sec.toString()
-        time.innerHTML = min.toString() + ":" + secStr;
-        timer--;
-        setTimeout(function () { startTimer(); }, 1000);
-    }
-    startTimer();
-}
 
 function startTest() {
     
@@ -82,11 +66,25 @@ function startTest() {
     
     let audio;
     let testDiv = createNode( ["div", {id:"testDiv", class:"w3-container"}, ""], document.body);
-    let time = createNode( ["p", {id:"time", class:"w3-center w3-jumbo my-margin-small",  contenteditable:"true"}, ""]
-    , testDiv);
     let myAnswer = new Array(questions.length);
     
-    toggleHighlight(time);
+
+    function setTimer(second) {
+        var time = document.querySelector("#time");
+        var timer = second, min = 0, sec = 0;
+    
+        function startTimer(params) {
+            min = parseInt(timer / 60);
+            sec = parseInt(timer % 60);
+    
+            if (timer < 0) { return }
+            let secStr = sec < 10 ? "0" + sec.toString() : sec.toString()
+            time.innerHTML = min.toString() + ":" + secStr;
+            timer--;
+            setTimeout(function () { startTimer(); }, 1000);
+        }
+        startTimer();
+    }
     
     function playAudio(audio, onEnd) {
         audio = new Audio(audio);
@@ -199,7 +197,7 @@ function startTest() {
             endTest();
         }
         cancelBtn.onclick = function () {modal.style.display = "none";}
-        modal.style.display = "block"
+        modal.style.display = "block";
         function saveExit() {
             function downloadResponse(url, fileName) {
                 let download = document.createElement('a');
@@ -335,17 +333,19 @@ function startTest() {
         }
     }
     else if (uri.includes("writing")) {
+        
         function addTextarea() {
             function getAllIndexes(arr, val) {
                 var indexes = [], i = -1;
                 while ((i = arr.includes(val, i+1)) != -1){ indexes.push(i); }
                 return indexes;
             }
-
-            let wordCount = createNode( ["span", {class:"w3-padding w3-half"}, "Word Count: 0"], testDiv);
+            let div = createNode( ["div", {class:"w3-half w3-padding"}, ""], testDiv);
+            let wordCount = createNode( ["span", {class:"w3-large"}, "Word Count: 0"], div);
             toggleHighlight(wordCount);
-
-            let textarea = createNode( ["textarea", {class:"w3-margin-top w3-half"}, ""], testDiv);
+            let time = createNode( ["span", {id:"time", class:"w3-large w3-right"}, ""], div);
+            toggleHighlight(time);
+            let textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
 
             textarea.oninput = function () {
                 wordCount.innerText = "Word Count: " + (getAllIndexes(textarea.value, " ").length + 1)
@@ -363,10 +363,12 @@ function startTest() {
                 article.classList.add("w3-padding");
                 textarea.style.width = "none";
             }
+            return textarea;
         }
         if (num == 1) {
             article.innerText = reading.innerText
-
+            textarea = addTextarea();
+            textarea.disabled = true;
             waitTime(180, endReading);
             function playListening() { playAudio(html.replace(".html", ".mp3"), waitWriting); }
             function endReading() {
@@ -376,9 +378,9 @@ function startTest() {
             }
 
             function waitWriting() {
+                textarea.disabled = false;
                 time.classList.toggle("w3-hide");
-                article.classList.toggle("w3-hide");
-                addTextarea();
+                article.classList.toggle("w3-hide");                
                 waitTime(1200, showModal);
             }
             
@@ -422,19 +424,62 @@ function startTest() {
         });
 
     }
-    else {
-        second = 1200
-        setTimer(second);
+    else if (uri.includes("reading")) {
+        
         document.querySelectorAll(".underline").forEach(element => {
             element.style.fontWeight = "normal"
         });
         
         let section = createNode( ["section", {class:"show-question w3-half"}, ""], testDiv);
-
+        time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center w3-half"}, ""], testDiv);
+        second = 1200
+        setTimer(second);
         showQuestion(0);
         
         function showQuestion(index) {
-            
+
+            function reviewQuestion(id) {
+                checkAnswer(id);
+                let modal = testDiv.querySelector(".w3-modal");
+                if (!modal) {
+                    modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
+                    
+                    modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
+                    let table = createNode( ["table", {class:"w3-table-all w3-padding-small"}, ""], modalContent);
+                    let thead = createNode( ["thead", {}, ""], table);
+                    let tr = createNode( ["tr", {class: color}, ""], thead);
+                    createNode( ["td", {}, "Question"], tr);
+                    createNode( ["td", {}, "Option"], tr);
+
+                    let tbody = createNode( ["tbody", {}, ""], table);
+                    for (let i = 0; i < questions.length; i++) {
+                        const element = questions[i];
+                        innerText = (i + 1) + ". " + element.children[0].innerText
+                        let tr = createNode( ["tr", {}, ""], tbody);
+                        
+                        let td = createNode( ["td", {}, (i + 1) + ". " + element.children[0].innerText], tr);
+                        td.style.maxWidth = "280px";
+                        td.style.overflow = "hidden";
+                        td.style.textOverflow = "ellipsis";
+                        td.style.whiteSpace = "nowrap";
+
+                        if(myAnswer[i]===undefined) { myAnswer[i] = "" }
+                        createNode( ["td", {}, myAnswer[i].split("->")[0]], tr);
+                        tr.onclick = function() {
+                            showQuestion(i);
+                            modal.style.display = "none";
+                        };
+                    }
+                }
+                modal.style.paddingTop = "10px";
+                let tr = modal.querySelectorAll("tbody tr");
+                for (let i = 0; i < tr.length; i++) { 
+                    tr[i].children[1].innerText = myAnswer[i].split("->")[0]; 
+                }
+
+                modal.style.display = "block";
+            }
+
             id = questions[index].id;
             
             section.innerHTML = questions[index].innerHTML;
@@ -461,17 +506,25 @@ function startTest() {
             testDiv.querySelector(".show-article h4").style.color = backgroundColor;
             addInputColor();
             
-            let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container"}, ""], section);
-            createNode( ["button", {class:"w3-btn w3-left w3-padding-small " + color}, "Previous"], div);
+            let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container w3-margin-bottom "}, ""], section);
+            let previouBtn = createNode( ["button", {class:"w3-btn w3-left w3-padding-small " + color}, "Previous"], div);
+            
             if (mobileFlag) {
-                time.classList.add("w3-hide")
-                let timer = createNode( ["span", {class:"w3-display-middle w3-large", id}, ""], div);
+                time.classList.add("w3-hide");
+                timer = createNode( ["span", {class:"w3-display-middle w3-xxlarge"}, ""], div);
                 time.addEventListener('DOMSubtreeModified', function () {
                     timer.innerText = time.innerText;
                     addHighlight(timer);
                 });
             }
-            createNode( ["button", {class:"w3-btn w3-right w3-padding-small " + color}, "Next"], div);
+            addHighlight(time);
+            let nextBtn = createNode( ["button", {class:"w3-btn w3-right w3-padding-small " + color}, "Next"], div);
+            let reviewBtn = testDiv.querySelector("#review");
+            if (!reviewBtn) {
+                reviewBtn = createNode(["button", {class:"w3-btn w3-block w3-half " + color, id:"review"}, "Review Question"], testDiv);
+            }
+
+            reviewBtn.addEventListener("click", function () { reviewQuestion(id.split("n")[1]); });
             div.querySelectorAll("button").forEach( elem => { elem.onclick = function(e) { navigateQuestion (e.target); }});
 
             if(mobileFlag) {
@@ -606,8 +659,8 @@ function updateNav() {
                 for (let index = 1; index <= parseInt(element.split(":")[1]); index++) {
                     let href = set + "-" + section.toLowerCase() + index + ".html";
                     href = !setFlag ? set + "/" + href : href;
-                    section = element.split(":")[0].replace("ing", "").replace("Writ","Write");
-                    let a = createNode( ["a", {class:"w3-padding-small w3-btn " + color, href: href}, section + " " + index], div);
+                    type = element.split(":")[0].replace("ing", "").replace("Writ","Write");
+                    let a = createNode( ["a", {class:"w3-padding-small w3-btn " + color, href: href}, type + " " + index], div);
                 }
             });
         }
