@@ -589,6 +589,7 @@ function startTest() {
                 });
             }
         }
+        
         playAudio(html.replace(".html", ".mp3"), function() {
             second = 180
             setTimer(second);
