@@ -86,12 +86,33 @@ function startTest() {
     }
     
     function playAudio(link, onEnd) {
-        //audio = new Audio(link);
-        audio = document.createElement('audio');
-        audio.src = link;
-        testDiv.appendChild(audio);
-        audio.play();
-        audio.addEventListener("ended", function() { onEnd(); });
+        audio = new Audio(link);
+        //audio = document.createElement('audio');
+        //audio.src = link;
+        //testDiv.appendChild(audio);
+        let promise = audio.play();
+        
+        if (promise !== undefined) {
+            promise.catch(error => {
+                // Auto-play was prevented
+                // Show a UI element to let the user manually start playback
+                article.classList.toggle("w3-hide");
+                let button = testDiv.querySelector("#playAudio");
+                if(!button) {
+                    button = createNode(["button", {class:"w3-btn w3-block w3-section w3-hide "+color, id:"playAudio"}, "Play Audio"], testDiv, true);
+                }
+                button.classList.toggle("w3-hide");
+                button.onclick = function() { 
+                    audio.play();
+                    article.classList.toggle("w3-hide");
+                    button.classList.toggle("w3-hide");
+                    audio.addEventListener("ended", function() { onEnd(); });
+                };
+            }).then(() => {
+                // Auto-play started
+                audio.addEventListener("ended", function() { onEnd(); });
+            });
+        }
     }
     
     function waitTime(second, onTimeout) {
@@ -142,21 +163,22 @@ function startTest() {
                 element.querySelector(".my-radio").style.backgroundColor = backgroundColor;
             }
             else if (element.parentNode.tagName == "TD") {
+                if(element.children[0].checked) { 
+                    element.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
+                    element.children[0].checked = false;
+                    return
+                }
+                    //element.children[0].click(); return}
                 let name = element.querySelector("input").getAttribute("name");
                 
                 for (let index = 0; index < inputs.length; index++) {
                     const node = inputs[index].parentNode;
                     if(inputs[index].getAttribute("name") !== name ) { continue }
                     node.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
-                    if(node.children[0].checked) { node.children[0].click(); }
+                    if(node.children[0].checked) { node.children[0].checked = false; }
                 }
                 element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
-                if(element.children[0].checked) {
-                    //element.children[0].click();
-                }
-                else {
-                    
-                }
+                element.children[0].checked = true;
             }
             else {
                 if (element.querySelector("input").checked) {
@@ -166,7 +188,7 @@ function startTest() {
             }
         }
 
-        document.querySelectorAll(".my-label").forEach(element => {
+        testDiv.querySelectorAll(".my-label").forEach(element => {
             element.addEventListener("click", function () { addColor(element); })
         });
     }
@@ -211,7 +233,6 @@ function startTest() {
                 for (let j = 0; j < inputs.length; j++) {
                     const element = inputs[j];
                     if (!element.checked) { continue }
-                    if(!myAnswer[id-1]) { myAnswer[id-1] = "" }
                     myAnswer[id-1] += String.fromCharCode(65 + j);
                     flag = true;
                 }
@@ -320,10 +341,10 @@ function startTest() {
             let tbody = createNode( ["tbody", {}, ""], table);
             for (let i = 0; i < questions.length; i++) {
                 const element = questions[i];
-                innerText = (i + 1) + ". " + element.children[0].innerText
+                innerText = element.children[0].innerText
                 let tr = createNode( ["tr", {}, ""], tbody);
                 
-                let td = createNode( ["td", {}, (i + 1) + ". " + element.children[0].innerText], tr);
+                let td = createNode( ["td", {}, element.children[0].innerText], tr);
                 td.style.maxWidth = "280px";
                 td.style.overflow = "hidden";
                 td.style.textOverflow = "ellipsis";
@@ -363,8 +384,8 @@ function startTest() {
             textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
         }
         else {
-
-            textarea = createNode( ["textarea", {}, ""], testDiv);
+            
+            textarea = createNode( ["textarea", {class:"w3-section", autofocus:"autofocus"}, ""], testDiv);
         }
 
         if(!note) {
@@ -401,10 +422,6 @@ function startTest() {
             id = questions[index].id;
             
             section.innerHTML = questions[index].innerHTML;
-            if(questions[index].innerText.includes("highlighted sentence")) { 
-                section.children[0].innerText = "highlighted sentence in the passage?"
-            }
-            section.children[0].innerHTML = id.split("n")[1] + ". " + section.children[0].innerHTML;
             section.lastElementChild.classList.add("w3-hide");
 
             article.innerHTML = reading.innerHTML;
@@ -424,7 +441,7 @@ function startTest() {
             testDiv.querySelector(".show-article h4").style.color = backgroundColor;
             addInputColor();
             
-            let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container w3-margin-bottom "}, ""], section);
+            let div = createNode( ["div", {class:"w3-bar my-margin-top-small w3-display-container w3-section "}, ""], section);
             let previouBtn = createNode( ["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
             
             if (mobileFlag) {
@@ -510,14 +527,26 @@ function startTest() {
             if(myAnswer[index] && myAnswer[index].split("->")[0]) { 
                 options = myAnswer[index].split("->")[0];
                 if(myAnswer[index].includes(".")) { options = options.split(". ")[1] }
-                if(options) {options.split("").forEach(elem => { 
-                    inputs[elem.charCodeAt(0) - 65].click(); 
-                    if(section.children[1].innerText.length < 3) { 
-                        insertArea[elem.charCodeAt(0) - 65].innerText = section.children[0].innerText.split(".")[1] + ". "
+                if(!options) { return }
+                
+                for (let i = 0; i < options.split("").length; i++) {
+                    const element = options.split("")[i];
+                    if(options.length > 4) {
+                        option = element.charCodeAt(0) - 65;
+                        if(option !== 13) { 
+                            let elem = inputs[i * 2 + option].parentNode;
+                            elem.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
+                            elem.children[0].checked = true;
+                        }
+                    } 
+                    else {
+                        inputs[element.charCodeAt(0) - 65].click(); 
+                        if(section.children[1].innerText.length < 3) { 
+                            insertArea[element.charCodeAt(0) - 65].innerText = section.children[0].innerText.split(".")[1] + ". "
+                        }
                     }
-                });}
+                }
             }
-            
         }
 
         let section = createNode( ["section", {class:"show-question w3-half"}, ""], testDiv);
@@ -529,7 +558,7 @@ function startTest() {
     }
     else if (uri.includes("listening")) {
         article.classList.toggle("w3-half");
-        let button = createNode( ["button", {class:"w3-btn w3-block w3-margin-top w3-hide "+color}, "Next"], testDiv);
+        let button = createNode( ["button", {class:"w3-btn w3-block w3-section w3-hide "+color}, "Next"], testDiv);
         button.addEventListener("click", function(e) { navigateQuestion (e.target); });
         time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
         addTextarea("note");
@@ -546,7 +575,7 @@ function startTest() {
 
             function playListening() {
                 article.id = element.id;
-                article.innerText = article.id.split("n")[1] + ". " + element.children[0].innerText
+                article.innerHTML = element.children[0].outerHTML
                 button.classList.add("w3-hide");
                 time.classList.add("w3-hide");
                 playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
@@ -559,7 +588,6 @@ function startTest() {
             }
         }
         playAudio(html.replace(".html", ".mp3"), function() {
-            
             second = 180
             setTimer(second);
             addHighlight(time);
@@ -568,14 +596,15 @@ function startTest() {
 
     }
     else if (uri.includes("speaking")) {
-        time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
-        addTextarea(true);
-        addHighlight(time);
-        article.classList.toggle("w3-half");
-        article.classList.toggle("w3-margin-top")
         if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
         recordAudio();
-        
+
+        time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
+        addHighlight(time);
+        article.classList.toggle("w3-half");
+        article.classList.toggle("w3-section")
+        addTextarea(true);
+
         playListening = function () { 
             article.classList.toggle("w3-hide");
             time.classList.toggle("w3-hide");
@@ -664,7 +693,7 @@ function updateNav() {
             let number = (i < 10  && !html.includes("og") ? "0" + i : i);
             let set = setFlag ? sets : sets + number;
             let before = setFlag || html.includes("og") ? true : false;
-            div = createNode( ["div", {class:"w3-bar w3-margin-top"}, ""], main, before);
+            div = createNode( ["div", {class:"w3-bar w3-section"}, ""], main, before);
             if(!setFlag) { div.style.fontSize = "13px"; }
             if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
             sections.forEach( element => {
@@ -689,7 +718,7 @@ function updateNav() {
             let number = (i < 10  && !html.includes("og") ? "0" + i : i);
             let set = setFlag ? sets : sets + number;
             let before = setFlag && html.includes("og") ? true : false;
-            div = createNode( ["div", {class:"w3-bar w3-margin-top"}, ""], main, before);
+            div = createNode( ["div", {class:"w3-bar w3-section"}, ""], main, before);
             div.style.fontSize = "14px";
             if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
             sections.forEach( element => {
@@ -760,6 +789,13 @@ function initialize() {
         element.classList.remove("my-color");
         element.classList.add(color);
     });
+    let questions = document.querySelector("#question").children;
+    if(questions.length > 4) {
+        for (let i = 0; i < questions.length; i++) {
+            const element = questions[i];
+            element.children[0].innerText = element.id.split("n")[1] + ". " + element.children[0].innerText
+        }
+    }
 
     let timeSpan = document.querySelectorAll(".time");
     timeSpan.forEach(element => {
@@ -812,7 +848,7 @@ function initialize() {
     if (sidebarBtn) { sidebarBtn.addEventListener("click", function () { sidebar.classList.toggle("w3-hide"); }); }
     window.onscroll = function () { toggleFixed(topNav);}
     
-    removeLeadingWhiteSpace(); // Remove Leading WhiteSpace in pre tag.
+    //removeLeadingWhiteSpace(); // Remove Leading WhiteSpace in pre tag.
     
 }
 
