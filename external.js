@@ -145,8 +145,10 @@ function startTest() {
                 audio.src = audioURL;
             }
             mediaRecorder.ondataavailable = event => data.push(event.data);
+            return mediaRecorder;
         }
         navigator.mediaDevices.getUserMedia(constraints).then(onFulfilled);
+        
     }
 
     function addInputColor() {
@@ -597,7 +599,7 @@ function startTest() {
     }
     else if (uri.includes("speaking")) {
         if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
-        recordAudio();
+        mediaRecorder = recordAudio();
 
         time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
         addHighlight(time);
