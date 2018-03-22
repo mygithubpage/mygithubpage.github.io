@@ -46,14 +46,99 @@ function highlight(thisElem) {
     }
 }
 
-// If Article Tag or Top Bar Item is clicked, store the content of clicked tag in sessionStorage
-function addTagClick(tags) {
-    for (let index = 0; index < tags.length; index++) {
-        const element = tags[index];
-        element.addEventListener("click", function () { sessionStorage.setItem("tag", element.textContent); })
+// Remove Leading WhiteSpace in pre tag.
+function removeLeadingWhiteSpace() {
+    var pres = document.getElementsByTagName("pre");
+    for (const pre of pres) {
+      let lines = pre.innerHTML.split( "\n" );
+      let length = lines[1].length - lines[1].trimLeft(" ").length // The Greatest WhiteSpace Length to be removed
+      let innerHTML = "";
+      
+      for (let index = 0; index < lines.length; index++) {
+        const element = lines[index];
+        let newLine = "\n";
+
+        // Remove first and last empty line
+        if (index == 0 || index == lines.length - 2) { newLine = ""; }
+
+        innerHTML += element.replace(" ".repeat(length)) + newLine;
+        innerHTML = innerHTML.replace("undefined", "");
+      }
+      pre.innerHTML = innerHTML.trimLeft("\n").trimRight("\n");
     }
 }
 
+function addHighlight(element) {
+    let highlightElems = document.querySelectorAll("[class*='h-']");
+    if (highlightElems) {
+        highlightElems.forEach(element => {
+            element.addEventListener("mouseover", function() {highlight(element)} );
+            element.addEventListener("mouseout", function() {highlight(element)} );
+        });
+    }
+    if(element) {
+        element.style.color = backgroundColor;
+        element.style.fontWeight = "bold";
+    }
+}
+
+function toggleHighlight(element) {
+    if(element.style.color !== backgroundColor) {
+        element.style.color = backgroundColor;
+        element.style.fontWeight = "bold";
+    }
+    else {
+        element.style.color = "black";
+        element.style.fontWeight = "normal";
+    }
+}
+
+function addInputColor() {
+    let inputs = document.getElementsByTagName("input");
+
+    var addColor = function(element) {    
+
+        if (element.querySelector("input").getAttribute("type") === "radio") {
+            let name = element.querySelector("input").getAttribute("name");
+            
+            for (let index = 0; index < inputs.length; index++) {
+                const node = inputs[index].parentNode;
+                if(inputs[index].getAttribute("name") !== name ) { continue }
+                node.querySelector(".my-radio").style.backgroundColor = "lightgray";
+            }
+            element.querySelector(".my-radio").style.backgroundColor = backgroundColor;
+        }
+        else if (element.parentNode.tagName == "TD") {
+            if(element.children[0].checked) { 
+                element.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
+                element.children[0].checked = false;
+                return
+            }
+                //element.children[0].click(); return}
+            let name = element.querySelector("input").getAttribute("name");
+            
+            for (let index = 0; index < inputs.length; index++) {
+                const node = inputs[index].parentNode;
+                if(inputs[index].getAttribute("name") !== name ) { continue }
+                node.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
+                if(node.children[0].checked) { node.children[0].checked = false; }
+            }
+            element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
+            element.children[0].checked = true;
+        }
+        else {
+            if (element.querySelector("input").checked) {
+                element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
+            }
+            else { element.querySelector(".my-checkbox").style.backgroundColor = "lightgray"; }
+        }
+
+    }
+
+    document.querySelectorAll(".my-label").forEach(element => {
+        element.addEventListener("click", function () { addColor(element); })
+    });
+}
 
 function startTest() {
     
@@ -151,49 +236,6 @@ function startTest() {
         
     }
 
-    function addInputColor() {
-        let inputs = testDiv.getElementsByTagName("input");
-        var addColor = function(element) {    
-            if (element.querySelector("input").getAttribute("type") === "radio") {
-                let name = element.querySelector("input").getAttribute("name");
-                
-                for (let index = 0; index < inputs.length; index++) {
-                    const node = inputs[index].parentNode;
-                    if(inputs[index].getAttribute("name") !== name ) { continue }
-                    node.querySelector(".my-radio").style.backgroundColor = "lightgray";
-                }
-                element.querySelector(".my-radio").style.backgroundColor = backgroundColor;
-            }
-            else if (element.parentNode.tagName == "TD") {
-                if(element.children[0].checked) { 
-                    element.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
-                    element.children[0].checked = false;
-                    return
-                }
-                    //element.children[0].click(); return}
-                let name = element.querySelector("input").getAttribute("name");
-                
-                for (let index = 0; index < inputs.length; index++) {
-                    const node = inputs[index].parentNode;
-                    if(inputs[index].getAttribute("name") !== name ) { continue }
-                    node.querySelector(".my-checkbox").style.backgroundColor = "lightgray";
-                    if(node.children[0].checked) { node.children[0].checked = false; }
-                }
-                element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
-                element.children[0].checked = true;
-            }
-            else {
-                if (element.querySelector("input").checked) {
-                    element.querySelector(".my-checkbox").style.backgroundColor = backgroundColor;
-                }
-                else { element.querySelector(".my-checkbox").style.backgroundColor = "lightgray"; }
-            }
-        }
-
-        testDiv.querySelectorAll(".my-label").forEach(element => {
-            element.addEventListener("click", function () { addColor(element); })
-        });
-    }
 
     function navigateQuestion (thisElem) {
         if(uri.includes("listening")) { id = thisElem.previousElementSibling.id; }
@@ -599,8 +641,7 @@ function startTest() {
 
     }
     else if (uri.includes("speaking")) {
-        if (!navigator.mediaDevices.getUserMedia && !navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) { endTest(); }
-        mediaRecorder = recordAudio();
+        if(uri.startsWith("file:/")) { mediaRecorder = recordAudio(); }
 
         time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
         addHighlight(time);
@@ -623,12 +664,29 @@ function startTest() {
             time.classList.remove("w3-hide");
             waitTime(seconds[1][Math.ceil(num / 2) - 1], startSpeak); }
         startSpeak = function () { playAudio("../../speaking_beep_answer.mp3", waitSpeak); }
-        waitSpeak = function () { 
-            mediaRecorder.start();
-            waitTime(seconds[0][Math.ceil(num / 2) - 1], function() { 
-                mediaRecorder.stop(); 
-                waitTime(1,showModal);
-            }) 
+        waitSpeak = function () {
+            if(uri.startsWith("file:/")) { 
+                mediaRecorder.start();
+                waitTime(seconds[0][Math.ceil(num / 2) - 1], function() { 
+                    mediaRecorder.stop(); 
+                    waitTime(1,showModal);
+                });
+            }
+            else {
+                var handleSuccess = function(stream) {
+                    var audio = document.createElement('audio');
+                    if (window.URL) {
+                        audio.src = window.URL.createObjectURL(stream);
+                    } else {
+                        audio.src = stream;
+                    }
+                    audio.setAttribute('controls', 'controls');
+                    testDiv.appendChild(audio);
+                };
+                
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(handleSuccess);
+            }
         }
 
         if (num < 3) {
@@ -680,15 +738,18 @@ function updateNav() {
     document.querySelectorAll(".w3-dropdown-content").forEach(element => {
         element.style.minWidth = "auto";
     });
+    if(uri.includes("notes") || uri.includes("blog") || uri.includes("essay")) { return }
     if(setFlag) { 
         length = 1; 
         sets = html.split("-")[0];
     }
     else { 
         let number = document.querySelector("#number");
-        addHighlight(number);
-        length = html.includes("og") ? 3 : parseInt(number.textContent); 
-        sets = html.split(".")[0]; 
+        if(number) {
+            addHighlight(number);
+            length = html.includes("og") ? 3 : parseInt(number.textContent); 
+            sets = html.split(".")[0]; 
+        }
     }
     
     if(mobileFlag) {
@@ -738,64 +799,245 @@ function updateNav() {
     }
 }
 
-// Remove Leading WhiteSpace in pre tag.
-function removeLeadingWhiteSpace() {
-    var pres = document.getElementsByTagName("pre");
-    for (const pre of pres) {
-      let lines = pre.innerHTML.split( "\n" );
-      let length = lines[1].length - lines[1].trimLeft(" ").length // The Greatest WhiteSpace Length to be removed
-      let innerHTML = "";
-      
-      for (let index = 0; index < lines.length; index++) {
-        const element = lines[index];
-        let newLine = "\n";
+function updateNotes() {
 
-        // Remove first and last empty line
-        if (index == 0 || index == lines.length - 2) { newLine = ""; }
-
-        innerHTML += element.replace(" ".repeat(length)) + newLine;
-        innerHTML = innerHTML.replace("undefined", "");
-      }
-      pre.innerHTML = innerHTML.trimLeft("\n").trimRight("\n");
-    }
-}
-
-function addHighlight(element) {
-    let highlightElems = document.querySelectorAll("[class*='h-']");
-    if (highlightElems) {
-        highlightElems.forEach(element => {
-            element.addEventListener("mouseover", function() {highlight(element)} );
-            element.addEventListener("mouseout", function() {highlight(element)} );
-        });
-    }
-    if(element) {
-        element.style.color = backgroundColor;
-        element.style.fontWeight = "bold";
-    }
-}
-
-function toggleHighlight(element) {
-    if(element.style.color !== backgroundColor) {
-        element.style.color = backgroundColor;
-        element.style.fontWeight = "bold";
+    if(uri.includes("blog")) {
+        entries = [
+            ["javascript.html", "JavaScript"],
+            ["powershell.html", "PowerShell"],
+            ["css.html","CSS"]
+        ];
     }
     else {
-        element.style.color = "black";
-        element.style.fontWeight = "normal";
+        entries = [
+            ["og-example-writing2.html", "Example Independent Writing Trait", 
+            "Do you agree or disagree with the following statement?<br/><b>Always telling the truth is the most important consideration in any relationship.</b><br/>Use specific reasons and examples to support your answer."],
+    
+            ["sample-question-writing2.html", "Sample Independent Writing Comparative",
+            "Do you agree or disagree with the following statement?<br/><b>A teacher's ability to relate well with students is more important than excellent knowledge of the subject being taught.</b><br/>Use specific reasons and examples to support your answer."],
+    
+            ["og-example-writing1.html","Example Integrated Writing"],
+            ["sample-question-writing1.html", "Sample Integrated Writing"],
+            ["performance-feedback.html", "Performance"],
+            ["scoring-rubric.html", "Scoring"]
+        ];
     }
+    
+    function createEntry(entries) {
+        let entriesDiv = document.querySelector("#entries")
+        entries.forEach(element => {
+            let div = createNode(["div", {class : "w3-card w3-padding w3-section w3-white my-entry"}, ""], entriesDiv);
+            let section = createNode(["section", {}, ""], div);
+            let h3 = createNode(["h3", {}, ""], section);
+            let a = createNode(["a", {class:"w3-button w3-white", href:element[0]}, ""], h3);
+            let b = createNode(["b", {class:"highlight"}, element[1]], a);
+            if(element[2]) { 
+                let p = createNode(["p", {}, ""], section); 
+                p.innerHTML = element[2];
+            }
+
+            let tagDiv = createNode(["div", {class:"w3-white w3-section"}, ""], div);
+            createNode(["span", {}, "Tags:"], tagDiv);
+            element[1].split(" ").forEach( tag => {
+                createNode(["a", {class:"tag w3-btn w3-padding-small my-margin-small w3-border highlight"}, tag], tagDiv);
+            });
+        });
+    }
+    createEntry(entries);
+
+    var barItems = document.querySelectorAll("a.w3-bar-item");
+    var tags = document.querySelectorAll("a.tag"); // All tags in all entries.
+    var tagsDiv = document.querySelector("#tagsDiv"); // Place to add tags
+    var tagsArray = []; // All tags need to be show in tag div on load.
+    var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.    
+    entries = document.querySelectorAll(".my-entry");
+
+    // Filter multiple tags
+    function toggleFilter(thisElem) {
+
+      // Add selected tag to array
+      if (thisElem.className.includes("highlight")) {
+        selectedTags.push(thisElem.textContent);
+      } else {
+        selectedTags.splice(selectedTags.indexOf(thisElem.textContent), 1);
+      }
+
+      // Unselected Tag is light gray, selected tag is black
+      thisElem.classList.toggle("highlight");
+      thisElem.classList.toggle(color);
+      thisElem.classList.toggle("w3-border");
+      let entriesTagsArray = [];
+
+      // if the entry do not contains selected tags, it is hidden.
+      entries.forEach(entry => {
+        
+        // get the entries tag
+        let entryTags = entry.querySelectorAll("a.tag");
+        let entryTagsArray = []; // one entry's tags.
+        entry.classList.remove("w3-hide");
+
+        // join the entry tag in one string
+        entryTags.forEach(element => { 
+          entryTagsArray.push(element.textContent);
+          if(element.textContent === thisElem.textContent) {
+            element.classList.toggle("highlight");
+            element.classList.toggle(color);
+            element.classList.toggle("w3-border");
+          }
+        });
+
+        // if one selected tag is not in the entryTagsArray, the entry is hidden
+        selectedTags.forEach( tag => {
+          if(entryTagsArray.indexOf(tag) === -1) { 
+            entry.classList.add("w3-hide"); 
+          } 
+        }); // End of selectedTags foreach  
+
+        // if the entry is not hidden
+        if (!entry.classList.contains("w3-hide")) {
+          entryTagsArray.forEach(element => { entriesTagsArray.push(element) } );
+          tagBtns.forEach(element => {
+              element.classList.remove("w3-hide");
+            if (entriesTagsArray.indexOf(element.textContent) === -1) {
+              element.classList.add("w3-hide");
+            }
+          }); // End of tag Buttons forEach
+
+        }
+      }); // End of entries foreach
+
+    }
+
+    // Trigger tag click event
+    function clickTag(tag) {
+      tagBtns.forEach(element => {
+        if(element.textContent === tag) {  element.click(); }
+      });
+    }
+
+    // If Article Tag or Top Bar Item is clicked, store the content of clicked tag in sessionStorage
+    function addTagClick(tags) {
+        for (let index = 0; index < tags.length; index++) {
+            const element = tags[index];
+            element.addEventListener("click", function () { sessionStorage.setItem("tag", element.textContent); })
+        }
+    }
+
+    entries.forEach(entry => { entry.querySelector("a").style.padding = 0; });
+    
+    // Show tags
+    if(tagsDiv) {
+        tags.forEach(tag => {
+            element = tag.textContent;
+            if(tagsArray.indexOf(element) === -1){
+              tagsArray.push(element);
+              var btn = document.createElement("button");
+              btn.className = "tag w3-btn w3-padding-small my-margin-small highlight w3-border";
+              
+              btn.textContent = element;
+              tagsDiv.appendChild(btn);
+            }
+          });
+    }
+    
+    document.querySelectorAll(".highlight").forEach(element => { addHighlight(element); });
+    document.querySelectorAll("b").forEach(element => { 
+        addHighlight(element); 
+        element.style.whiteSpace = "normal";
+    });
+
+    entries.forEach(element => { element.querySelector("a").onclick = function (e) {
+            sessionStorage.setItem("title", e.target.textContent);
+        } 
+    });
+
+    var title = sessionStorage.getItem("title");
+    if(!uri.includes("notes.html") && !uri.includes("blog.html") && title) {
+        document.title = title;
+        uri.split("/").slice(-2)
+        let tagDiv = document.querySelector("#tags");
+        title.split(" ").forEach( tag => {
+            let classes = "tag w3-btn w3-padding-small my-margin-small " + color;
+            let href = uri.split("/").slice(-2)[0] + ".html";
+            createNode(["a", {class:classes, href:href}, tag], tagDiv);
+        });
+    }
+    
+    // Add filter Event for tags in tag div. 
+    var tagBtns = document.querySelectorAll("#tagsDiv > button.tag");
+    tagBtns.forEach(element => {
+      element.addEventListener("click", function() { toggleFilter(element); });
+    });
+
+    // Add top bar item tag.
+    barItems.forEach(element => {
+      element.addEventListener("click", function() {clickTag(element.textContent)} );
+    });
+
+    // Add article tag.
+    tags.forEach(element => {
+      element.addEventListener("click", function() {clickTag(element.textContent)} );
+    });
+    
+    // Filter Tag
+    var tag = sessionStorage.getItem("tag");
+    if (tag) { clickTag(tag); }
+  
+    addTagClick(document.querySelectorAll(".tag"));
+    addTagClick(document.querySelectorAll("a.w3-bar-item"));
+
+    // Add Sidebar Button and Click Event
+    /*window.addEventListener("load", function() { 
+      addSiderbarBtn();
+      sidebar.innerHTML = tagsDiv.innerHTML;
+      sidebarItems = document.querySelectorAll("#sidebar > button");
+      sidebarItems.forEach(element => {
+        element.addEventListener("click", function() {
+          toggleFilter(element);
+        });
+      });
+    });*/
+
 }
 
 function initialize() {
 
-    updateNav();
+    
     document.querySelectorAll(".my-color").forEach(element => {
         element.classList.remove("my-color");
         element.classList.add(color);
     });
-    let questions = document.querySelector("#question").children;
-    if(questions.length > 4) {
-        for (let i = 0; i < questions.length; i++) {
-            const element = questions[i];
+
+    document.querySelectorAll(".highlight").forEach(element => { toggleHighlight(element); });
+
+    updateNav();
+    addInputColor();
+    updateNotes();
+    // Add Top Navigation Button Click Event and Tag Click Event.
+    topNavBtn.addEventListener("click", function () { toggleTopNav(topNavBtn) });
+    var testBtn = document.querySelector("#test");
+    if (testBtn) { testBtn.addEventListener("click", function () { startTest() }); }
+
+    let sidebarItems = document.querySelectorAll("#sidebar > a");
+    if (sidebarItems.length > 0) {
+        sidebarItems.forEach(element => {
+            let item = document.querySelector("#" + element.href.split("#")[1]);
+            element.addEventListener("click", function () { 
+                sidebar.classList.add("w3-hide");
+                window.onscroll = function () { toggleFixed(item);}
+            });
+        });
+    }
+
+    if (sidebarBtn) { sidebarBtn.addEventListener("click", function () { sidebar.classList.toggle("w3-hide"); }); }
+    window.onscroll = function () { toggleFixed(topNav);}
+    
+    
+
+    let questions = document.querySelector("#question");
+    if(questions && questions.children.length > 4) {
+        for (let i = 0; i < questions.children.length; i++) {
+            const element = questions.children[i];
             element.children[0].innerText = element.id.split("n")[1] + ". " + element.children[0].innerText
         }
     }
@@ -805,8 +1047,7 @@ function initialize() {
         element.classList.add("w3-hide")
     });
     
-    document.querySelectorAll(".highlight").forEach(element => { toggleHighlight(element); });
-
+    
     testBtn = document.querySelector("#test");
     if(testBtn) { if(mobileFlag) { testBtn.className += " w3-block w3-margin"; } }
 
@@ -829,28 +1070,6 @@ function initialize() {
         });
     }
 
-    // Add Top Navigation Button Click Event and Tag Click Event.
-    topNavBtn.addEventListener("click", function () { toggleTopNav(topNavBtn) });
-    var testBtn = document.querySelector("#test");
-    if (testBtn) { testBtn.addEventListener("click", function () { startTest() }); }
-
-    addTagClick(document.querySelectorAll(".w3-tag"));
-    addTagClick(document.querySelectorAll("a.w3-bar-item"));
-
-    let sidebarItems = document.querySelectorAll("#sidebar > a");
-    if (sidebarItems.length > 0) {
-        sidebarItems.forEach(element => {
-            let item = document.querySelector("#" + element.href.split("#")[1]);
-            element.addEventListener("click", function () { 
-                sidebar.classList.add("w3-hide");
-                window.onscroll = function () { toggleFixed(item);}
-            });
-        });
-    }
-
-    if (sidebarBtn) { sidebarBtn.addEventListener("click", function () { sidebar.classList.toggle("w3-hide"); }); }
-    window.onscroll = function () { toggleFixed(topNav);}
-    
     //removeLeadingWhiteSpace(); // Remove Leading WhiteSpace in pre tag.
     
 }
