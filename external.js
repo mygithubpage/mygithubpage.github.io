@@ -1,6 +1,8 @@
 // My Personal JavaScript
 
+ogCategoryString = "Politics:og1-reading1.html;Psychology:og1-reading2.html;Geography:og1-reading3.html,og2-reading3.html;Biology:og2-reading1.html;Art:og2-reading2.html;Sociology:og3-reading1.html;Ecology:og3-reading2.html,og3-reading3.html&Teacher And Student Discussion:og1-listening1.html,og2-listening1.html,og3-listening4.html;Environmental Science:og1-listening2.html,og3-listening2.html;Philosophy:og1-listening3.html;Course Inquiry:og1-listening4.html,og2-listening4.html,og3-listening1.html;Botany:og1-listening5.html;Business:og1-listening6.html;History:og2-listening2.html,og3-listening3.html;Biology:og2-listening3.html;Astronomy:og2-listening5.html,og3-listening6.html;Art Category:og2-listening6.html,og3-listening5.html&Location:og1-speaking1.html;Learn:og1-speaking2.html,og3-speaking2.html;Logistics Services:og1-speaking3.html,og3-speaking3.html;Sociology:og1-speaking4.html;Time Conflict:og1-speaking5.html,og3-speaking5.html;Business:og1-speaking6.html,og3-speaking6.html;Life:og2-speaking1.html;Friend:og2-speaking2.html;Infrastructure Construction:og2-speaking3.html;Psychology:og2-speaking4.html,og2-speaking6.html,og3-speaking4.html;Dilemma Choice:og2-speaking5.html;Feature:og3-speaking1.html&Biology:og1-writing1.html;Family:og1-writing2.html;Education:og2-writing1.html;Lifestyle:og2-writing2.html;Art:og3-writing1.html;Friend:og3-writing2.html"
 
+localStorage.setItem("category", ogCategoryString);
 hideBarItems = document.querySelectorAll(".w3-hide-small");
 sidebarBtn = document.querySelector("#sidebarBtn");
 sidebar = document.querySelector("#sidebar");
@@ -138,6 +140,48 @@ function addInputColor() {
     document.querySelectorAll(".my-label").forEach(element => {
         element.addEventListener("click", function () { addColor(element); })
     });
+}
+
+function addTextarea(note, parent, before) {
+    function getAllIndexes(arr, val) {
+        var indexes = [], i = -1;
+        while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
+        return indexes;
+    }
+
+    if(!note) {
+        wordCountDiv = createNode( ["div", {class:"w3-half w3-padding"}, ""], testDiv);
+        wordCount = createNode( ["span", {class:"w3-large"}, "Word Count: 0"], wordCountDiv);
+        toggleHighlight(wordCount);
+        let time = createNode( ["span", {id:"time", class:"w3-large w3-right"}, ""], wordCountDiv);
+        toggleHighlight(time);
+        textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
+    }
+    else {
+        if(parent) { textarea = createNode( ["textarea", {class:"w3-section", autofocus:"autofocus"}, ""], parent, before); }
+        else { textarea = createNode( ["textarea", {class:"w3-section", autofocus:"autofocus"}, ""], testDiv); }
+    }
+
+    if(!note) {
+        textarea.oninput = function (e) {
+            wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1)
+        }
+    }
+
+    textarea.style.resize = "none";
+    textarea.style.border = "2px solid " + backgroundColor;
+    textarea.style.height = screen.height - textarea.offsetTop - 192 + "px";
+    textarea.style.height = "-webkit-fill-available";
+
+    if(mobileFlag) {
+        textarea.style.width = "-webkit-fill-available";
+        textarea.style.width = "-moz-available";
+    }
+    else {
+        article.classList.add("w3-padding");
+        textarea.style.width = note ? "-webkit-fill-available" : "none";
+    }
+    return textarea;
 }
 
 function startTest() {
@@ -412,52 +456,10 @@ function startTest() {
         else { return modal }
     }
 
-    function addTextarea(note) {
-        function getAllIndexes(arr, val) {
-            var indexes = [], i = -1;
-            while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
-            return indexes;
-        }
-
-        if(!note) {
-            wordCountDiv = createNode( ["div", {class:"w3-half w3-padding"}, ""], testDiv);
-            wordCount = createNode( ["span", {class:"w3-large"}, "Word Count: 0"], wordCountDiv);
-            toggleHighlight(wordCount);
-            let time = createNode( ["span", {id:"time", class:"w3-large w3-right"}, ""], wordCountDiv);
-            toggleHighlight(time);
-            textarea = createNode( ["textarea", {class:"w3-half"}, ""], testDiv);
-        }
-        else {
-            
-            textarea = createNode( ["textarea", {class:"w3-section", autofocus:"autofocus"}, ""], testDiv);
-        }
-
-        if(!note) {
-            textarea.oninput = function (e) {
-                wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1)
-            }
-        }
-
-        textarea.style.resize = "none";
-        textarea.style.border = "2px solid " + backgroundColor;
-        textarea.style.height = screen.height - textarea.offsetTop - 192 + "px";
-        textarea.style.height = "-webkit-fill-available";
-
-        if(mobileFlag) {
-            textarea.style.width = "-webkit-fill-available";
-            textarea.style.width = "-moz-available";
-        }
-        else {
-            article.classList.add("w3-padding");
-            textarea.style.width = note ? "-webkit-fill-available" : "none";
-        }
-        return textarea;
-    }
-    
     document.querySelector("nav").classList.toggle("w3-hide");
     document.querySelector("main").classList.toggle("w3-hide");
     document.querySelector("footer").classList.toggle("w3-hide");
-    let article = createNode( ["article", {class:"show-article w3-half"}, ""], testDiv);
+    article = createNode( ["article", {class:"show-article w3-half"}, ""], testDiv);
     
     if (uri.includes("reading")) {
          
@@ -747,9 +749,12 @@ function updateNav() {
         let number = document.querySelector("#number");
         if(number) {
             addHighlight(number);
-            length = html.includes("og") ? 3 : parseInt(number.textContent); 
-            sets = html.split(".")[0]; 
+            length = parseInt(number.textContent); 
         }
+        else {
+            length = 3;
+        }
+        sets = html.split(".")[0]; 
     }
     
     if(mobileFlag) {
@@ -775,7 +780,6 @@ function updateNav() {
         document.querySelectorAll(".w3-dropdown-click button").forEach(elem => { 
             elem.onclick = function (e) {e.target.nextElementSibling.classList.toggle("w3-show")}; 
         });
-        if(setFlag) { createNode( ["button", {class:"w3-btn w3-right w3-large " + color, id:"test"}, "Test"], div); }
     }
     else {
         for (let i = 1; i <= length; i++) {
@@ -795,12 +799,98 @@ function updateNav() {
                 }
             });
         }
-        if(setFlag) { createNode( ["button", {class:"w3-btn w3-right w3-large " + color, id:"test"}, "Test"], div); }
     }
+
+    if(setFlag) { 
+        href = "../" + uri.split("/").slice(-3)[0] + ".html"
+        categoryBtn = createNode( ["a", {class:"w3-btn w3-left w3-section w3-large " + color, href:href}, "See Same Category Passage"], div); 
+        testBtn = createNode( ["button", {class:"w3-btn w3-right w3-section w3-large " + color, id:"test"}, "Test"], div); 
+        if(mobileFlag) { 
+            testBtn.className += " w3-block"; 
+            categoryBtn.className += " w3-block"; 
+        }
+
+        categoryBtn.onclick = function () {
+            ogCategoryString.split("&").forEach(element => { 
+                if(element.includes(html)) {
+                    element.split(";").forEach(elem => {
+                        if(elem.includes(html)) { tag = elem.split(":")[0]; }
+                    })
+                }
+            })
+            sessionStorage.setItem("tag", tag + ":" + html);
+        }
+
+    }
+    else {
+        function filterTag(element) {
+            selector = ".w3-bar.w3-section " + (mobileFlag ? "> div" : "a" );
+            document.querySelectorAll(selector).forEach( elem => {
+                
+                if(mobileFlag) {
+                    elem.children[0].style.display = "none";
+                    elem.children[1].style.display = "block";
+                    for (let i = 0; i < elem.children[1].children.length; i++) {
+                        const e = elem.children[1].children[i];
+                        e.style.display = "none";
+                        if(element.split(":")[1].includes(e.href.split("/").splice(-1)[0])) {      
+                            e.style.display = "inline-block";     
+                            e.className = e.className.replace("w3-bar-item ",color + " w3-padding-small ");
+                        }
+                    }
+                }
+                else {
+                    elem.style.display = "none";
+                    if(element.split(":")[1].includes(elem.href.split("/").splice(-1)[0])) { elem.style.display = "table-cell"; }
+                }
+            }) 
+        }
+
+        categoryDiv = createNode( ["div", {}, ""], main, true);
+        div = createNode( ["div", {class:"w3-bar w3-card my-color"}, ""], categoryDiv);
+        if(mobileFlag) { categoryDiv.style.fontSize = "13px"; }
+        for (let i = 0; i < 4; i++) {
+            button = createNode( ["button", {class:"w3-bar-Item w3-button w3-col l2"}, sections[i].split(":")[0]], div);
+            if(mobileFlag) { button.className = button.className.replace("w3-col l2", "w3-padding-small"); }
+            button.onclick = function() {
+                categroyDiv.innerHTML = "";
+                ogCategoryString.split("&")[i].split(";").forEach( element => {
+                    let tag = element.split(":")[0];
+                    a = createNode(["button", {class:"tag w3-btn w3-padding-small my-margin-small " + color}, tag], categroyDiv);
+                    
+                    a.onclick = function() { filterTag(element); }
+                })
+            };
+        }
+        let search = createNode( ["button", {class:"w3-bar-Item w3-button w3-right"}, "Search"], div);
+
+        if(mobileFlag) { search.classList.toggle("w3-padding-small") 
+        }
+        categroyDiv = createNode( ["div", {class:"w3-padding-small w3-card w3-white"}, ""], categoryDiv);
+
+        var tag = sessionStorage.getItem("tag");
+
+        if (tag) { 
+            document.querySelectorAll(".w3-bar-Item.w3-button").forEach(element => {
+                if(tag.includes(element.textContent.toLowerCase())) { 
+                    element.click(); 
+                    for (let i = 0; i < categroyDiv.children.length; i++) {
+                        const elem = categroyDiv.children[i];
+                        if(tag.split(":")[0] === elem.textContent) { 
+                            elem.click(); 
+                            sessionStorage.removeItem("tag");
+                        }
+                    }
+                }
+            }); 
+        }
+    }
+    
+    
 }
 
 function updateNotes() {
-
+    if(!uri.includes("blog") && !uri.includes("notes")) { return }
     if(uri.includes("blog")) {
         entries = [
             ["javascript.html", "JavaScript"],
@@ -822,7 +912,10 @@ function updateNotes() {
             ["scoring-rubric.html", "Scoring"]
         ];
     }
-    
+    var entriesString = "";
+    entries.forEach(element => { entriesString += element[0] + "," + element[1] + ";"});
+    localStorage.setItem("tags", entriesString);
+
     function createEntry(entries) {
         let entriesDiv = document.querySelector("#entries")
         entries.forEach(element => {
@@ -844,13 +937,14 @@ function updateNotes() {
         });
     }
     createEntry(entries);
+    entries = document.querySelectorAll(".my-entry");
 
     var barItems = document.querySelectorAll("a.w3-bar-item");
     var tags = document.querySelectorAll("a.tag"); // All tags in all entries.
     var tagsDiv = document.querySelector("#tagsDiv"); // Place to add tags
     var tagsArray = []; // All tags need to be show in tag div on load.
     var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.    
-    entries = document.querySelectorAll(".my-entry");
+    
 
     // Filter multiple tags
     function toggleFilter(thisElem) {
@@ -909,10 +1003,13 @@ function updateNotes() {
     }
 
     // Trigger tag click event
-    function clickTag(tag) {
-      tagBtns.forEach(element => {
-        if(element.textContent === tag) {  element.click(); }
-      });
+    function clickTag(tagBtns) {
+        var tag = sessionStorage.getItem("tag");
+        if (tag) { 
+            tagBtns.forEach(element => {
+            if(element.textContent === tag) {  element.click(); }
+            }); 
+        }
     }
 
     // If Article Tag or Top Bar Item is clicked, store the content of clicked tag in sessionStorage
@@ -946,12 +1043,11 @@ function updateNotes() {
         element.style.whiteSpace = "normal";
     });
 
-    entries.forEach(element => { element.querySelector("a").onclick = function (e) {
-            sessionStorage.setItem("title", e.target.textContent);
-        } 
-    });
+    localStorage.getItem("tags").split(";").forEach(element => { if(element.split(",")[0] === html) {
+        title = element.split(",")[1];
+        return
+    }});
 
-    var title = sessionStorage.getItem("title");
     if(!uri.includes("notes.html") && !uri.includes("blog.html") && title) {
         document.title = title;
         uri.split("/").slice(-2)
@@ -980,8 +1076,7 @@ function updateNotes() {
     });
     
     // Filter Tag
-    var tag = sessionStorage.getItem("tag");
-    if (tag) { clickTag(tag); }
+    clickTag(tagBtns)
   
     addTagClick(document.querySelectorAll(".tag"));
     addTagClick(document.querySelectorAll("a.w3-bar-item"));
@@ -1002,17 +1097,15 @@ function updateNotes() {
 
 function initialize() {
 
-    
-    document.querySelectorAll(".my-color").forEach(element => {
-        element.classList.remove("my-color");
-        element.classList.add(color);
-    });
-
     document.querySelectorAll(".highlight").forEach(element => { toggleHighlight(element); });
 
     updateNav();
     addInputColor();
     updateNotes();
+    document.querySelectorAll(".my-color").forEach(element => {
+        element.classList.remove("my-color");
+        element.classList.add(color);
+    });
     // Add Top Navigation Button Click Event and Tag Click Event.
     topNavBtn.addEventListener("click", function () { toggleTopNav(topNavBtn) });
     var testBtn = document.querySelector("#test");
@@ -1046,13 +1139,9 @@ function initialize() {
     timeSpan.forEach(element => {
         element.classList.add("w3-hide")
     });
-    
-    
-    testBtn = document.querySelector("#test");
-    if(testBtn) { if(mobileFlag) { testBtn.className += " w3-block w3-margin"; } }
 
     let audio = document.querySelector("audio");
-    if(audio && false) {
+    if(audio && uri.includes("listening")) {
         n = 0;
         let listening = document.querySelector("#listening-text article");
         listening.style.overflow = "scroll";
@@ -1069,8 +1158,18 @@ function initialize() {
             }
         });
     }
+    if(uri.includes("topic")) {
+        addHighlight(document.querySelector("h3"));
+        document.querySelector("div.w3-bar").classList.toggle("w3-hide");
+        article = document.querySelector("article");
+        var textarea = addTextarea(true, document.querySelector("main"), true);
+        textarea.style.height = screen.height / 2 - 96 + "px";
+        article.style.height = screen.height / 2 - 96 + "px";
+        article.style.overflow = "scroll";
+        article.classList.toggle("w3-section")
+    }
 
-    //removeLeadingWhiteSpace(); // Remove Leading WhiteSpace in pre tag.
+    if(uri.includes("blog")) { removeLeadingWhiteSpace(); } // Remove Leading WhiteSpace in pre tag.
     
 }
 
