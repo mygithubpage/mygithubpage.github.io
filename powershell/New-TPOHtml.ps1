@@ -1505,7 +1505,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 8; $n -le 53; $n++) 
+for ($n = 11; $n -le 53; $n++) 
 {
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) { "$number" } else {"$($number - $number % 4 + 4)"}
@@ -1513,7 +1513,7 @@ for ($n = 8; $n -le 53; $n++)
     if ($number -lt 10 -and $sets -eq "TPO") {$number = "0$number"}
     New-Item -Path "$xmlPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
     Write-Host "$sets$number"
-    #Get-Reading
+    Get-Reading
     Get-Listening 
     Get-Speaking 
     Get-Writing
