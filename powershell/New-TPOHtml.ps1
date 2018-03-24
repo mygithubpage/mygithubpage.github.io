@@ -655,6 +655,10 @@ function Get-Reading() {
     $prefix = "$sets$number\$section\$sets$number$letter"
     New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
     
+    
+    $flag = $true
+    $files = Get-ChildItem "$xmlPath\$sets$number\$section\$sets$number$letter*.xml"
+
     $type = $section.Remove($section.Length - 3, 3).ToLower()
     $html = (Invoke-WebRequest "$website/$type/$location.html")
 
@@ -686,13 +690,10 @@ function Get-Reading() {
         if (Test-Path "$xmlPath\$filePath.xml") { 
             $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
             $node = (Select-Xml "//Category" $xml).Node
-            if($node) {
-                $node.innerText = $category[$i-1]
-            } else {
-                Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+            if(!$node -or !$node.innerText) {
+                Add-XmlNode ("Category", @{}, $explanation) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+                New-File $xml "$xmlPath\$filePath.xml"
             }
-            
-            New-File $xml "$xmlPath\$filePath.xml"
             #continue 
         }
         $html = (Invoke-WebRequest $links[$i-1])
@@ -743,16 +744,13 @@ function Get-Reading() {
 
                         
             if (Test-Path "$xmlPath\$filePath.xml") { 
-                $explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
                 $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
                 $node = (Select-Xml "//Explanation" $xml).Node
-                if($node) {
-                    $node.innerText = $explanation
-                } else {
+                if(!$node -or !$node.innerText) {
+                    $explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
                     Add-XmlNode ("Explanation", @{}, $explanation) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+                    New-File $xml "$xmlPath\$filePath.xml"
                 }
-
-                New-File $xml "$xmlPath\$filePath.xml"
                 continue 
             }
 
@@ -1041,8 +1039,11 @@ function Get-Listening() {
 
         if (Test-Path "$xmlPath\$filePath.xml") { 
             $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
-            Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
-            
+            $node = (Select-Xml "//Category" $xml).Node
+            Add-XmlNode ("Title", @{}, $titles[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+            if(!$node -or !$node.innerText) {
+                Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+            }
             New-File $xml "$xmlPath\$filePath.xml"
             #continue 
         }
@@ -1086,9 +1087,11 @@ function Get-Listening() {
             if (Test-Path "$xmlPath\$filePath.xml") { 
                 $explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
                 $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
-                Add-XmlNode ("Explanation", @{}, $explanation) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
-            
-                New-File $xml "$xmlPath\$filePath.xml"
+                $node = (Select-Xml "//Explanation" $xml).Node
+                if(!$node -or !$node.innerText) {
+                    Add-XmlNode ("Explanation", @{}, $explanation) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+                    New-File $xml "$xmlPath\$filePath.xml"
+                }
                 continue 
             }
             
@@ -1156,6 +1159,15 @@ function Get-Speaking() {
     $prefix = "$sets$number\$section\$sets$number$letter"
     New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
 
+    $flag = $true
+    $files = Get-ChildItem "$xmlPath\$sets$number\$section\$sets$number$letter*.xml"
+    foreach($file in $files) {
+        $xml = [xml] (Get-Content $file)
+        $innerText = (Select-Xml "//Category" $xml).Node.InnerText
+        if(!$innerText) { $flag = $false }
+    }
+    if($flag) { return }
+
     $type = $section.Remove($section.Length - 3, 3).ToLower()
     $html = (Invoke-WebRequest "$website/$type/$location.html")
 
@@ -1182,9 +1194,11 @@ function Get-Speaking() {
         
         if (Test-Path "$xmlPath\$filePath.xml") { 
             $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
-            Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
-            
-            New-File $xml "$xmlPath\$filePath.xml"
+            $node = (Select-Xml "//Category" $xml).Node
+            if(!$node -or !$node.innerText) {
+                Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+                New-File $xml "$xmlPath\$filePath.xml"
+            }
             continue 
         }
         #>
@@ -1262,6 +1276,15 @@ function Get-Writing () {
     $prefix = "$sets$number\$section\$sets$number$letter"
     New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
 
+    $flag = $true
+    $files = Get-ChildItem "$xmlPath\$sets$number\$section\$sets$number$letter*.xml"
+    foreach($file in $files) {
+        $xml = [xml] (Get-Content $file)
+        $innerText = (Select-Xml "//Category" $xml).Node.InnerText
+        if(!$innerText) { $flag = $false }
+    }
+    if($flag) { return }
+
     $html = (Invoke-WebRequest "$website/write/$location.html")
 
     # Get 3 Passage question number 
@@ -1284,9 +1307,11 @@ function Get-Writing () {
         
         if (Test-Path "$xmlPath\$filePath.xml") { 
             $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
-            Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
-            
-            New-File $xml "$xmlPath\$filePath.xml"
+            $node = (Select-Xml "//Category" $xml).Node
+            if(!$node -or !$node.innerText) {
+                Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
+                New-File $xml "$xmlPath\$filePath.xml"
+            }
             continue 
         }
         #>
@@ -1480,7 +1505,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 1; $n -le 53; $n++) 
+for ($n = 8; $n -le 53; $n++) 
 {
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) { "$number" } else {"$($number - $number % 4 + 4)"}
@@ -1488,7 +1513,7 @@ for ($n = 1; $n -le 53; $n++)
     if ($number -lt 10 -and $sets -eq "TPO") {$number = "0$number"}
     New-Item -Path "$xmlPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
     Write-Host "$sets$number"
-    Get-Reading
+    #Get-Reading
     Get-Listening 
     Get-Speaking 
     Get-Writing

@@ -751,13 +751,11 @@ function startTest() {
 
 }
 
-function filter(e) {
+function filterTag(e) {
     let parent = e.target.parentNode;
     let tagDiv = parent.nextElementSibling;
     let input = document.querySelector("#filter");
-    if(!uri.includes("blog") && !uri.includes("notes")) { 
-         
-    }
+
     if(!input) { input = createNode( ["input", {class:"w3-bar-item w3-hide w3-right", id:"filter", autofocus:true}, ""], parent); }
     input.classList.toggle("w3-show");
     if(mobileFlag) { input.style.width = "224px"; }
@@ -801,7 +799,6 @@ function updateNav() {
     document.querySelectorAll(".w3-dropdown-content").forEach(element => {
         element.style.minWidth = "auto";
     });
-    if(uri.includes("notes") || uri.includes("blog") || uri.includes("essay")) { return }
     if(setFlag) { 
         length = 1; 
         sets = html.split("-")[0];
@@ -818,53 +815,47 @@ function updateNav() {
         sets = html.split(".")[0]; 
     }
     
-    if(mobileFlag) {
-        for (let i = 1; i <= length; i++) {
-            let number = (i < 10  && !html.includes("og") ? "0" + i : i);
-            let set = setFlag ? sets : sets + number;
-            let before = setFlag || html.includes("og") ? true : false;
-            div = createNode( ["div", {class:"w3-bar w3-section"}, ""], main, before);
-            if(!setFlag) { div.style.fontSize = "13px"; }
-            if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
-            sections.forEach( element => {
-                let section = element.split(":")[0];
+    let before = html.includes("og") ? true : false;
+    setsDiv = createNode( ["div", {class:"", id:"setsDiv"}, ""], main, before);
+
+    for (let i = 1; i <= length; i++) {
+        let number = (i < 10  && !html.includes("og") ? "0" + i : i);
+        let set = setFlag ? sets : sets + number;
+        div = createNode( ["div", {class:"w3-bar w3-section"}, ""], setsDiv);
+        if(!setFlag) { div.style.fontSize = "13px"; }
+        if(!mobileFlag) { div.style.fontSize = "14px"; }
+        if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
+
+        sections.forEach( element => {
+            let section = element.split(":")[0];
+            if(mobileFlag) {
                 let dropdown = createNode( ["div", {class:"w3-dropdown-click"}, ""], div);
                 let button = createNode( ["button", {class:"w3-bar-item w3-button w3-padding-small my-color"}, section], dropdown);
-                let dropdownContent = createNode( ["div", {class:"w3-dropdown-content w3-bar-block"}, ""], dropdown);
-                for (let index = 1; index <= parseInt(element.split(":")[1]); index++) {
-                    let href = set + "-" + section.toLowerCase() + index + ".html";
-                    href = !setFlag ? set + "/" + href : href;
+                dropdownContent = createNode( ["div", {class:"w3-dropdown-content w3-bar-block"}, ""], dropdown);
+            }
+            for (let index = 1; index <= parseInt(element.split(":")[1]); index++) {
+                let href = set + "-" + section.toLowerCase() + index + ".html";
+                href = !setFlag ? set + "/" + href : href;
+                if(mobileFlag) {
                     let a = createNode( ["a", {class:"w3-bar-item w3-btn", href: href}, section + " " + index], dropdownContent);
                 }
-            });
-        }
+                else {
+                    type = element.split(":")[0].replace("ing", "").replace("Writ","Write");
+                    let a = createNode( ["a", {class:"w3-padding-small w3-button " + color, href: href}, type + " " + index], div);
+                }
+            }
+        });
+    }
+
+    if(mobileFlag) {
         document.querySelectorAll(".w3-dropdown-click button").forEach(elem => { 
             elem.onclick = function (e) {e.target.nextElementSibling.classList.toggle("w3-show")}; 
         });
     }
-    else {
-        for (let i = 1; i <= length; i++) {
-            let number = (i < 10  && !html.includes("og") ? "0" + i : i);
-            let set = setFlag ? sets : sets + number;
-            let before = setFlag && html.includes("og") ? true : false;
-            div = createNode( ["div", {class:"w3-bar w3-section"}, ""], main, before);
-            div.style.fontSize = "14px";
-            if(!setFlag) { createNode( ["span", {class:"w3-bar-item w3-btn w3-padding-small my-color"}, set.toUpperCase()], div); }
-            sections.forEach( element => {
-                let section = element.split(":")[0];
-                for (let index = 1; index <= parseInt(element.split(":")[1]); index++) {
-                    let href = set + "-" + section.toLowerCase() + index + ".html";
-                    href = !setFlag ? set + "/" + href : href;
-                    type = element.split(":")[0].replace("ing", "").replace("Writ","Write");
-                    let a = createNode( ["a", {class:"w3-padding-small w3-button " + color, href: href}, type + " " + index], div);
-                }
-            });
-        }
-    }
 
     if(setFlag) { 
         href = "../" + uri.split("/").slice(-3)[0] + ".html"
-        categoryBtn = createNode( ["a", {class:"w3-btn w3-left w3-section w3-large " + color, href:href}, "See Same Category Passage"], div); 
+        categoryBtn = createNode( ["a", {class:"w3-btn w3-left w3-section w3-large " + color, href:href}, "See Same Category Questions"], div); 
         testBtn = createNode( ["button", {class:"w3-btn w3-right w3-section w3-large " + color, id:"test"}, "Test"], div); 
         if(mobileFlag) { 
             testBtn.className += " w3-block"; 
@@ -884,25 +875,25 @@ function updateNav() {
 
     }
     else {
-        function filterTag(element) {
-            selector = ".w3-bar.w3-section " + (mobileFlag ? "> div" : "a" );
-            document.querySelectorAll(selector).forEach( elem => {
-                
-                if(mobileFlag) {
-                    elem.children[0].style.display = "none";
-                    elem.children[1].style.display = "block";
-                    for (let i = 0; i < elem.children[1].children.length; i++) {
-                        const e = elem.children[1].children[i];
-                        e.style.display = "none";
-                        if(element.split(":")[1].includes(e.href.split("/").splice(-1)[0])) {      
-                            e.style.display = "inline-block";     
-                            e.className = e.className.replace("w3-bar-item ",color + " w3-padding-small ");
-                        }
-                    }
-                }
-                else {
-                    elem.style.display = "none";
-                    if(element.split(":")[1].includes(elem.href.split("/").splice(-1)[0])) { elem.style.display = "table-cell"; }
+
+        function filterSet(element) {
+
+            document.querySelector("#description").classList.add("w3-hide");
+            document.querySelectorAll("#setsDiv > div").forEach( element => {
+                element.classList.add("w3-hide");
+            });
+
+            let setDiv = document.querySelector("#setDiv");
+            if(!setDiv) {
+                setDiv = createNode(["div", {class:"w3-section", id:"setDiv"}, ""], document.querySelector("#setsDiv"), true);
+            }
+            setDiv.classList.remove("w3-hide");
+            setDiv.innerHTML = "";
+
+            document.querySelectorAll("#setsDiv a").forEach( elem => {
+                if(element.split(":")[1].includes(elem.href.split("/").splice(-1)[0])) {
+                    innerText = elem.href.split("/").slice(-2)[0].toUpperCase() + " " + elem.innerText;
+                    createNode(["a", {class:"w3-left w3-button w3-padding-small my-margin-small " + color, href:elem.href}, innerText], setDiv);
                 }
             }) 
         }
@@ -922,12 +913,13 @@ function updateNav() {
                     button.onclick = function(e) {  
                         categroyDiv.querySelectorAll("button").forEach(elem => { elem.classList.remove(color); });
                         e.target.classList.toggle(color);
-                        filterTag(element); }
+                        filterSet(element); }
                 })
             };
         }
+        
         let search = createNode( ["button", {class:"w3-bar-item w3-button w3-right"}, "Search"], div);
-        search.onclick = function (e) { filter(e) };
+        search.onclick = function (e) { filterTag(e) };
         
         if(mobileFlag) { search.classList.toggle("w3-padding-small") }
         categroyDiv = createNode( ["div", {class:"w3-padding-small w3-card w3-white"}, ""], categoryDiv);
@@ -1015,7 +1007,7 @@ function updateNotes() {
     var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.  
     if(document.querySelector("#tagDiv")) {
         let search = createNode( ["button", {class:"w3-bar-item w3-button w3-right w3-padding-small"}, "Search"], document.querySelector("#tagDiv").children[0]);
-        search.onclick = function (e) { filter(e) };
+        search.onclick = function (e) { filterTag(e) };
     }
     
 
@@ -1176,7 +1168,7 @@ function updateUI() {
     function setHeight(article) {
         if(!article) {return}
         article.style.height = screen.height / 3 + "px";
-        article.style.overflow = "scroll";
+        article.style.overflowY = "scroll";
         article.classList.add("w3-section")
     }
 
@@ -1191,7 +1183,7 @@ function updateUI() {
         for (let i = 0; i < questions.length; i++) {
             const element = questions[i];
             let button = createNode(["button", {class:"w3-bar-item w3-button " + color}, i + 1], pageBar);
-            if (uri.includes("reading")) { button.style.padding = "5px"; }
+            if (uri.includes("reading") && mobileFlag) { button.style.padding = "5px"; }
             button.onclick = function (e) {
                id = "question" + e.target.textContent
                questionDiv.innerHTML = questions[parseInt(e.target.textContent) - 1].innerHTML
@@ -1235,11 +1227,15 @@ function updateUI() {
 }
 
 function initialize() {
-
-    updateNav();
+    if(uri.includes("blog")) { document.querySelector("nav").classList.toggle("w3-hide"); }
     addInputColor();
-    if(uri.includes("blog") || uri.includes("notes")) { updateNotes(); } 
-    if(!uri.includes("blog") && !uri.includes("notes")) { updateUI(); } 
+    if(uri.includes("blog") || uri.includes("notes")) { 
+        updateNotes(); 
+    } 
+    if(uri.includes("toefl/og/") || uri.includes("tpo/")) { 
+        updateNav();
+        updateUI(); 
+    } 
     document.querySelectorAll(".highlight").forEach(element => { addHighlight(element); });
 
     document.querySelectorAll(".my-color").forEach(element => {
