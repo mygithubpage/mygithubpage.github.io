@@ -606,7 +606,11 @@ function Get-Translation ($Content) {
 
     while(!$result.innerText) { 
         Start-Sleep 1
-        $textarea.value = $content
+        $textarea.value = $Content
+        if($ie.LocationURL -eq "https://translate.google.com/") {
+            Set-Clipboard $Content
+            return
+        }
         $ie.Document.IHTMLDocument3_getElementById("gt-submit").click()
         $result = $ie.Document.IHTMLDocument3_getElementById("result_box")
     }
@@ -1175,7 +1179,7 @@ function Get-Speaking() {
     for ($i = 1; $i -le $links.Count; $i++) {
         "$sets$number$letter$i"
         $filePath = "$prefix$i"
-        <#
+        
         if (Test-Path "$xmlPath\$filePath.xml") { 
             $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
             Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
@@ -1277,7 +1281,7 @@ function Get-Writing () {
     for ($i = 1; $i -le $links.Count; $i++) {
         "$sets$number$letter$i"
         $filePath = "$prefix$i"
-        <#
+        
         if (Test-Path "$xmlPath\$filePath.xml") { 
             $xml = [xml] (Get-Content "$xmlPath\$filePath.xml")
             Add-XmlNode ("Category", @{}, $category[$i-1]) $xml (Select-Xml "//TestItem" $xml).Node | Out-Null
@@ -1466,7 +1470,7 @@ function Get-Score ()
 $global:website = "https://top.zhan.com/toefl"
 $global:sections = "Reading", "Listening", "Speaking", "Writing"
 $global:time = @("45", "60", "60"), @("15", "30", "20")
-$global:sets = "OG"
+$global:sets = "TPO"
 $global:setsLength = if ($sets -eq "OG") {3} else {5}
 
 $global:xmlPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\Sampler\forml1"
@@ -1476,19 +1480,19 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 1; $n -le 3; $n++) 
+for ($n = 1; $n -le 53; $n++) 
 {
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) { "$number" } else {"$($number - $number % 4 + 4)"}
     $location = if ($sets -eq "TPO") { "alltpo$tpos" } else { $sets.ToLower()}
     if ($number -lt 10 -and $sets -eq "TPO") {$number = "0$number"}
     New-Item -Path "$xmlPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
-    #Write-Host "$sets$number"
-    #Get-Reading
-    #Get-Listening 
-    #Get-Speaking 
-    #Get-Writing
-    New-TPOHtml
+    Write-Host "$sets$number"
+    Get-Reading
+    Get-Listening 
+    Get-Speaking 
+    Get-Writing
+    #New-TPOHtml
 }
 
 #Update-SamplerXml 
