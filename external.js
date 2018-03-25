@@ -90,6 +90,9 @@ function addHighlight(element) {
         if(element.tagName === "BUTTON") {
             element.style.border = "1px solid " + backgroundColor;
         }
+        if(element.tagName === "U") {
+            element.style.textDecoration = "underline " + backgroundColor + " solid";
+        }
     }
 }
 
@@ -577,11 +580,11 @@ function startTest() {
             if(mobileFlag) {
                 section.style.borderTop= "3px solid " + backgroundColor;
                 article.style.height = screen.height - section.offsetHeight - 80 + "px";
-                article.style.overflow = "scroll";
+                article.style.overflowY = "scroll";
             }
             else{
                 article.style.height = "680px";
-                article.style.overflow = "scroll";
+                article.style.overflowY = "scroll";
                 section.classList.add("w3-padding");
             }
             
@@ -967,6 +970,7 @@ function updateNotes() {
     
             ["og-example-writing1.html","Example Integrated Writing"],
             ["sample-question-writing1.html", "Sample Integrated Writing"],
+            ["official-guide.html", "Guide" ],
             ["performance-feedback.html", "Performance"],
             ["scoring-rubric.html", "Scoring"]
         ];
@@ -1177,7 +1181,7 @@ function updateUI() {
         questions.forEach(element => {element.classList.toggle("w3-hide")})
         questionDiv = createNode(["div", {class:"w3-section"}, ""], document.querySelector("main"))
         questionDiv.style.height = screen.height / 3 + "px";
-        questionDiv.style.overflow = "scroll";
+        questionDiv.style.overflowY = "scroll";
         pageBar = createNode(["div", {class:"w3-bar"}, ""], questionDiv);
         questionDiv = createNode(["div", {}, ""], questionDiv);
         for (let i = 0; i < questions.length; i++) {
@@ -1236,8 +1240,7 @@ function initialize() {
         updateNav();
         updateUI(); 
     } 
-    document.querySelectorAll(".highlight").forEach(element => { addHighlight(element); });
-
+    document.querySelectorAll(".highlight, h1, h2, h3, h4, h5, h6, b, u").forEach(element => { addHighlight(element); });
     document.querySelectorAll(".my-color").forEach(element => {
         element.classList.remove("my-color");
         element.classList.add(color);
@@ -1280,7 +1283,7 @@ function initialize() {
     if(audio && uri.includes("listening")) {
         n = 0;
         let listening = document.querySelector("#listening-text");
-        listening.style.overflow = "scroll";
+        listening.style.overflowY = "scroll";
         listening.style.height = screen.height - audio.offsetTop - 160 + "px";
         audio.addEventListener("timeupdate", function (e) {
             let duration = parseFloat(timeSpan[n].getAttribute("data-times")) + parseFloat(timeSpan[n].getAttribute("data-time"));
@@ -1295,14 +1298,30 @@ function initialize() {
         });
     }
     if(uri.includes("topic")) {
-        addHighlight(document.querySelector("h3"));
-        document.querySelector("div.w3-bar").classList.toggle("w3-hide");
+        question = document.querySelector("section");
         article = document.querySelector("article");
+        article.classList.toggle("w3-section");
+        question.classList.toggle("w3-hide");
+        questionDiv = createNode(["div", {}, ""], article, true);
+        questionDiv.innerHTML = question.innerHTML;
         var textarea = addTextarea(true, document.querySelector("main"), true);
         textarea.style.height = screen.height / 4 - 96 + "px";
         article.style.height = screen.height / 2 - 96 + "px";
-        article.style.overflow = "scroll";
+        article.style.overflowY = "scroll";
         
+    }
+
+    if(html.includes("essay")) {
+        let input = document.querySelector("#sidebar input");
+        input.style.width = "100%";
+        
+        input.oninput = function (e) {
+            document.querySelectorAll("#sidebar button").forEach(elem => { 
+                if(!elem.textContent.includes(e.target.value)) { elem.classList.add("w3-hide");}
+                else { elem.classList.remove("w3-hide"); }
+            });
+        }
+
     }
 
     if(uri.includes("blog")) { removeLeadingWhiteSpace(); } // Remove Leading WhiteSpace in pre tag.

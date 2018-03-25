@@ -214,15 +214,15 @@ Original One Light Syntax theme from https:/.com/atom/one-light-syntax
 /* My Element */
 @media (min-width:600px) {
   #sidebar {
-    margin-top:-16; 
+    margin-top:-16px; 
     width:25%;
   }
 }
 
 @media (max-width:600px) {
   #sidebar {
-    margin-top:-16; 
-    width:75%;
+    margin-top:-16px; 
+    width:100%;
   }
 }
 

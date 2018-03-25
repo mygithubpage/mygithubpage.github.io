@@ -1338,7 +1338,7 @@ function Get-Writing () {
             $nodes = `
             @(
                 (Update-Characters $document.getElementsByClassName("audio_topic")[0].innerText),
-                "Summarize the points made in the lecture, being sure to explain how they oppose specific points made in the reading passage.",
+                (Update-Characters $document.getElementsByClassName("tigan")[0].innerText)
                 "Sampler\SAWQ.wav"
             )  
 
@@ -1505,7 +1505,7 @@ $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 
 Test-Denpendency
 
-for ($n = 11; $n -le 53; $n++) 
+for ($n = 12; $n -le 53; $n++) 
 {
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) { "$number" } else {"$($number - $number % 4 + 4)"}
