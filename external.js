@@ -1,10 +1,7 @@
 // My Personal JavaScript
 
-ogCategoryString = "Politics:og1-reading1.html;Psychology:og1-reading2.html;Geography:og1-reading3.html,og2-reading3.html;Biology:og2-reading1.html;Art:og2-reading2.html;Sociology:og3-reading1.html;Ecology:og3-reading2.html,og3-reading3.html&Teacher And Student Discussion:og1-listening1.html,og2-listening1.html,og3-listening4.html;Environmental Science:og1-listening2.html,og3-listening2.html;Philosophy:og1-listening3.html;Course Inquiry:og1-listening4.html,og2-listening4.html,og3-listening1.html;Botany:og1-listening5.html;Business:og1-listening6.html;History:og2-listening2.html,og3-listening3.html;Biology:og2-listening3.html;Astronomy:og2-listening5.html,og3-listening6.html;Art Category:og2-listening6.html,og3-listening5.html&Location:og1-speaking1.html;Learn:og1-speaking2.html,og3-speaking2.html;Logistics Services:og1-speaking3.html,og3-speaking3.html;Sociology:og1-speaking4.html;Time Conflict:og1-speaking5.html,og3-speaking5.html;Business:og1-speaking6.html,og3-speaking6.html;Life:og2-speaking1.html;Friend:og2-speaking2.html;Infrastructure Construction:og2-speaking3.html;Psychology:og2-speaking4.html,og2-speaking6.html,og3-speaking4.html;Dilemma Choice:og2-speaking5.html;Feature:og3-speaking1.html&Biology:og1-writing1.html;Family:og1-writing2.html;Education:og2-writing1.html;Lifestyle:og2-writing2.html;Art:og3-writing1.html;Friend:og3-writing2.html"
+categoryString = "Politics:og1-reading1.html;Psychology:og1-reading2.html,tpo06-reading3.html,tpo13-reading3.html,tpo21-reading3.html,tpo30-reading1.html;Geography:og1-reading3.html,og2-reading3.html,tpo01-reading1.html,tpo03-reading2.html,tpo04-reading3.html,tpo06-reading2.html,tpo07-reading1.html,tpo15-reading3.html,tpo19-reading3.html,tpo21-reading1.html,tpo27-reading2.html,tpo28-reading1.html,tpo36-reading1.html,tpo52-reading1.html;Biology:og2-reading1.html,tpo02-reading2.html,tpo04-reading1.html,tpo05-reading3.html,tpo08-reading2.html,tpo09-reading3.html,tpo11-reading2.html,tpo11-reading3.html,tpo13-reading2.html,tpo15-reading1.html,tpo17-reading2.html,tpo17-reading3.html,tpo20-reading3.html,tpo24-reading2.html,tpo25-reading3.html,tpo26-reading2.html,tpo27-reading3.html,tpo28-reading3.html,tpo30-reading2.html,tpo31-reading1.html,tpo32-reading3.html,tpo34-reading3.html,tpo36-reading2.html,tpo36-reading3.html,tpo37-reading2.html,tpo38-reading1.html,tpo38-reading2.html,tpo38-reading3.html,tpo40-reading3.html,tpo42-reading1.html,tpo44-reading1.html,tpo47-reading2.html,tpo47-reading3.html;Art:og2-reading2.html,tpo01-reading2.html,tpo02-reading3.html,tpo03-reading1.html,tpo04-reading2.html,tpo10-reading1.html,tpo11-reading1.html,tpo12-reading2.html,tpo22-reading2.html,tpo23-reading3.html,tpo27-reading1.html,tpo29-reading1.html,tpo34-reading1.html,tpo41-reading1.html,tpo44-reading2.html;Sociology:og3-reading1.html,tpo13-reading1.html,tpo29-reading2.html,tpo31-reading2.html,tpo33-reading2.html,tpo41-reading3.html,tpo46-reading2.html,tpo47-reading1.html,tpo50-reading1.html;Ecology:og3-reading2.html,og3-reading3.html,tpo02-reading1.html,tpo03-reading3.html,tpo05-reading1.html,tpo12-reading3.html,tpo19-reading2.html,tpo23-reading1.html,tpo24-reading1.html,tpo31-reading3.html,tpo39-reading2.html,tpo39-reading3.html,tpo40-reading2.html,tpo42-reading2.html,tpo45-reading2.html,tpo45-reading3.html,tpo46-reading3.html,tpo53-reading2.html;Botany:tpo01-reading3.html,tpo22-reading1.html,tpo32-reading1.html,tpo44-reading3.html;Anthropology:tpo05-reading2.html,tpo08-reading1.html,tpo09-reading1.html,tpo12-reading1.html,tpo14-reading2.html,tpo14-reading3.html,tpo20-reading2.html,tpo24-reading3.html,tpo28-reading2.html,tpo37-reading1.html,tpo51-reading3.html;History:tpo06-reading1.html,tpo07-reading2.html,tpo07-reading3.html,tpo10-reading3.html,tpo16-reading1.html,tpo17-reading1.html,tpo18-reading1.html,tpo18-reading2.html,tpo19-reading1.html,tpo26-reading1.html,tpo26-reading3.html,tpo29-reading3.html,tpo30-reading3.html,tpo33-reading1.html,tpo34-reading2.html,tpo37-reading3.html,tpo39-reading1.html,tpo40-reading1.html,tpo43-reading1.html,tpo46-reading1.html,tpo49-reading2.html,tpo49-reading3.html,tpo50-reading2.html,tpo51-reading1.html,tpo53-reading1.html;Astronomy:tpo08-reading3.html,tpo16-reading3.html,tpo22-reading3.html,tpo41-reading2.html,tpo42-reading3.html,tpo50-reading3.html,tpo51-reading2.html;Education:tpo09-reading2.html;Meteorology:tpo10-reading2.html,tpo18-reading3.html,tpo43-reading3.html,tpo48-reading3.html;Business:tpo14-reading1.html,tpo25-reading2.html;Archeology:tpo15-reading2.html,tpo33-reading3.html,tpo48-reading2.html,tpo52-reading2.html,tpo53-reading3.html;Chemistry:tpo16-reading2.html,tpo43-reading2.html;Demographics:tpo20-reading1.html,tpo32-reading2.html,tpo48-reading1.html;Agriculture:tpo21-reading2.html,tpo23-reading2.html,tpo35-reading1.html,tpo35-reading2.html,tpo35-reading3.html,tpo52-reading3.html;Child:tpo25-reading1.html,tpo45-reading1.html;Youth:tpo49-reading1.html&Teacher And Student Discussion:og1-listening1.html,og2-listening1.html,og3-listening4.html,tpo01-listening4.html,tpo02-listening1.html,tpo03-listening1.html,tpo04-listening1.html,tpo04-listening4.html,tpo05-listening4.html,tpo06-listening4.html,tpo08-listening4.html,tpo09-listening1.html,tpo10-listening1.html,tpo12-listening1.html,tpo13-listening1.html,tpo14-listening4.html,tpo15-listening4.html,tpo16-listening4.html,tpo17-listening1.html,tpo19-listening1.html,tpo20-listening4.html,tpo21-listening1.html,tpo22-listening1.html,tpo22-listening4.html,tpo24-listening4.html,tpo25-listening1.html,tpo25-listening4.html,tpo26-listening4.html,tpo27-listening4.html,tpo28-listening1.html,tpo28-listening4.html,tpo29-listening4.html,tpo30-listening4.html,tpo31-listening1.html,tpo32-listening4.html,tpo33-listening4.html,tpo34-listening4.html,tpo35-listening4.html,tpo36-listening4.html,tpo37-listening1.html,tpo37-listening4.html,tpo38-listening4.html,tpo39-listening1.html,tpo39-listening4.html,tpo40-listening1.html,tpo42-listening1.html,tpo43-listening4.html,tpo44-listening1.html,tpo44-listening4.html,tpo45-listening4.html,tpo47-listening4.html,tpo50-listening1.html,tpo50-listening2.html,tpo51-listening1.html,tpo51-listening4.html,tpo52-listening1.html,tpo52-listening4.html,tpo53-listening1.html;Environmental Science:og1-listening2.html,og3-listening2.html,tpo03-listening2.html,tpo09-listening3.html,tpo11-listening5.html,tpo12-listening6.html,tpo17-listening3.html,tpo20-listening3.html,tpo23-listening3.html,tpo33-listening3.html,tpo34-listening3.html,tpo36-listening2.html,tpo40-listening3.html,tpo40-listening5.html,tpo42-listening5.html,tpo44-listening6.html,tpo47-listening6.html,tpo48-listening3.html,tpo52-listening3.html,tpo53-listening3.html;Philosophy:og1-listening3.html,tpo02-listening5.html,tpo28-listening2.html;Course Inquiry:og1-listening4.html,og2-listening4.html,og3-listening1.html,tpo03-listening4.html,tpo21-listening4.html,tpo23-listening4.html,tpo29-listening1.html,tpo31-listening4.html,tpo36-listening1.html,tpo41-listening1.html,tpo46-listening4.html,tpo47-listening1.html,tpo48-listening4.html,tpo49-listening4.html;Botany:og1-listening5.html,tpo02-listening3.html,tpo19-listening5.html,tpo28-listening5.html,tpo34-listening5.html,tpo38-listening2.html,tpo41-listening2.html,tpo43-listening2.html,tpo51-listening2.html;Business:og1-listening6.html,tpo06-listening2.html,tpo11-listening6.html,tpo12-listening3.html,tpo21-listening3.html,tpo26-listening2.html,tpo34-listening6.html,tpo38-listening3.html,tpo42-listening6.html,tpo47-listening5.html;History:og2-listening2.html,og3-listening3.html,tpo08-listening5.html,tpo10-listening3.html,tpo17-listening5.html,tpo18-listening5.html,tpo25-listening5.html,tpo41-listening3.html,tpo45-listening2.html,tpo48-listening6.html,tpo49-listening3.html,tpo51-listening3.html,tpo51-listening6.html,tpo53-listening2.html,tpo53-listening5.html;Biology:og2-listening3.html,tpo01-listening6.html,tpo04-listening2.html,tpo06-listening3.html,tpo07-listening3.html,tpo08-listening2.html,tpo11-listening2.html,tpo12-listening2.html,tpo15-listening6.html,tpo16-listening5.html,tpo18-listening6.html,tpo20-listening6.html,tpo21-listening5.html,tpo24-listening2.html,tpo25-listening2.html,tpo25-listening6.html,tpo26-listening3.html,tpo28-listening3.html,tpo30-listening3.html,tpo32-listening3.html,tpo33-listening5.html,tpo35-listening2.html,tpo36-listening6.html,tpo37-listening6.html,tpo39-listening6.html,tpo45-listening3.html,tpo46-listening2.html,tpo47-listening3.html,tpo48-listening5.html,tpo50-listening3.html;Astronomy:og2-listening5.html,og3-listening6.html,tpo02-listening6.html,tpo03-listening6.html,tpo05-listening3.html,tpo13-listening6.html,tpo14-listening5.html,tpo18-listening2.html,tpo19-listening3.html,tpo21-listening2.html,tpo22-listening3.html,tpo24-listening6.html,tpo26-listening5.html,tpo30-listening5.html,tpo38-listening6.html,tpo41-listening6.html,tpo42-listening3.html,tpo53-listening6.html;Art Category:og2-listening6.html,og3-listening5.html,tpo01-listening2.html,tpo03-listening3.html,tpo03-listening5.html,tpo07-listening2.html,tpo08-listening3.html,tpo09-listening2.html,tpo12-listening5.html,tpo15-listening5.html,tpo16-listening3.html,tpo16-listening6.html,tpo17-listening2.html,tpo18-listening3.html,tpo19-listening6.html,tpo21-listening6.html,tpo22-listening6.html,tpo23-listening6.html,tpo24-listening3.html,tpo25-listening3.html,tpo26-listening6.html,tpo27-listening3.html,tpo27-listening6.html,tpo30-listening6.html,tpo31-listening2.html,tpo33-listening6.html,tpo34-listening2.html,tpo35-listening5.html,tpo37-listening5.html,tpo38-listening5.html,tpo40-listening2.html,tpo41-listening5.html,tpo42-listening2.html,tpo44-listening3.html,tpo46-listening3.html,tpo46-listening5.html,tpo51-listening5.html,tpo52-listening2.html;Library And Bookstore:tpo01-listening1.html,tpo07-listening4.html,tpo09-listening4.html,tpo10-listening4.html,tpo13-listening4.html,tpo14-listening1.html,tpo20-listening1.html,tpo24-listening1.html,tpo27-listening1.html,tpo32-listening1.html,tpo34-listening1.html,tpo49-listening1.html;Geography:tpo01-listening3.html,tpo04-listening5.html,tpo06-listening6.html,tpo07-listening6.html,tpo09-listening5.html,tpo15-listening3.html,tpo16-listening2.html,tpo31-listening3.html,tpo32-listening5.html,tpo35-listening6.html,tpo37-listening2.html,tpo39-listening2.html,tpo49-listening2.html,tpo50-listening6.html;Archeology:tpo01-listening5.html,tpo14-listening6.html,tpo23-listening2.html,tpo24-listening5.html,tpo28-listening6.html,tpo29-listening5.html,tpo31-listening6.html,tpo32-listening2.html,tpo33-listening2.html,tpo35-listening3.html,tpo37-listening3.html,tpo49-listening6.html,tpo52-listening6.html;Psychology:tpo02-listening2.html,tpo10-listening6.html,tpo14-listening2.html,tpo15-listening2.html,tpo30-listening2.html,tpo43-listening3.html;Domestic Services:tpo02-listening4.html,tpo05-listening1.html,tpo06-listening1.html,tpo07-listening1.html,tpo08-listening1.html,tpo11-listening1.html,tpo11-listening4.html,tpo12-listening4.html,tpo15-listening1.html,tpo16-listening1.html,tpo17-listening4.html,tpo18-listening1.html,tpo18-listening4.html,tpo19-listening4.html,tpo23-listening1.html,tpo26-listening1.html,tpo30-listening1.html,tpo33-listening1.html,tpo35-listening1.html,tpo38-listening1.html,tpo40-listening4.html,tpo41-listening4.html,tpo42-listening4.html,tpo43-listening1.html,tpo45-listening1.html,tpo46-listening1.html,tpo48-listening1.html,tpo48-listening2.html,tpo50-listening4.html,tpo53-listening4.html;Literature:tpo04-listening3.html,tpo05-listening6.html,tpo06-listening5.html,tpo13-listening5.html,tpo20-listening5.html,tpo43-listening5.html,tpo47-listening2.html,tpo50-listening5.html;Sociology:tpo04-listening6.html,tpo05-listening2.html,tpo40-listening6.html;Chemistry:tpo05-listening5.html,tpo08-listening6.html,tpo44-listening2.html,tpo45-listening5.html,tpo46-listening6.html,tpo52-listening5.html;Anthropology:tpo07-listening5.html,tpo22-listening2.html,tpo36-listening3.html,tpo39-listening3.html,tpo44-listening5.html,tpo45-listening6.html;Linguistics:tpo09-listening6.html,tpo19-listening2.html,tpo20-listening2.html;Marine Biology:tpo10-listening2.html,tpo17-listening6.html,tpo23-listening5.html,tpo27-listening2.html,tpo31-listening5.html;Ecology:tpo10-listening5.html,tpo13-listening3.html,tpo29-listening2.html;Architecture:tpo11-listening3.html,tpo13-listening2.html,tpo29-listening3.html,tpo29-listening6.html,tpo32-listening6.html,tpo36-listening5.html;Zoology:tpo14-listening3.html,tpo22-listening5.html,tpo27-listening5.html,tpo49-listening5.html;Literature:tpo39-listening5.html;Physics:tpo43-listening6.html&Location:og1-speaking1.html,tpo02-speaking1.html,tpo05-speaking1.html,tpo07-speaking1.html,tpo24-speaking1.html,tpo40-speaking1.html,tpo52-speaking1.html;Learn:og1-speaking2.html,og3-speaking2.html,tpo02-speaking2.html,tpo03-speaking2.html,tpo04-speaking2.html,tpo05-speaking2.html,tpo07-speaking2.html,tpo13-speaking2.html,tpo17-speaking2.html,tpo24-speaking2.html,tpo29-speaking2.html,tpo31-speaking2.html,tpo38-speaking2.html,tpo39-speaking2.html,tpo41-speaking2.html,tpo49-speaking2.html;Logistics Services:og1-speaking3.html,og3-speaking3.html,tpo02-speaking3.html,tpo03-speaking3.html,tpo05-speaking3.html,tpo16-speaking3.html,tpo27-speaking3.html,tpo31-speaking3.html,tpo37-speaking3.html,tpo49-speaking3.html,tpo53-speaking3.html;Sociology:og1-speaking4.html,tpo02-speaking4.html,tpo03-speaking4.html,tpo17-speaking6.html,tpo23-speaking4.html,tpo25-speaking4.html,tpo52-speaking4.html,tpo53-speaking6.html;Time Conflict:og1-speaking5.html,og3-speaking5.html,tpo02-speaking5.html,tpo03-speaking5.html,tpo08-speaking5.html,tpo12-speaking5.html,tpo19-speaking5.html,tpo20-speaking5.html,tpo23-speaking5.html,tpo27-speaking5.html,tpo31-speaking5.html,tpo33-speaking5.html,tpo34-speaking5.html,tpo36-speaking5.html,tpo39-speaking5.html,tpo40-speaking5.html,tpo46-speaking5.html,tpo49-speaking5.html,tpo52-speaking5.html;Business:og1-speaking6.html,og3-speaking6.html,tpo07-speaking6.html,tpo08-speaking6.html,tpo18-speaking6.html,tpo26-speaking6.html,tpo29-speaking6.html,tpo33-speaking6.html,tpo40-speaking6.html,tpo44-speaking4.html,tpo48-speaking6.html;Life:og2-speaking1.html,tpo08-speaking2.html,tpo16-speaking2.html,tpo18-speaking2.html,tpo19-speaking2.html,tpo23-speaking2.html,tpo25-speaking2.html,tpo33-speaking2.html,tpo36-speaking2.html,tpo42-speaking2.html,tpo45-speaking2.html,tpo46-speaking2.html,tpo48-speaking2.html;Friend:og2-speaking2.html;Infrastructure Construction:og2-speaking3.html,tpo01-speaking3.html,tpo08-speaking3.html,tpo10-speaking3.html,tpo11-speaking3.html,tpo12-speaking3.html,tpo13-speaking3.html,tpo15-speaking3.html,tpo17-speaking3.html,tpo19-speaking3.html,tpo20-speaking3.html,tpo24-speaking3.html,tpo28-speaking3.html,tpo29-speaking3.html,tpo30-speaking3.html,tpo32-speaking3.html,tpo33-speaking3.html,tpo40-speaking3.html,tpo46-speaking3.html,tpo48-speaking3.html,tpo50-speaking3.html,tpo51-speaking3.html;Psychology:og2-speaking4.html,og2-speaking6.html,og3-speaking4.html,tpo01-speaking6.html,tpo03-speaking6.html,tpo04-speaking4.html,tpo05-speaking6.html,tpo06-speaking4.html,tpo07-speaking4.html,tpo10-speaking6.html,tpo12-speaking4.html,tpo13-speaking4.html,tpo14-speaking4.html,tpo15-speaking4.html,tpo16-speaking4.html,tpo16-speaking6.html,tpo19-speaking4.html,tpo20-speaking6.html,tpo22-speaking4.html,tpo30-speaking4.html,tpo31-speaking4.html,tpo34-speaking4.html,tpo40-speaking4.html,tpo41-speaking4.html,tpo41-speaking6.html,tpo46-speaking6.html,tpo47-speaking4.html,tpo49-speaking4.html,tpo50-speaking4.html,tpo53-speaking4.html;Dilemma Choice:og2-speaking5.html,tpo53-speaking5.html;Feature:og3-speaking1.html,tpo03-speaking1.html,tpo20-speaking1.html,tpo30-speaking1.html;Object:tpo01-speaking1.html,tpo06-speaking1.html,tpo11-speaking1.html,tpo12-speaking1.html,tpo13-speaking1.html,tpo14-speaking1.html,tpo26-speaking1.html,tpo40-speaking2.html,tpo46-speaking1.html,tpo53-speaking1.html;Media:tpo01-speaking2.html,tpo20-speaking2.html,tpo26-speaking2.html,tpo28-speaking2.html;Marketing:tpo01-speaking4.html,tpo05-speaking4.html,tpo10-speaking4.html,tpo20-speaking4.html,tpo28-speaking4.html,tpo39-speaking4.html,tpo51-speaking4.html;Social Activity:tpo01-speaking5.html,tpo05-speaking5.html,tpo13-speaking5.html,tpo15-speaking5.html,tpo21-speaking5.html,tpo26-speaking5.html,tpo47-speaking5.html,tpo51-speaking5.html;Economic:tpo02-speaking6.html,tpo12-speaking6.html,tpo38-speaking6.html;Situation:tpo04-speaking1.html,tpo16-speaking1.html,tpo19-speaking1.html,tpo23-speaking1.html,tpo28-speaking1.html,tpo29-speaking1.html,tpo32-speaking1.html,tpo33-speaking1.html;Teaching Activities:tpo04-speaking3.html,tpo06-speaking3.html,tpo07-speaking3.html,tpo09-speaking3.html,tpo14-speaking3.html,tpo26-speaking3.html,tpo34-speaking3.html,tpo35-speaking3.html,tpo36-speaking3.html,tpo41-speaking3.html,tpo42-speaking3.html,tpo47-speaking3.html;Other:tpo04-speaking5.html,tpo06-speaking5.html,tpo28-speaking5.html,tpo30-speaking5.html,tpo35-speaking6.html,tpo37-speaking5.html,tpo38-speaking5.html,tpo43-speaking5.html,tpo45-speaking5.html;Art Appreciation:tpo04-speaking6.html;Jobs:tpo06-speaking2.html,tpo32-speaking2.html,tpo43-speaking2.html,tpo43-speaking3.html,tpo44-speaking1.html,tpo44-speaking2.html;Education:tpo06-speaking6.html,tpo21-speaking4.html,tpo35-speaking1.html,tpo35-speaking2.html,tpo36-speaking1.html,tpo37-speaking1.html,tpo37-speaking2.html,tpo39-speaking1.html,tpo47-speaking2.html,tpo51-speaking2.html;Job Completed:tpo07-speaking5.html,tpo10-speaking5.html,tpo16-speaking5.html,tpo17-speaking5.html,tpo18-speaking5.html,tpo22-speaking5.html,tpo29-speaking5.html,tpo32-speaking5.html,tpo42-speaking5.html,tpo48-speaking5.html,tpo50-speaking5.html;Experience:tpo08-speaking1.html,tpo09-speaking1.html,tpo10-speaking1.html,tpo17-speaking1.html;Biology:tpo08-speaking4.html,tpo09-speaking6.html,tpo13-speaking6.html,tpo14-speaking6.html,tpo15-speaking6.html,tpo17-speaking4.html,tpo18-speaking4.html,tpo19-speaking6.html,tpo22-speaking6.html,tpo23-speaking6.html,tpo26-speaking4.html,tpo27-speaking4.html,tpo29-speaking4.html,tpo30-speaking6.html,tpo31-speaking6.html,tpo32-speaking4.html,tpo32-speaking6.html,tpo33-speaking4.html,tpo34-speaking6.html,tpo36-speaking6.html,tpo37-speaking4.html,tpo38-speaking4.html,tpo39-speaking6.html,tpo42-speaking4.html,tpo43-speaking6.html,tpo44-speaking6.html,tpo45-speaking4.html,tpo45-speaking6.html,tpo46-speaking4.html,tpo48-speaking4.html,tpo49-speaking6.html,tpo50-speaking6.html,tpo51-speaking6.html;Development Of:tpo09-speaking2.html,tpo10-speaking2.html,tpo11-speaking2.html,tpo12-speaking2.html,tpo22-speaking2.html,tpo27-speaking2.html,tpo30-speaking2.html,tpo34-speaking2.html;Art:tpo09-speaking4.html,tpo11-speaking4.html,tpo36-speaking4.html;Stay:tpo09-speaking5.html,tpo11-speaking5.html,tpo14-speaking5.html,tpo24-speaking5.html,tpo25-speaking5.html,tpo35-speaking5.html,tpo41-speaking5.html,tpo44-speaking5.html;Interior Design:tpo11-speaking6.html;Abstract:tpo14-speaking2.html,tpo15-speaking2.html,tpo21-speaking2.html;Method:tpo15-speaking1.html,tpo25-speaking1.html,tpo31-speaking1.html,tpo47-speaking1.html,tpo48-speaking1.html;Variety:tpo18-speaking1.html,tpo22-speaking1.html;Extracurricular Activities:tpo18-speaking3.html,tpo21-speaking3.html,tpo22-speaking3.html,tpo23-speaking3.html,tpo25-speaking3.html,tpo38-speaking3.html,tpo39-speaking3.html,tpo43-speaking4.html,tpo44-speaking3.html,tpo45-speaking3.html,tpo52-speaking3.html;Event:tpo21-speaking1.html,tpo34-speaking1.html,tpo42-speaking1.html,tpo43-speaking1.html,tpo50-speaking1.html,tpo53-speaking2.html;History:tpo21-speaking6.html,tpo27-speaking6.html,tpo37-speaking6.html,tpo47-speaking6.html;Environmental Science:tpo24-speaking4.html,tpo35-speaking4.html,tpo42-speaking6.html,tpo52-speaking6.html;Literature:tpo24-speaking6.html;Geology:tpo25-speaking6.html,tpo28-speaking6.html;Character:tpo27-speaking1.html,tpo41-speaking1.html,tpo45-speaking1.html,tpo50-speaking2.html;Suggest:tpo38-speaking1.html,tpo49-speaking1.html,tpo51-speaking1.html;Activity:tpo52-speaking2.html&Biology:og1-writing1.html,tpo04-writing1.html,tpo10-writing1.html,tpo15-writing1.html,tpo24-writing1.html,tpo26-writing1.html,tpo29-writing1.html,tpo31-writing1.html,tpo34-writing1.html,tpo43-writing1.html,tpo45-writing1.html,tpo47-writing1.html,tpo48-writing1.html,tpo49-writing1.html,tpo51-writing1.html;Family:og1-writing2.html,tpo13-writing2.html,tpo26-writing2.html,tpo28-writing2.html;Education:og2-writing1.html,tpo01-writing2.html,tpo06-writing1.html,tpo07-writing2.html,tpo11-writing1.html,tpo12-writing2.html,tpo18-writing2.html,tpo22-writing2.html,tpo29-writing2.html,tpo33-writing2.html,tpo40-writing2.html,tpo43-writing2.html,tpo50-writing2.html;Lifestyle:og2-writing2.html,tpo03-writing2.html,tpo14-writing2.html,tpo16-writing2.html,tpo37-writing2.html,tpo49-writing2.html;Art:og3-writing1.html,tpo03-writing1.html,tpo12-writing1.html;Friend:og3-writing2.html;Business:tpo01-writing1.html,tpo02-writing1.html,tpo19-writing1.html;Abstract:tpo02-writing2.html,tpo31-writing2.html,tpo38-writing2.html;Society:tpo04-writing2.html,tpo05-writing2.html,tpo06-writing2.html,tpo35-writing2.html,tpo41-writing2.html,tpo52-writing2.html;Archeology:tpo05-writing1.html,tpo13-writing1.html,tpo16-writing1.html,tpo25-writing1.html,tpo33-writing1.html;Ecology:tpo07-writing1.html,tpo14-writing1.html,tpo17-writing1.html,tpo18-writing1.html,tpo20-writing1.html,tpo21-writing1.html,tpo23-writing1.html,tpo39-writing1.html;History:tpo08-writing1.html,tpo28-writing1.html,tpo30-writing1.html,tpo32-writing1.html,tpo35-writing1.html,tpo44-writing1.html;Media:tpo08-writing2.html,tpo17-writing2.html,tpo19-writing2.html,tpo47-writing2.html,tpo51-writing2.html;Science And Technology:tpo09-writing1.html,tpo09-writing2.html,tpo11-writing2.html,tpo22-writing1.html,tpo36-writing1.html,tpo37-writing1.html,tpo46-writing1.html,tpo50-writing1.html,tpo52-writing1.html;Child:tpo10-writing2.html,tpo15-writing2.html,tpo24-writing2.html,tpo34-writing2.html,tpo44-writing2.html;Jobs:tpo20-writing2.html,tpo21-writing2.html,tpo23-writing2.html,tpo27-writing2.html,tpo30-writing2.html,tpo39-writing2.html,tpo42-writing2.html;Youth:tpo25-writing2.html,tpo32-writing2.html,tpo45-writing2.html,tpo46-writing2.html,tpo48-writing2.html;Meteorology:tpo27-writing1.html,tpo40-writing1.html;Government:tpo36-writing2.html,tpo53-writing2.html;Surroundings:tpo38-writing1.html,tpo41-writing1.html,tpo42-writing1.html;Sociology:tpo53-writing1.html"
 
-tpoCategoryString = ""
-
-categoryString = uri.includes("og") ? ogCategoryString : tpoCategoryString;
 
 hideBarItems = document.querySelectorAll(".w3-hide-small");
 sidebarBtn = document.querySelector("#sidebarBtn");
@@ -13,7 +10,7 @@ topNavBtn = document.querySelector("#topNavBtn");
 topNav = document.querySelector("#topNav"); 
 main = document.querySelector("main"); 
 backgroundColor = window.getComputedStyle(document.querySelector("footer")).backgroundColor;
-questions = document.querySelectorAll("#question div");
+questions = document.querySelectorAll("#question > div");
 num = parseInt(html.substr(html.indexOf(".") - 1, 1));
 setFlag = html.includes("-");
 
@@ -31,7 +28,7 @@ function toggleTopNav(thisElem) {
         element.classList.toggle("w3-hide-small");
     });
 
-    // toggle top naviagtion shape
+    // toggle top navigation shape
     if (thisElem.innerText == "\u25B2") {
         thisElem.innerText = "\u25BC";
     } else {
@@ -77,11 +74,11 @@ function removeLeadingWhiteSpace() {
 }
 
 function addHighlight(element) {
-    let highlightElems = document.querySelectorAll("[class*='h-']");
+    let highlightElems = document.querySelectorAll("span[class*='h-']");
     if (highlightElems) {
         highlightElems.forEach(element => {
-            element.addEventListener("mouseover", function() {highlight(element)} );
-            element.addEventListener("mouseout", function() {highlight(element)} );
+            element.onmouseover = () => highlight(element);
+            element.onmouseoout = () => highlight(element);
         });
     }
     if(element) {
@@ -110,7 +107,7 @@ function toggleHighlight(element, remove) {
 function addInputColor() {
     let inputs = document.getElementsByTagName("input");
 
-    var addColor = function(element) {    
+    var addColor = element => {    
 
         if (element.querySelector("input").getAttribute("type") === "radio") {
             let name = element.querySelector("input").getAttribute("name");
@@ -149,9 +146,7 @@ function addInputColor() {
 
     }
 
-    document.querySelectorAll(".my-label").forEach(element => {
-        element.addEventListener("click", function () { addColor(element); })
-    });
+    document.querySelectorAll(".my-label").forEach(element => element.onclick = () => addColor(element));
 }
 
 function addTextarea(note, parent, before) {
@@ -175,9 +170,7 @@ function addTextarea(note, parent, before) {
     }
 
     if(!note) {
-        textarea.oninput = function (e) {
-            wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1)
-        }
+        textarea.oninput = e => wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1);
     }
 
     textarea.style.resize = "none";
@@ -199,19 +192,19 @@ function addTextarea(note, parent, before) {
 function showSpecialQuestion(article, section) {
     article.querySelectorAll("span").forEach( elem => { 
         if(elem.className.includes("question")) { toggleHighlight(elem, true); }
-    })
+    });
     let inputs = section.querySelectorAll(".my-label input");
     let regEx = /aragraph ./
-    if(regEx.exec(section.children[0].innerText)){
-        let para = regEx.exec(section.children[0].innerText)[0].slice(-1);
+    if(regEx.exec(section.children[0].children[0].innerText)){
+        let para = regEx.exec(section.children[0].children[0].innerText)[0].slice(-1);
         article.querySelectorAll("p")[para - 1].scrollIntoView();
     }
 
     // insert Text
     insertArea = article.querySelectorAll(".insert-area");
-    insertArea.forEach(elem => { elem.innerText = "" });
-    if(section.children[1].innerText.length < 5) {
-        addHighlight(section.children[0]);
+    insertArea.forEach(elem =>  elem.innerText = "" );
+    if(section.children[0].children[1].innerText.length < 3) {
+        addHighlight(section.children[0].children[0]);
         
         insertArea.forEach( elem => { 
             if(elem.getAttribute("data-answer") == "A") { elem.scrollIntoView(); }
@@ -221,19 +214,19 @@ function showSpecialQuestion(article, section) {
         });
         for (let index = 0; index < inputs.length; index++) {
             const element = inputs[index];
-            element.addEventListener("click", function () { 
+            element.onclick = () => { 
                 let inputs = section.querySelectorAll(".my-label input");
                 insertArea.forEach(elem => {
                     elem.innerText = "[" + elem.getAttribute("data-answer") + "] "
                     addHighlight(elem);
                 });
                 insertArea[index].innerText = section.children[0].innerText.split(".")[1] + ". "
-            })
+            }
         }
     }
 
     // highlight
-    let highlight = article.querySelector("." + id)
+    let highlight = article.querySelector("." + id);
     if(highlight) {
         for (let i = 0; i < highlight.children.length; i++) {
             const element = highlight.children[i];
@@ -244,8 +237,8 @@ function showSpecialQuestion(article, section) {
         article.scrollTop = article.scrollTop - (screen.height - section.offsetHeight) / 2 + 64
         index = parseInt(section.children[0].innerText.split(".")[0]) - 1;
         if(questions[index].innerText.includes("highlighted sentence")) {
-            highlight.querySelectorAll(".highlight").forEach( elem => { addHighlight(elem); })
-            section.children[0].innerText = "";
+            highlight.querySelectorAll(".highlight").forEach( elem => addHighlight(elem));
+            section.children[0].children[0].innerText = "";
             article.style.height = Math.max(highlight.offsetHeight, screen.height - section.offsetHeight) + "px";
             highlight.scrollIntoView();
         }
@@ -273,10 +266,10 @@ function startTest() {
             sec = parseInt(timer % 60);
     
             if (timer < 0) { return }
-            let secStr = sec < 10 ? "0" + sec.toString() : sec.toString()
+            let secStr = sec < 10 ? "0" + sec.toString() : sec.toString();
             time.innerHTML = min.toString() + ":" + secStr;
             timer--;
-            setTimeout(function () { startTimer(); }, 1000);
+            setTimeout(() => startTimer(), 1000);
         }
         startTimer();
     }
@@ -298,40 +291,37 @@ function startTest() {
                     button = createNode(["button", {class:"w3-btn w3-block w3-section w3-hide "+color, id:"playAudio"}, "Play Audio"], testDiv, true);
                 }
                 button.classList.toggle("w3-hide");
-                button.onclick = function() { 
+                button.onclick = () => { 
                     audio.play();
                     article.classList.toggle("w3-hide");
                     button.classList.toggle("w3-hide");
-                    audio.addEventListener("ended", function() { onEnd(); });
+                    audio.onended = () => onEnd();
                 };
-            }).then(() => {
-                // Auto-play started
-                audio.addEventListener("ended", function() { onEnd(); });
-            });
+            }).then(() => audio.onended = () => onEnd());
         }
     }
     
     function waitTime(second, onTimeout) {
         setTimer(second);
-        setTimeout(function () { onTimeout(); }, second * 1000);
+        setTimeout( () => onTimeout(), second * 1000);
     }
     
     function endTest() {
         
         document.body.removeChild(document.body.lastChild);
         document.querySelector("nav").classList.toggle("w3-hide");        
-        document.querySelector("main").classList.toggle("w3-hide")
-        document.querySelector("footer").classList.toggle("w3-hide")
+        document.querySelector("main").classList.toggle("w3-hide");
+        document.querySelector("footer").classList.toggle("w3-hide");
     }
     
     function recordAudio() {
         let constraints = { audio: true };
         let data = [];
     
-        let onFulfilled = function (stream) {
+        let onFulfilled = stream => {
             mediaRecorder = new MediaRecorder(stream);
             
-            mediaRecorder.onstop = function (e) {
+            mediaRecorder.onstop = e => {
                 var audio = document.createElement('audio');
                 audio.setAttribute('controls', 'controls');
                 testDiv.appendChild(audio);
@@ -365,7 +355,7 @@ function startTest() {
 
     function checkAnswer(id) {
         
-        let answer = testDiv.querySelector(".my-answer").innerText;
+        let answer = testDiv.querySelector(".answer").innerText;
         let flag;
         let selection;
         
@@ -397,8 +387,8 @@ function startTest() {
                 }                
             }
             if(uri.includes("reading")) {
-                let category = answer.split("@")
-                let keys = new Array(answer.length + 1)
+                let category = answer.split("@");
+                let keys = new Array(answer.length + 1);
                 answer = ""
                 for (let i = 0; i < category[0].length; i++) { keys[category[0].charCodeAt(i) - 65] = "A" }
                 for (let i = 0; i < category[1].length; i++) { keys[category[1].charCodeAt(i) - 65] = "B" }
@@ -449,7 +439,7 @@ function startTest() {
             }
         }
 
-        if(uri.includes("speaking") || uri.includes("writing")) {
+        if((/\/speaking|\/writing/).exec(uri)) {
             modal = createNode( ["div", {class:"w3-modal"}, ""], testDiv);
             modalContent = createNode( ["div", {class:"w3-modal-content"}, ""], modal);
             let header = createNode( ["div", {class:"w3-container " + color}, ""], modalContent);
@@ -472,11 +462,11 @@ function startTest() {
         if (uri.includes("speaking")) {
             p.innerHTML = testDiv.querySelector("audio").outerHTML
         }
-        exitBtn.onclick = function () {
+        exitBtn.onclick = () => {
             saveExit();
             endTest();
         }
-        cancelBtn.onclick = function () {modal.style.display = "none";}
+        cancelBtn.onclick = () => modal.style.display = "none";
         modal.style.display = "block";
         
     }
@@ -507,7 +497,7 @@ function startTest() {
 
                 if(myAnswer[i]===undefined) { myAnswer[i] = "" }
                 createNode( ["td", {}, myAnswer[i].split("->")[0]], tr);
-                tr.onclick = function() {
+                tr.onclick = () => {
                     showQuestion(i);
                     modal.style.display = "none";
                 };
@@ -548,7 +538,7 @@ function startTest() {
             let labels = section.querySelectorAll(".my-label");
             if(mobileFlag) {
                 section.children[0].style.margin = "8px";
-                labels.forEach(elem => { elem.style.marginBottom = "4px"; });
+                labels.forEach(elem => elem.style.marginBottom = "4px");
             }        
             testDiv.querySelector(".show-article h4").style.color = backgroundColor;
             addInputColor();
@@ -559,10 +549,19 @@ function startTest() {
             if (mobileFlag) {
                 time.classList.add("w3-hide");
                 timer = createNode( ["span", {class:"w3-display-middle w3-xxlarge"}, ""], div);
-                time.addEventListener('DOMSubtreeModified', function () {
+
+                // Callback function to execute when mutations are observed
+                var callback = () => {
                     timer.innerText = time.innerText;
                     addHighlight(timer);
-                });
+                };
+
+                // Create an observer instance linked to the callback function
+                var observer = new MutationObserver(callback);
+                // Options for the observer (which mutations to observe)
+                var options = { childList: true };
+                // Start observing the target node for configured mutations
+                observer.observe(time, options);
             }
             addHighlight(time);
             let nextBtn = createNode( ["button", {class:"w3-btn w3-right " + color}, "Next"], div);
@@ -571,10 +570,10 @@ function startTest() {
                 reviewBtn = createNode(["button", {class:"w3-btn w3-block w3-half " + color, id:"review"}, "Review Questions"], testDiv);
             }
 
-            reviewBtn.addEventListener("click", function () { reviewQuestions(id.split("n")[1]); });
+            reviewBtn.onclick = () => reviewQuestions(id.split("n")[1]);
             div.querySelectorAll("button").forEach( elem => { 
                 if(mobileFlag) { elem.classList.toggle("w3-padding-small"); }
-                elem.onclick = function(e) { navigateQuestion (e.target); }
+                elem.onclick = e => navigateQuestion (e.target);
             });
 
             if(mobileFlag) {
@@ -618,15 +617,14 @@ function startTest() {
 
         let section = createNode( ["section", {class:"show-question w3-half"}, ""], testDiv);
         time = createNode( ["p", {id:"time", class:"w3-jumbo w3-center w3-half"}, ""], testDiv);
-        second = 1200
-        setTimer(second);
+        setTimer(1200);
         showQuestion(0);
 
     }
     else if (uri.includes("listening")) {
         article.classList.toggle("w3-half");
         let button = createNode( ["button", {class:"w3-btn w3-block w3-section w3-hide "+color}, "Next"], testDiv);
-        button.addEventListener("click", function(e) { navigateQuestion (e.target); });
+        button.onclick = e => navigateQuestion (e.target);
         time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
         addTextarea("note");
 
@@ -634,18 +632,19 @@ function startTest() {
             inputs = testDiv.querySelectorAll(".my-label input");
             
             const element = questions[index];
-            if (element.className.includes("replay")) {
+            if (element.children[0].className.includes("replay")) {
                 article.innerText = "Listen again to part of the lecture. Then answer the question."
-                playAudio(html.replace(".html", "-" + element.id + "-replay.mp3"), function() { playListening(); } );
+                button.classList.add("w3-hide");
+                playAudio(html.replace(".html", "-" + element.id + "-replay.mp3"), () => playListening() );
             }
             else { playListening(); }
 
             function playListening() {
                 article.id = element.id;
-                article.innerHTML = element.children[0].outerHTML
+                article.innerHTML = element.children[0].children[0].outerHTML
                 button.classList.add("w3-hide");
                 time.classList.add("w3-hide");
-                playAudio(html.replace(".html", "-" + element.id + ".mp3"), function() {
+                playAudio(html.replace(".html", "-" + element.id + ".mp3"), () => {
                     article.innerHTML = element.innerHTML;
                     article.lastElementChild.classList.add("w3-hide");
                     button.classList.remove("w3-hide");
@@ -655,9 +654,8 @@ function startTest() {
             }
         }
         
-        playAudio(html.replace(".html", ".mp3"), function() {
-            second = 180
-            setTimer(second);
+        playAudio(html.replace(".html", ".mp3"), () => {
+            setTimer(240);
             addHighlight(time);
             showQuestion(0);
         });
@@ -669,34 +667,34 @@ function startTest() {
         time = createNode( ["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
         addHighlight(time);
         article.classList.toggle("w3-half");
-        article.classList.toggle("w3-section")
+        article.classList.toggle("w3-section");
         addTextarea(true);
 
-        playListening = function () { 
+        playListening = () =>  { 
             article.classList.toggle("w3-hide");
             time.classList.toggle("w3-hide");
             playAudio(html.replace(".html", ".mp3"), playQuestion); 
         }
-        playQuestion = function () {  
+        playQuestion = () =>  {  
             article.innerText = questionText
             article.classList.remove("w3-hide");
             playAudio(html.replace(".html", "-question.mp3"), startPreparation); 
         }
-        startPreparation = function () { playAudio("../../speaking_beep_prepare.mp3", waitPreparation) }
-        waitPreparation = function () { 
+        startPreparation = () =>  playAudio("../../speaking_beep_prepare.mp3", waitPreparation);
+        waitPreparation = () =>  { 
             time.classList.remove("w3-hide");
             waitTime(seconds[1][Math.ceil(num / 2) - 1], startSpeak); }
-        startSpeak = function () { playAudio("../../speaking_beep_answer.mp3", waitSpeak); }
-        waitSpeak = function () {
+        startSpeak = () =>  playAudio("../../speaking_beep_answer.mp3", waitSpeak);
+        waitSpeak = () =>  {
             if(uri.startsWith("file:/")) { 
                 mediaRecorder.start();
-                waitTime(seconds[0][Math.ceil(num / 2) - 1], function() { 
+                waitTime(seconds[0][Math.ceil(num / 2) - 1], () => { 
                     mediaRecorder.stop(); 
                     waitTime(1,showModal);
                 });
             }
             else {
-                var handleSuccess = function(stream) {
+                var handleSuccess = stream => {
                     var audio = document.createElement('audio');
                     if (window.URL) {
                         audio.src = window.URL.createObjectURL(stream);
@@ -707,8 +705,7 @@ function startTest() {
                     testDiv.appendChild(audio);
                 };
                 
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(handleSuccess);
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(handleSuccess);
             }
         }
 
@@ -719,7 +716,7 @@ function startTest() {
             playListening();
         }
         else {
-            playAudio(html.replace(".html", "-reading.mp3"), function () { 
+            playAudio(html.replace(".html", "-reading.mp3"), () => { 
                 article.innerHTML = reading.innerHTML
                 waitTime(45, playListening); 
             });
@@ -766,29 +763,29 @@ function filterTag(e) {
     if(input.className.includes("w3-show")) {
         parent.classList.add("w3-padding-small");
         e.target.innerText = "Close"
-        document.querySelectorAll("div .w3-bar-item.w3-button").forEach(elem => { elem.classList.add("w3-hide"); });
+        document.querySelectorAll("div .w3-bar-item.w3-button").forEach(elem => elem.classList.add("w3-hide"));
         e.target.classList.remove("w3-hide");
         e.target.classList.toggle("w3-padding-small");
-        if(uri.includes("blog") || uri.includes("notes")) { 
+        if((/\/notes|\/blog/).exec(uri)) { 
             parent.children[0].classList.toggle("w3-hide");
         }
     }
     else {
-        document.querySelectorAll(".w3-bar-item.w3-button").forEach(elem => { elem.classList.remove("w3-hide"); });
+        document.querySelectorAll(".w3-bar-item.w3-button").forEach(elem => elem.classList.remove("w3-hide"));
         e.target.innerText = "Search"
         e.target.classList.toggle("w3-padding-small");
-        if(uri.includes("blog") || uri.includes("notes")) { 
+        if((/\/notes|\/blog/).exec(uri)) { 
             parent.children[0].classList.toggle("w3-hide");
         }
         else {
             parent.classList.remove("w3-padding-small");
         }
         input.value = "";
-        tagDiv.querySelectorAll(".tag").forEach(elem => {  elem.classList.remove("w3-hide");});
+        tagDiv.querySelectorAll(".tag").forEach(elem => elem.classList.remove("w3-hide"));
     }
     
     
-    input.oninput = function (e) {
+    input.oninput = e => {
         tagDiv.querySelectorAll(".tag").forEach(elem => { 
             if(!elem.textContent.includes(e.target.value)) { elem.classList.add("w3-hide");}
             else { elem.classList.remove("w3-hide"); }
@@ -799,9 +796,7 @@ function filterTag(e) {
 function updateNav() {
     let length;
     sections = ["Reading:3", "Listening:6", "Speaking:6", "Writing:2"];
-    document.querySelectorAll(".w3-dropdown-content").forEach(element => {
-        element.style.minWidth = "auto";
-    });
+    document.querySelectorAll(".w3-dropdown-content").forEach(element => element.style.minWidth = "auto");
     if(setFlag) { 
         length = 1; 
         sets = html.split("-")[0];
@@ -818,8 +813,8 @@ function updateNav() {
         sets = html.split(".")[0]; 
     }
     
-    let before = html.includes("og") ? true : false;
-    setsDiv = createNode( ["div", {class:"", id:"setsDiv"}, ""], main, before);
+    //let before = html.includes("og") ? true : false;
+    setsDiv = createNode( ["div", {class:"", id:"setsDiv"}, ""], main, true);
 
     for (let i = 1; i <= length; i++) {
         let number = (i < 10  && !html.includes("og") ? "0" + i : i);
@@ -852,7 +847,7 @@ function updateNav() {
 
     if(mobileFlag) {
         document.querySelectorAll(".w3-dropdown-click button").forEach(elem => { 
-            elem.onclick = function (e) {e.target.nextElementSibling.classList.toggle("w3-show")}; 
+            elem.onclick = e => e.target.nextElementSibling.classList.toggle("w3-show") 
         });
     }
 
@@ -865,14 +860,14 @@ function updateNav() {
             categoryBtn.className += " w3-block"; 
         }
 
-        categoryBtn.onclick = function () {
+        categoryBtn.onclick = () =>  {
             categoryString.split("&").forEach(element => { 
                 if(element.includes(html)) {
                     element.split(";").forEach(elem => {
                         if(elem.includes(html)) { tag = elem.split(":")[0]; }
-                    })
+                    });
                 }
-            })
+            });
             sessionStorage.setItem("tag", tag + ":" + html);
         }
 
@@ -882,9 +877,7 @@ function updateNav() {
         function filterSet(element) {
 
             document.querySelector("#description").classList.add("w3-hide");
-            document.querySelectorAll("#setsDiv > div").forEach( element => {
-                element.classList.add("w3-hide");
-            });
+            document.querySelectorAll("#setsDiv > div").forEach( element => element.classList.add("w3-hide"));
 
             let setDiv = document.querySelector("#setDiv");
             if(!setDiv) {
@@ -907,22 +900,22 @@ function updateNav() {
         for (let i = 0; i < 4; i++) {
             button = createNode( ["button", {class:"w3-bar-item w3-button w3-col l2"}, sections[i].split(":")[0]], div);
             if(mobileFlag) { button.className = button.className.replace("w3-col l2", "w3-padding-small"); }
-            button.onclick = function() {
+            button.onclick = () => {
                 categroyDiv.innerHTML = "";
                 categoryString.split("&")[i].split(";").forEach( element => {
                     let tag = element.split(":")[0];
                     button = createNode(["button", {class:"tag w3-btn w3-padding-small my-margin-small highlight"}, tag], categroyDiv);
-                    document.querySelectorAll(".highlight").forEach(element => { addHighlight(element); });
-                    button.onclick = function(e) {  
-                        categroyDiv.querySelectorAll("button").forEach(elem => { elem.classList.remove(color); });
+                    document.querySelectorAll(".highlight").forEach(element => addHighlight(element));
+                    button.onclick = e => {  
+                        categroyDiv.querySelectorAll("button").forEach(elem => elem.classList.remove(color));
                         e.target.classList.toggle(color);
                         filterSet(element); }
-                })
+                });
             };
         }
         
         let search = createNode( ["button", {class:"w3-bar-item w3-button w3-right"}, "Search"], div);
-        search.onclick = function (e) { filterTag(e) };
+        search.onclick = e => filterTag(e);
         
         if(mobileFlag) { search.classList.toggle("w3-padding-small") }
         categroyDiv = createNode( ["div", {class:"w3-padding-small w3-card w3-white"}, ""], categoryDiv);
@@ -957,34 +950,65 @@ function updateNotes() {
         entries = [
             ["javascript.html", "JavaScript"],
             ["powershell.html", "PowerShell"],
-            ["css.html","CSS"]
+            ["css.html","CSS"],
+            ["setup.html","Setup"]
         ];
     }
     else {
         entries = [
-            ["og-example-writing2.html", "Example Independent Writing Trait", 
-            "Do you agree or disagree with the following statement?<br/><b>Always telling the truth is the most important consideration in any relationship.</b><br/>Use specific reasons and examples to support your answer."],
-    
-            ["sample-question-writing2.html", "Sample Independent Writing Comparative",
-            "Do you agree or disagree with the following statement?<br/><b>A teacher's ability to relate well with students is more important than excellent knowledge of the subject being taught.</b><br/>Use specific reasons and examples to support your answer."],
-    
-            ["og-example-writing1.html","Example Integrated Writing"],
-            ["sample-question-writing1.html", "Sample Integrated Writing"],
-            ["official-guide.html", "Guide" ],
+            ["reading-notes.html", "Reading Notes" ],
+            ["listening-notes.html", "Listening Notes" ],
+            ["speaking-notes.html", "Speaking Notes" ],
+            ["writing-notes.html", "Writing Notes" ],
             ["performance-feedback.html", "Performance"],
-            ["scoring-rubric.html", "Scoring"]
+            ["scoring-rubric.html", "Scoring"],
+            ["example-writing1.html","Example Integrated Writing"],
+            ["example-writing2.html", "Example Independent Writing Trait"],
+            ["sample-writing1.html", "Sample Integrated Writing"],
+            ["sample-writing2.html", "Sample Independent Writing Comparative"],
+            ["sample-speaking1.html", "Sample Speaking 1"],
+            ["sample-speaking2.html", "Sample Speaking 2"],
+            ["sample-speaking3.html", "Sample Speaking 3"],
+            ["sample-speaking4.html", "Sample Speaking 4"],
+            ["sample-speaking5.html", "Sample Speaking 5"],
+            ["sample-speaking6.html", "Sample Speaking 6"],
+            ["example-speaking1.html", "Example Speaking 1"],
+            ["example-speaking2.html", "Example Speaking 2"],
+            ["example-speaking3.html", "Example Speaking 3"],
+            ["example-speaking4.html", "Example Speaking 4"],
+            ["example-speaking5.html", "Example Speaking 5"],
+            ["example-speaking6.html", "Example Speaking 6"],
+            ["reading-practice1.html", "Reading Practice 1"],
+            ["reading-practice2.html", "Reading Practice 2"],
+            ["reading-practice3.html", "Reading Practice 3"],
+            ["reading-practice4.html", "Reading Practice 4"],
+            ["reading-practice5.html", "Reading Practice 5"],
+            ["reading-practice6.html", "Reading Practice 6"],
+            ["listening-practice1.html", "Listening Practice 1"],            
+            ["listening-practice2.html", "Listening Practice 2"],            
+            ["listening-practice3.html", "Listening Practice 3"],            
+            ["listening-practice4.html", "Listening Practice 4"],            
+            ["listening-practice5.html", "Listening Practice 5"],            
+            ["sample-reading1.html", "Sample Reading 1"],
+            ["sample-reading2.html", "Sample Reading 2"],
+            ["sample-reading3.html", "Sample Reading 3"],
+            ["sample-reading4.html", "Sample Reading 4"],
+            ["sample-reading5.html", "Sample Reading 5"],
+            ["sample-listening1.html", "Sample Listening 1"],
+            ["sample-listening2.html", "Sample Listening 2"],
+            ["sample-listening3.html", "Sample Listening 3"],
+            ["sample-listening4.html", "Sample Listening 4"]
         ];
     }
 
 
     var entriesString = "";
-    entries.forEach(element => { entriesString += element[0] + "," + element[1] + ";"});
-    localStorage.setItem("tags", entriesString);
+    entries.forEach(element => entriesString += element[0] + "," + element[1] + ";");
 
     function createEntry(entries) {
-        let entriesDiv = document.querySelector("#entries")
+        let entriesDiv = document.querySelector("#entries");
         entries.forEach(element => {
-            let div = createNode(["div", {class : "w3-card w3-padding w3-section w3-white my-entry"}, ""], entriesDiv);
+            let div = createNode(["div", {class : "w3-card w3-padding w3-left my-margin w3-white my-entry"}, ""], entriesDiv);
             let section = createNode(["section", {}, ""], div);
             let h3 = createNode(["h3", {}, ""], section);
             let a = createNode(["a", {class:"w3-button w3-white", href:element[0]}, ""], h3);
@@ -997,6 +1021,7 @@ function updateNotes() {
             let tagDiv = createNode(["div", {class:"w3-white w3-section"}, ""], div);
             createNode(["span", {}, "Tags:"], tagDiv);
             element[1].split(" ").forEach( tag => {
+                if(tag.length < 3) { return }
                 createNode(["button", {class:"tag w3-btn w3-padding-small my-margin-small highlight"}, tag], tagDiv);
             });
         });
@@ -1011,7 +1036,7 @@ function updateNotes() {
     var selectedTags = []; // Add element when a tag is selected in tag div. otherwise remove it.  
     if(document.querySelector("#tagDiv")) {
         let search = createNode( ["button", {class:"w3-bar-item w3-button w3-right w3-padding-small"}, "Search"], document.querySelector("#tagDiv").children[0]);
-        search.onclick = function (e) { filterTag(e) };
+        search.onclick = e => filterTag(e);
     }
     
 
@@ -1058,7 +1083,7 @@ function updateNotes() {
 
         // if the entry is not hidden
         if (!entry.classList.contains("w3-hide")) {
-          entryTagsArray.forEach(element => { entriesTagsArray.push(element) } );
+          entryTagsArray.forEach(element => entriesTagsArray.push(element) );
           tagBtns.forEach(element => {
               element.classList.remove("w3-hide");
             if (entriesTagsArray.indexOf(element.textContent) === -1) {
@@ -1088,11 +1113,11 @@ function updateNotes() {
     function addTagClick(tags) {
         for (let index = 0; index < tags.length; index++) {
             const element = tags[index];
-            element.addEventListener("click", function () { sessionStorage.setItem("tag", element.textContent); })
+            element.onclick = () => sessionStorage.setItem("tag", element.textContent);
         }
     }
 
-    entries.forEach(entry => { entry.querySelector("a").style.padding = 0; });
+    entries.forEach(entry => entry.querySelector("a").style.padding = 0);
     
     // Show tags
     if(tagsDiv) {
@@ -1109,77 +1134,85 @@ function updateNotes() {
           });
     }
     
-    document.querySelectorAll(".highlight").forEach(element => { addHighlight(element); });
+    document.querySelectorAll(".highlight").forEach(element => addHighlight(element));
     document.querySelectorAll("b").forEach(element => { 
         addHighlight(element); 
         element.style.whiteSpace = "normal";
     });
 
-    localStorage.getItem("tags").split(";").forEach(element => { if(element.split(",")[0] === html) {
-        title = element.split(",")[1];
-        return
-    }});
+    entriesString.split(";").forEach(element => { 
+        if(element.split(",")[0] && html.includes(element.split(",")[0])) {
+            title = element.split(",")[1];
+            return
+        }}
+    );
 
-    if(!uri.includes("notes.html") && !uri.includes("blog.html") && title) {
+    if(!(/\/notes\.html|\/blog\.html/).exec(uri)) {
+        
+        let div = createNode(["div", {class:"w3-card w3-white w3-padding w3-section"}, ""], document.querySelector("main"), true);
+        createNode(["span", {}, "Tags: "], div);
         document.title = title;
-        uri.split("/").slice(-2)
-        let tagDiv = document.querySelector("#tags");
         title.split(" ").forEach( tag => {
+            if(tag.length < 3) { return }
             let classes = "tag w3-btn w3-padding-small my-margin-small " + color;
             let href = uri.split("/").slice(-2)[0] + ".html";
-            createNode(["a", {class:classes, href:href}, tag], tagDiv);
+            createNode(["a", {class:classes, href:href}, tag], div);
         });
+
     }
-    
+    if((/\/reading-notes\.html|\/listening-notes\.html/).exec(uri)) {
+        questions = document.querySelectorAll("div.w3-padding li");
+        
+        sections = document.querySelectorAll(".questions section");
+        for (let i = 0; i < questions.length; i++) {
+            const element = questions[i];
+            element.onclick = e => {
+                sections[i].parentNode.classList.remove("w3-hide");
+                sections.forEach(element => element.classList.add("w3-hide")); 
+                sections[i].classList.remove("w3-hide");
+            }
+            element.onmouseover = e => {
+                questions.forEach(element => toggleHighlight(element, true));
+                addHighlight(e.target);
+                e.target.style.cursor = "pointer";
+            }
+        }
+    }
+
     // Add filter Event for tags in tag div. 
     tagBtns = document.querySelectorAll("#tagsDiv > button.tag");
-    tagBtns.forEach(element => {
-      element.addEventListener("click", function() { toggleFilter(element); });
-    });
+    tagBtns.forEach(element => element.onclick = () => toggleFilter(element) );
+    
 
     // Add top bar item tag.
-    barItems.forEach(element => {
-      element.addEventListener("click", function() {clickTag(element.textContent)} );
-    });
+    //barItems.forEach(element => element.onclick = () => clickTag(element.textContent));
 
     // Add article tag.
-    tags.forEach(element => {
-      element.addEventListener("click", function() {clickTag(element.textContent)} );
-    });
+    tags.forEach(element => element.onclick = () => clickTag(element.textContent));
     
     // Filter Tag
     clickTag();
   
     addTagClick(document.querySelectorAll("a.tag"));
 
-    // Add Sidebar Button and Click Event
-    /*window.addEventListener("load", function() { 
-      addSiderbarBtn();
-      sidebar.innerHTML = tagsDiv.innerHTML;
-      sidebarItems = document.querySelectorAll("#sidebar > button");
-      sidebarItems.forEach(element => {
-        element.addEventListener("click", function() {
-          toggleFilter(element);
-        });
-      });
-    });*/
+}
 
+function setHeight(article) {
+    if(!article) {return}
+    article.style.height = screen.height / 3 + "px";
+    article.style.overflowY = "scroll";
+    article.classList.add("w3-section");
 }
 
 function updateUI() {
     if(!setFlag) {return}
 
-    function setHeight(article) {
-        if(!article) {return}
-        article.style.height = screen.height / 3 + "px";
-        article.style.overflowY = "scroll";
-        article.classList.add("w3-section")
-    }
+
 
     function showQuestion(article) {
         setHeight(article);
-        questions.forEach(element => {element.classList.toggle("w3-hide")})
-        questionDiv = createNode(["div", {class:"w3-section"}, ""], document.querySelector("main"))
+        questions.forEach(element => element.classList.toggle("w3-hide"));
+        questionDiv = createNode(["div", {class:"w3-section"}, ""], document.querySelector("main"));
         questionDiv.style.height = screen.height / 3 + "px";
         questionDiv.style.overflowY = "scroll";
         pageBar = createNode(["div", {class:"w3-bar"}, ""], questionDiv);
@@ -1188,14 +1221,14 @@ function updateUI() {
             const element = questions[i];
             let button = createNode(["button", {class:"w3-bar-item w3-button " + color}, i + 1], pageBar);
             if (uri.includes("reading") && mobileFlag) { button.style.padding = "5px"; }
-            button.onclick = function (e) {
+            button.onclick = e => {
                id = "question" + e.target.textContent
                questionDiv.innerHTML = questions[parseInt(e.target.textContent) - 1].innerHTML
-               document.querySelectorAll(".highlight").forEach(element => { addHighlight(element); });
-               document.querySelectorAll(".highlight").forEach(element => { toggleHighlight(element); });
+               article.querySelectorAll(".highlight").forEach(element => addHighlight(element));
+               article.querySelectorAll(".highlight").forEach(element => toggleHighlight(element));
                addInputColor();
                
-               showSpecialQuestion(article, questionDiv)
+               showSpecialQuestion(article, questionDiv);
             }
         }
     }
@@ -1211,13 +1244,15 @@ function updateUI() {
     }
     else {
         response = document.querySelector("#sample-response");
-        question = document.querySelector("#question")
+        question = document.querySelector("#question");
         setHeight(response);
         
-        question.classList.toggle("w3-hide");
-        questionDiv = createNode(["div", {}, ""], response, true);
-        questionDiv.innerHTML = question.innerHTML;
-
+        if(response) {
+            question.classList.toggle("w3-hide");
+            questionDiv = createNode(["div", {}, ""], response, true);
+            questionDiv.innerHTML = question.innerHTML;
+        }
+        
         listening = document.querySelector("#listening-text");
         if(listening) {
             audio = document.querySelector("audio");
@@ -1233,69 +1268,73 @@ function updateUI() {
 function initialize() {
     if(uri.includes("blog")) { document.querySelector("nav").classList.toggle("w3-hide"); }
     addInputColor();
-    if(uri.includes("blog") || uri.includes("notes")) { 
+    if((/blog|notes/).exec(uri)) { 
         updateNotes(); 
     } 
-    if(uri.includes("toefl/og/") || uri.includes("tpo/")) { 
+    if((/toefl\/og\/|tpo\//).exec(uri)) { 
         updateNav();
         updateUI(); 
     } 
-    document.querySelectorAll(".highlight, h1, h2, h3, h4, h5, h6, b, u").forEach(element => { addHighlight(element); });
+    if((/practice|sample|example/).exec(uri)) { 
+        updateUI(); 
+        document.querySelector("main").lastChild.className += " w3-padding w3-white w3-card";
+        testBtn = createNode( ["button", {class:"w3-btn w3-right " + color, id:"test"}, "Test"], document.querySelector("main").children[0]); 
+        
+    }
+    document.querySelectorAll(".highlight, h1, h2, h3, h4, h5, h6, b, u").forEach(element => addHighlight(element));
     document.querySelectorAll(".my-color").forEach(element => {
         element.classList.remove("my-color");
         element.classList.add(color);
     });
     // Add Top Navigation Button Click Event and Tag Click Event.
-    topNavBtn.addEventListener("click", function () { toggleTopNav(topNavBtn) });
+    topNavBtn.onclick = () => toggleTopNav(topNavBtn);
     var testBtn = document.querySelector("#test");
-    if (testBtn) { testBtn.addEventListener("click", function () { startTest() }); }
+    if (testBtn) { testBtn.onclick = () => startTest(); }
 
     let sidebarItems = document.querySelectorAll("#sidebar > a");
     if (sidebarItems.length > 0) {
         sidebarItems.forEach(element => {
             let item = document.querySelector("#" + element.href.split("#")[1]);
-            element.addEventListener("click", function () { 
+            element.onclick = () => { 
                 sidebar.classList.add("w3-hide");
-                window.onscroll = function () { toggleFixed(item);}
-            });
+                window.onscroll = () => toggleFixed(item);
+            }
         });
     }
 
-    if (sidebarBtn) { sidebarBtn.addEventListener("click", function () { sidebar.classList.toggle("w3-hide"); }); }
-    window.onscroll = function () { toggleFixed(topNav);}
-    
-    
+    if (sidebarBtn) { sidebarBtn.onclick = () => sidebar.classList.toggle("w3-hide"); }
+    window.onscroll = () => toggleFixed(topNav);
 
     let questions = document.querySelector("#question");
     if(questions && questions.children.length > 4) {
         for (let i = 0; i < questions.children.length; i++) {
             const element = questions.children[i];
-            element.children[0].innerText = element.id.split("n")[1] + ". " + element.children[0].innerText
+            element.children[0].children[0].innerHTML = element.id.split("n")[1] + ". " + element.children[0].children[0].innerHTML;
         }
     }
 
-    let timeSpan = document.querySelectorAll(".time");
-    timeSpan.forEach(element => {
-        element.classList.add("w3-hide")
-    });
-
     let audio = document.querySelector("audio");
     if(audio && uri.includes("listening")) {
+        var timeSpan = document.querySelectorAll(".time");
+        timeSpan.forEach(element => element.classList.add("w3-hide"));
         n = 0;
         let listening = document.querySelector("#listening-text");
         listening.style.overflowY = "scroll";
         listening.style.height = screen.height - audio.offsetTop - 160 + "px";
-        audio.addEventListener("timeupdate", function (e) {
-            let duration = parseFloat(timeSpan[n].getAttribute("data-times")) + parseFloat(timeSpan[n].getAttribute("data-time"));
-            if(parseFloat(e.target.currentTime.toFixed(2)) <= duration) {
-                listening.scrollTop = timeSpan[n].parentNode.offsetTop - 320;
-                addHighlight(timeSpan[n].parentNode, true);
-            }
-            else {
-                toggleHighlight(timeSpan[n].parentNode);
-                n++;
-            }
-        });
+        if(timeSpan) {
+            audio.ontimeupdate = e => {
+                let duration = parseFloat(timeSpan[n].getAttribute("data-times")) + parseFloat(timeSpan[n].getAttribute("data-time"));
+                if(parseFloat(e.target.currentTime.toFixed(2)) <= duration) {
+                    listening.scrollTop = timeSpan[n].parentNode.offsetTop - 320;
+                    addHighlight(timeSpan[n].parentNode, true);
+                }
+                else {
+                    toggleHighlight(timeSpan[n].parentNode);
+                    n++;
+                }
+            };
+        }
+        
     }
     if(uri.includes("topic")) {
         question = document.querySelector("section");
@@ -1315,15 +1354,27 @@ function initialize() {
         let input = document.querySelector("#sidebar input");
         input.style.width = "100%";
         
-        input.oninput = function (e) {
+        input.oninput = e => {
             document.querySelectorAll("#sidebar button").forEach(elem => { 
                 if(!elem.textContent.includes(e.target.value)) { elem.classList.add("w3-hide");}
                 else { elem.classList.remove("w3-hide"); }
             });
         }
-
     }
 
+    if(document.querySelectorAll(".response").length > 0) {
+        document.querySelector("#question").classList.toggle("w3-hide")
+        div = createNode(["div", {class:"w3-white w3-card w3-padding w3-section"}, ""], main);
+        pageBar = createNode(["div", {class:"w3-bar"}, ""], div);
+        div = createNode(["div", {}, ""], div);
+        setHeight(div);
+        for (let i = 0; i < document.querySelectorAll(".response").length; i++) {
+            const element = document.querySelectorAll(".response")[i];
+            let button = createNode(["button", {class:"w3-bar-item w3-button " + color}, 5 - i], pageBar);
+            button.onclick = () => div.innerHTML = element.innerHTML;
+        }
+    }
+    
     if(uri.includes("blog")) { removeLeadingWhiteSpace(); } // Remove Leading WhiteSpace in pre tag.
     
 }

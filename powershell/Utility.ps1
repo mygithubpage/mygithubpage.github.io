@@ -156,8 +156,8 @@ function Invoke-InternetExplorer {
     Param($Uri)
     $ie = (New-Object -COM "Shell.Application").Windows() | ForEach-Object { if($_.Name -like "*Internet Explorer*") {$_}}
 
-    Get-Process -Name iexplore -ErrorAction Ignore | Stop-Process
-    $ie = New-Object -ComObject InternetExplorer.Application
+    #Get-Process -Name iexplore -ErrorAction Ignore | Stop-Process
+    #$ie = New-Object -ComObject InternetExplorer.Application
     if (!$ie) { $ie = New-Object -ComObject InternetExplorer.Application }
     if ($ie.LocationURL -ne $Uri) { $ie.Navigate($Uri) }
 

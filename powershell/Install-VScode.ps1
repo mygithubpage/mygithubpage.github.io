@@ -14,6 +14,7 @@ if (!(Test-Path $path))
         $html = Invoke-WebRequest "https://code.visualstudio.com/docs/setup/windows"
         $uri = $html.ParsedHtml.body.getElementsByTagName("a") | `
         ForEach-Object {if($_.innerText -eq "$name installer"){$_.href}}
+        #$uri = "https://go.microsoft.com/fwlink/?Linkid=852157"
         Invoke-WebRequest $uri -OutFile $installer
     }
     else 

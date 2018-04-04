@@ -126,7 +126,7 @@ Format-Table Path, LineNumber -AutoSize
 	9. Avoid using backticks, they are easy to miss since they might look like dirt on the screen. Instead, use the pipeline (|) character where appropriate, or even splatting the parameters to the cmdlet.
 	10. "Filter left, format right".
 	11. Add the .exe extension to external commands and applications (e.g. there is a big difference between sc and sc.exe).
-	12. Don’t turn off pipeline errors ($ErrorActionPreference = "SilentlyContinue"). Implement structured error handling by using Try+Catch+Finally (or Trap) to handle errors.
+	12. Don't turn off pipeline errors ($ErrorActionPreference = "SilentlyContinue"). Implement structured error handling by using Try+Catch+Finally (or Trap) to handle errors.
 	13. Do not "pollute" the Windows PowerShell environment by changing preference variables globally (e.g. $ConfirmPreference, $WhatIfPreference, etc.).
 	14. Use cmdletBinding and add support for the -WhatIf, -Verbose and -Debug parameters.
 	15. Use Advanced Functions.

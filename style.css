@@ -193,6 +193,10 @@ Original One Light Syntax theme from https:/.com/atom/one-light-syntax
   margin:4px;
 }
 
+.my-margin {
+  margin:8px;
+}
+
 /* The sticky class is added to the tagDiv with JS when it reaches its scroll position */
 .my-fixed {
   position: fixed;
@@ -232,8 +236,7 @@ hr {
 } 
 
 ol, ul {
-  padding:16px;
-  margin:0;
+  padding: 0 16px;
 }
 
 a:hover {
