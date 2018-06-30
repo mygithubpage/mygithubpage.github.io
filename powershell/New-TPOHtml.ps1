@@ -1,7 +1,15 @@
 
 . "$PSScriptRoot\Utility.ps1"
-
-
+##  Script Structure
+##  1 Script Entrance
+#       Set Global variable
+#
+##  2 Loop
+#       2.1 Get-Sets (Comment Set-Translation and New-TPOHtml)
+#       2.2, 2.3 Set-Translation and New-TPOHtml
+#
+##      2.1 Get-Sets
+#           2.1.1 Set-Links
 function Add-XmlNodes ($xml, $parentNode, $nodes) {
     foreach ($node in $nodes) {
         $xmlElement = $xml.CreateElement($node.Name)
@@ -459,7 +467,7 @@ function New-TPOHtml () {
             $xml = [xml]$content
             $flag = $false
             (Select-String "\[.*?\[" $item.FullName).Matches.ForEach{
-                
+                Write-Host $item.FullName
                 $match = $_.Value.Trim("[")
                 $num = [int]$item.Name.SubString($setsLength + 3, 2)
                 foreach ($node in (Select-Xml "//article/p/span[@class='light']" $xml).Node) {
@@ -689,9 +697,10 @@ function Set-Translation ($Path) {
 
 }
 
-function Test-Denpendency () {
+# Test whether Dependency Program has been installed
+function Test-Dependency () {
+    # Check Downloader and Audio Converter
 
-    # Check Denpendency.Replace($selection, "<span class=`"question$num`">$selection</span>")
     if (!(Test-Path $idmExe)) { 
         "$idmExe Does not Exist"
         exit 
@@ -810,30 +819,32 @@ function Test-Explanation ($Path) {
     $flag
 }
 
-function Invoke-Preparation ($section) {
-    $global:sectionFlag = if ($section -match "Read|Listen") { $true } else { $false }
+function Set-Links ($section) {
+    
+    $global:sectionFlag = if ($section -match "Read|Listen") { $true } else { $false } # Read,Listen or Speak,Write
     $letter = $section.Substring(0, 1)
     $global:prefix = "$sets$number\$section\$sets$number$letter"
     New-Item -Path "$xmlPath\$sets$number\$section" -ItemType "Directory" -ErrorAction SilentlyContinue  | Out-Null
-    $type = $section.Remove($section.Length - 3, 3).ToLower()
+    $global:type = $section.Remove($section.Length - 3, 3).ToLower()
 
-    $flag = $true
-    $flag = Test-Category ("$xmlPath\$prefix" + "?.xml")
+    #$flag = $true
+    #$flag = Test-Category ("$xmlPath\$prefix" + "?.xml")
     
     #if ($sectionFlag) { $flag = Test-Explanation "$xmlPath\$prefix*Q*.xml" }
 
     $global:articles = @()
     $global:links = @()
-    $global:category = @()
+    $global:category = @() # Require Translate later
 
     #if ($flag) { return }
-    if ($section.Contains("Writ")) { $type = "write" }
+    if ($section.Contains("Writ")) { $global:type = "write" }
     $html = (Invoke-WebRequest "$website/$type/$location.html")
 
     foreach ($item in $html.ParsedHtml.body.getElementsByClassName("title")) {
         if ($item.innerText -like "*$sets$([int]$number)*") { $test = $item }
     }
 
+    # 
     $classes = "btnn2", "btnn2 aspan", "btnn blue", "btnn blue"
     for ($i = 0; $i -lt $sections.Count; $i++) {
         if ($sections[$i] -eq $section) { 
@@ -845,11 +856,11 @@ function Invoke-Preparation ($section) {
     
     foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName($className)) { 
         if ($sectionFlag) { $item = $item.parentNode }
-        $global:links += $website + $item.href.Remove(0,12)  
-        $global:articles += $item.href.Remove(0,12).Split("-")[1]
+        $global:links += $item.href
+        $global:articles += $item.href.Split("-")[1]
     }
 
-    
+    # get category
     $className = if ($sectionFlag) { "item_img_tips" } else { "text_tit" }
     foreach ($item in $test.nextSibling.nextSibling.getElementsByClassName($className)) { 
         if ($sectionFlag) { $item = $item.children[0] }
@@ -867,23 +878,27 @@ function Invoke-Preparation ($section) {
 }
 
 function Get-Sets ($selectedSection, $set, $question) {
+    # Get whole test or one or two sections
     foreach($section in $selectedSection) {
-        Invoke-Preparation $section
+        Set-Links $section
         for ($i = 1; $i -le $links.Count; $i++) {
             if ($set) { $i = $set }
             $global:filePath = "$prefix$i"
             Write-Host $filePath
-            $innerText = ([xml](Get-Content "$xmlPath\$filePath.xml")).TestItem.Category
-            if(!([regex]::IsMatch($innerText, "[\u3400-\u9FFF]"))) { $category[$i-1] = $innerText}
-
+            #$xmlFile = [xml](Get-Content "$xmlPath\$filePath.xml")
+            if(Test-Path "$xmlPath\$filePath.xml") {
+                #$innerText = $xmlFile.TestItem.Category
+                #if(!([regex]::IsMatch($innerText, "[\u3400-\u9FFF]"))) { $category[$i-1] = $innerText}
+            }
+            
             $html = (Invoke-WebRequest $links[$i-1])
             $global:document = $html.ParsedHtml.body
             $global:article = $articles[$i-1]
 
             if ($sectionFlag) {
-               
+                
                 if ($section -eq "Reading") {
-                            
+                    $textType = "PassageText"
                     $title = $document.getElementsByClassName("article_tit")[0].innerText
                     $text = $document.getElementsByClassName("article")[0].innerText
                     $text = Format-Paragraphs $text
@@ -894,33 +909,29 @@ function Get-Sets ($selectedSection, $set, $question) {
                     New-File $text "$xmlPath\$filePath.txt"
                     
                     $xml = Add-XmlTestItemNode @{CLASS = "view_this_passage_noquest"}
-                    Add-XmlChildNodes $xml @("TPPassage", "Title", "PassageText", "Category") @("$filePath.txt", $title, "", $category[$i-1])
-
-                    while (!([xml](Get-Content "$xmlPath\$filePath.xml")).InnerXml.Contains("underline")) {
-                        (Select-Xml "//PassageText" $xml).Node.InnerXml = (Get-Passage $links[$i-1])[1] 
-                        New-File $xml "$xmlPath\$filePath.xml"
-                    }
-
+                    Add-XmlChildNodes $xml @("TPPassage", "Title", $textType, "Category") @("$filePath.txt", $title, "", $category[$i-1])
+                    
                 }
                 else {
+                    $textType = "AudioText"
                     $xml = Add-XmlTestItemNode @{CLASS = "lecture"}
-                    $names = "LecturePicture", "LectureSound", "LecturePicture", "Title", "AudioText", "Category"
+                    $names = "LecturePicture", "LectureSound", "LecturePicture", "Title", $textType, "Category"
                     $nodes = "$filePath.jpg", "$filePath.wav", "Sampler\GetReady.gif", $titles[$i-1], "", $category[$i-1]
                     Add-XmlChildNodes $xml $names $nodes
                     
                     Get-Audio $links[$i-1] "$xmlPath\$filePath.mp3"
-
-                    while (!([xml](Get-Content "$xmlPath\$filePath.xml")).InnerXml.Contains("underline")) {
-                        (Select-Xml "//AudioText" $xml).Node.InnerXml = (Get-Passage $links[$i-1])[1] 
-                        New-File $xml "$xmlPath\$filePath.xml"
-                    }
-
-                    continue
+                    #continue
                 }
-
+                $count = 0
+                while (!$xml.InnerXml.Contains("underline") -and $count -lt 5) {
+                    (Select-Xml "//$textType" $xml).Node.InnerXml = (Get-Passage $links[$i-1])[1]
+                    $count++
+                    New-File $xml "$xmlPath\$filePath.xml"
+                }
+                
                 $questions = @()
                 foreach ($item in $document.getElementsByClassName("undone")) {
-                    $questions += $website + $item.parentNode.href.Remove(0,12)
+                    $questions += $item.parentNode.href
                 }
 
 
@@ -931,9 +942,12 @@ function Get-Sets ($selectedSection, $set, $question) {
                     $global:filePath = "$prefix$($i)Q$k"
                     Write-Host $filePath
         
-                    Set-Explanation "$xmlPath\$filePath.xml" $questions[$j-1] $explanation $set
-                    $explanation = (Select-Xml "//Explanation" ([xml] (Get-Content "$xmlPath\$filePath.xml"))).Node.innerText 
-                    continue
+                    if(Test-Path "$xmlPath\$filePath.xml") {
+                        #Set-Explanation "$xmlPath\$filePath.xml" $questions[$j-1] $explanation $set
+                        #$explanation = (Select-Xml "//Explanation" ([xml] (Get-Content "$xmlPath\$filePath.xml"))).Node.innerText 
+                    }
+                    
+                    #continue
                     # Question Text
                     $html = (Invoke-WebRequest "$($questions[$j-1])")
                     $global:document = $html.ParsedHtml.body
@@ -1185,8 +1199,8 @@ function Get-Reading($set, $question) {
         Add-XmlChildNodes $xml @("specialShowAnswer") @($keys)
     }
 
-    $explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
-    Add-XmlChildNodes $xml @("Explanation") @($explanation)
+    #$explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
+    Add-XmlChildNodes $xml @("Explanation") @($document.getElementsByClassName("desc")[0].innerText)
 
     New-File $xml "$xmlPath\$filePath.xml" 
     New-File $passageText "$xmlPath\$filePath.txt"
@@ -1253,8 +1267,8 @@ function Get-Listening ($set, $question) {
 
     }
 
-    $explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
-    Add-XmlChildNodes $xml @("Explanation") @($explanation)
+    #$explanation = Get-Translation $document.getElementsByClassName("desc")[0].innerText
+    Add-XmlChildNodes $xml @("Explanation") @($document.getElementsByClassName("desc")[0].innerText)
 
     New-File $xml "$xmlPath\$filePath.xml" 
 }
@@ -1502,12 +1516,12 @@ function Get-Score ()
 }
 
 
-
+## Script Entrance
 $global:website = "https://top.zhan.com/toefl"
 $global:sections = "Reading", "Listening", "Speaking", "Writing"
 $global:time = @("45", "60", "60"), @("15", "30", "20")
-$global:sets = "TPO"
-$global:setsLength = if ($sets -eq "OG") {3} else {5}
+$global:sets = "TPO" 
+$global:setsLength = if ($sets -eq "OG") {3} else {5} # folder name length
 
 $global:xmlPath = "$env:USERPROFILE\Downloads\ETS\TOEFL Programs\Sampler\forml1"
 $global:htmlPath = "C:\github\toefl\$($sets.ToLower())"
@@ -1515,19 +1529,20 @@ $global:idmExe = "C:\Program Files (x86)\Internet Download Manager\IDMan.exe"
 $global:switchExe = "C:\Program Files (x86)\NCH Software\Switch\switch.exe"
 $global:temp = ""
 
-Test-Denpendency
+Test-Dependency
 
-for ($n = 1; $n -le 53; $n++) 
+for ($n = 54; $n -le 54; $n++) 
 {   
     $global:number = $n
     $global:tpos = if ($number % 4 -eq 0) { "$number" } else {"$($number - $number % 4 + 4)"}
-    $location = if ($sets -eq "TPO") { "alltpo$tpos" } else { $sets.ToLower()}
+    $location = if ($sets -eq "TPO") { "alltpo$tpos" } else { $sets.ToLower()} # website 
     if ($number -lt 10 -and $sets -eq "TPO") {$number = "0$number"}
+    Write-Host "$sets$number"
+
+    # New Set Number Folder, like \TPO01\ for XML files
     New-Item -Path "$xmlPath\$sets$number\" -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
-    #Write-Host "$sets$number"
-    Get-Sets "Writing"
-    #Set-Translation "$xmlPath\$sets$number\*\TPO*Q*.xml"
-    #Set-Translation "$xmlPath\$sets$number\*\TPO????.xml"
+    #Get-Sets $sections # Get sections like $sections[1..2] (Listening and Speaking)
+    #Set-Translation "$xmlPath\$sets$number\*\TPO*.xml"
     New-TPOHtml
     #return
 }

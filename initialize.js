@@ -70,6 +70,7 @@ function addHead() {
     createNode( ["script", {src : "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"}] );
 
     // My javascript
+    createNode( ["script", {src : folder + "/variable.js"}] );
     createNode( ["script", {src : folder + "/external.js"}] );
     
 }
@@ -98,7 +99,7 @@ function addFooter(color) {
 }
 
 function addTopNav(color) {
-    var barItems = ["TPO", "Notes", "Essay", "OG", "Barrons", "Cambridge", "Longman"]
+    var barItems = ["TPO", "Notes", "Essay", "OG", "PT", "Barrons", "Cambridge", "Longman"]
     var nav = createNode( ["nav", {
         class : color + " w3-bar w3-card w3-center w3-margin-bottom", 
         id: "topNav"

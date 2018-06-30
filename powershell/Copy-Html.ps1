@@ -1,5 +1,5 @@
 
-(Get-ChildItem "C:\github\toefl\*\*\*.html").ForEach{
+(Get-ChildItem "C:\github\toefl\*\*.html" -Recurse).ForEach{
     $content = (Get-Content $_.FullName).Replace("/initialize.js", "/storage/sdcard1/toefl/initialize.js")
     if(!$content) { continue }
     Set-Content $_.FullName.Replace("C:\github", "D:") $content
