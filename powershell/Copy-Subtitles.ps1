@@ -64,4 +64,4 @@ function Copy-Subtitles () {
     }
 }
 
-Copy-Subtitles "$Home\Videos\Movies\" "$Home\Downloads\Compressed\"
+Copy-Subtitles "$Home\Videos\Movies\" "$Home\Downloads\"

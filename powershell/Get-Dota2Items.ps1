@@ -60,3 +60,11 @@ $items."$($slot.Replace(" ", "_"))".Split(",").ForEach{
     $item = $_.Split("/")[-1].Replace("%20", " ")
     if(!$string.Contains($item)) { Write-Host $_ }
 }
+
+$lines = Get-Content .\..\test.html
+for ($i = 0; $i -gt -$lines.Count; $i=$i+2) {
+    $link = "https://dota2.gamepedia.com/" + $lines[$i] -replace "about:/"
+    $request = Invoke-WebRequest $link
+    $links = $request.parsedHtml.links
+    $links | Foreach-object { if ($_.href -like "*Trading*" -and $_.innerText -like "*NOT*") {$link}}
+}

@@ -16,7 +16,7 @@ foreach ($sentence in $file.Content.Sentences) {
         $sentence = $sentence.Text.Replace($string, "_" * $string.Length) 
         $sentence = [regex]::Replace($sentence, "\u00A0", " ")
         
-        function Get-Definition ($string) {
+        function Get-Definition ($string, $sentence) {
             $uri = "https://www.thefreedictionary.com/" + $string
             $html = Invoke-WebRequest $uri
             $document = $html.ParsedHtml.body
@@ -32,7 +32,13 @@ foreach ($sentence in $file.Content.Sentences) {
             foreach ($item in $document.getElementsByClassName("Syn")) {
                 if($item.tagName -ne "span" -or $item.innerText.IndexOf(",") -lt 0) { continue }
                 $synonyms += $item.parentNode.outerHtml
-            }snd.play('//img2.tfd.com/pron/mp3/en/US/st/stdtdhshsgs3hr.mp3')
+            }
+            if (!$synonyms) {
+                for ($i = 1; $i -lt $document.getElementsByClassName("Syn").Length; $i++) {
+                    $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
+                }
+            }
+
             $pronuciation = $document.getElementsByClassName("snd2")[0].getAttribute("data-snd")
             $sound = "http://img2.tfd.com/pron/mp3/$pronuciation.mp3"
             $pronuciation = $document.getElementsByClassName("snd")[0]
@@ -40,9 +46,59 @@ foreach ($sentence in $file.Content.Sentences) {
                 $pronuciation = $pronuciation.getAttribute("data-snd")
                 $sound += ",http://img.tfd.com/hm/mp3/$pronuciation.mp3" 
             }
-            @($definition, $synonyms, $pronuciation)
+            #"<p>$sentence</p>", $definition, $synonyms, $sound
+            $definition, $synonyms, $sound
         }
-        
+
+        function Get-Oxford ($string) {
+            $uri = "https://en.oxforddictionaries.com/definition/us/" + $string
+            $html = Invoke-WebRequest $uri
+            $document = $html.ParsedHtml.body
+            
+            $definition = ""
+            foreach ($item in $document.getElementsByClassName("ind")) {
+                $definition += "<p>$($item.outerHtml)</p>"
+            }
+
+            $examples = @()
+            foreach ($example in $document.getElementsByClassName("examples")) {
+                foreach($item in $example.getElementsByClassName("ex")) {
+                    $examples += "<p>$($item.innerText.Substring(1,$item.innerText.Length -2))</p>"
+                }
+            }
+            $example = ""
+            $examples | Sort-Object { $_.Length } | Select-Object -Last 5 | Foreach-Object { $example += $_ }
+
+            $synonyms = ""
+            foreach ($item in $document.getElementsByClassName("exs")) {
+                $synonyms += "<p>$($item.outerHtml)</p>"
+            }
+
+            $sound = $document.getElementsByClassName("speaker")[0].ChildNodes[0].src
+
+            $uri = "https://www.thefreedictionary.com/" + $string
+            $html = Invoke-WebRequest $uri
+            $document = $html.ParsedHtml.body
+            $pronuciation = $document.getElementsByClassName("snd2")[0].getAttribute("data-snd")
+            $sound += ",http://img2.tfd.com/pron/mp3/$pronuciation.mp3"
+            $pronuciation = $document.getElementsByClassName("snd")[0]
+            if($pronuciation) { 
+                $pronuciation = $pronuciation.getAttribute("data-snd")
+                $sound += ",http://img.tfd.com/hm/mp3/$pronuciation.mp3" 
+            }
+
+            foreach ($item in $document.getElementsByClassName("Syn")) {
+                if($item.tagName -ne "span" -or $item.innerText.IndexOf(",") -lt 0) { continue }
+                $synonyms += $item.parentNode.outerHtml
+            }
+            if (!$synonyms) {
+                for ($i = 1; $i -lt $document.getElementsByClassName("Syn").Length; $i++) {
+                    $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
+                }
+            }
+
+            $example, $definition, $synonyms, $sound
+        }
         function Get-Affix ($word) {
             $xml = [xml](Get-Content "..\toefl\notes\affix.html")
             (Select-Xml "//tr" $xml).Node.ForEach{
@@ -84,8 +140,9 @@ foreach ($sentence in $file.Content.Sentences) {
             }
             $string
         }
-
-        $sets += , @($string, @("<p>$sentence</p>" + (Get-Affix $string), (Get-Definition $string)))
+        
+        $affix = Get-Affix $string
+        $sets += , @($string, (Get-Oxford $string))
         break
         
     }
@@ -133,12 +190,5 @@ while(!$ie.Document.IHTMLDocument3_getElementById("xml").value) {
     $xml = $ie.Document.IHTMLDocument3_getElementById("xml").value
     $xml
 }
-
-#>
-
-
-
-
-<#
 
 #>

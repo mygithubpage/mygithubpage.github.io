@@ -99,19 +99,26 @@ function addFooter(color) {
 }
 
 function addTopNav(color) {
-    var barItems = ["TPO", "Notes", "Essay", "OG", "PT", "Barrons", "Cambridge", "Longman"]
+    if(document.location.href.includes("/toefl/")) {
+        var test = "/toefl/"
+        var barItems = ["TPO", "Essay", "OG", "EQ", "Barrons", "Cambridge", "Longman", "Notes"];
+    }
+
+    else {
+        var test = "/gre/";
+        var barItems = ["OG", "Princeton", "Manhattan", "Kaplan", "Barrons", "MGH", "Mangoosh", "Grubers", "Notes"];
+    }
     var nav = createNode( ["nav", {
         class : color + " w3-bar w3-card w3-center w3-margin-bottom", 
         id: "topNav"
     }], document.body, "before");
     
-
     for (let index = 0; index < barItems.length; index++) {
         const element = barItems[index];
         let suffix = "";
-        if(index > 3) { suffix = " w3-hide-small" }
+        if(index > 2) { suffix = " w3-hide-small" }
         createNode( ["a", {
-            href : folder + "/toefl/" + element.toLowerCase() + "/" + element.toLowerCase() + ".html",
+            href : folder + test + element.toLowerCase() + "/" + element.toLowerCase() + ".html",
             class : "w3-bar-item w3-button" + suffix
         }, element], nav);
 
