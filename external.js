@@ -1489,9 +1489,16 @@ function createWordSets() {
                     button.onclick = (e) => { 
                         detailDiv.classList.add("w3-padding-small");
                         detailDiv.innerHTML = element[1][buttons.indexOf(e.target.textContent)];
+
+                        // highlight word in example
+                        if (e.target.textContent == "example") {
+                        }
+
                         while(detailDiv.innerHTML.includes("a>")) {
                             detailDiv.innerHTML = detailDiv.innerHTML.replace(/<a href=".*?">/, '').replace(/(\w)<\/a>/, "$1")
                         }
+
+                        // button hide
                         createNode(["button", {class:"w3-btn w3-bar w3-padding-small my-margin-top-small " + color}, "hide"], detailDiv).onclick = () => { 
                             detailDiv.innerHTML = "";
                             detailDiv.classList.remove("w3-padding-small");
