@@ -114,6 +114,8 @@ Get-ChildItem -Path $env:windir\*.log |
 Select-String -List error |
 Format-Table Path, LineNumber -AutoSize
 
+# https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands
+
 <#
 	1. Start your scripts with a standard set of comments (name, date, author, purpose and keywords) to easily find them later.
 	2. Add comments as much as possible, but not too much.

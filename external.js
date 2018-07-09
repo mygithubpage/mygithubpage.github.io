@@ -11,7 +11,9 @@ topNavBtn = document.querySelector("#topNavBtn");
 topNav = document.querySelector("#topNav"); 
 main = document.querySelector("main"); 
 backgroundColor = window.getComputedStyle(document.querySelector("footer")).backgroundColor;
-questions = document.querySelectorAll("#question > div");
+if((/verbal|quantitative/).exec(uri)) questions = document.querySelector("#questions").querySelectorAll("[id^='question']");
+else questions = document.querySelectorAll("#question > div");
+
 num = parseInt(html.substr(html.indexOf(".") - 1, 1));
 setFlag = html.includes("-");
 
@@ -680,11 +682,10 @@ function startTest() {
 
     function checkAnswer(id) {
 
-        if(uri.includes("verbal")) var answer = testDiv.querySelector(".answer").getAttribute("data-answer");
+        if((/verbal|quantitative/).exec(uri)) var answer = testDiv.querySelector(".answer").getAttribute("data-answer");
         else var answer = testDiv.querySelector(".answer").innerText;
 
         let flag;
-        let selection;
         
         if (!myAnswer[id-1] || !myAnswer[id-1].split("->")[0]) {  } 
         myAnswer[id-1] = "";
@@ -853,9 +854,9 @@ function startTest() {
         
         section.innerHTML = questions[index].innerHTML;
 
-        if(uri.includes("verbal")) {
-            if(questions[index].className.includes("comprehension")) {
-                section.querySelector(".passage").classList.toggle("w3-hide");
+        if((/verbal|quantitative/).exec(uri)) {
+            if(questions[index].getAttribute("data-passage")) {
+                section.querySelector(".passage").classList.add("w3-hide");
                 article.innerHTML = questions[index].querySelector(".passage").innerHTML;
             }
         }
@@ -879,7 +880,7 @@ function startTest() {
         
         // Previous and Next Button
         let div = createNode(["div", {class:"w3-bar my-margin-top-small w3-display-container w3-section "}, ""], section);
-        let previouBtn = createNode(["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
+        createNode(["button", {class:"w3-btn w3-left " + color}, "Previous"], div);
         
         // Time Ticking 
         if (mobileFlag) {
@@ -901,7 +902,7 @@ function startTest() {
         }
 
         addHighlight(time);
-        let nextBtn = createNode(["button", {class:"w3-btn w3-right " + color}, "Next"], div);
+        createNode(["button", {class:"w3-btn w3-right " + color}, "Next"], div);
 
         // Review Button
         let reviewBtn = testDiv.querySelector("#review");
@@ -914,7 +915,7 @@ function startTest() {
             elem.onclick = e => navigateQuestion (e.target);
         });
         
-        if((/text|sentence/).exec(questions[index].className)) {
+        if(!questions[index].getAttribute("data-passage")) {
             article.style.height = "0px";
             if(!mobileFlag) {
                 section.classList.remove("w3-half");
@@ -937,9 +938,8 @@ function startTest() {
                 reviewBtn.classList.add("w3-half");
             }
         }
-        
-        
-        if(!uri.includes("verbal")) showSpecialQuestion(article, section);
+
+        if(!(/verbal|quantitative/).exec(uri)) showSpecialQuestion(article, section);
 
         
         // select sentence question
@@ -1161,7 +1161,7 @@ function startTest() {
             waitTime(1800, showModal);
         }
     }
-    else if (uri.includes("verbal")) {
+    else if ((/verbal|quantitative/).exec(uri)) {
 
         var section = createNode(["section", {class:"show-question w3-half"}, ""], testDiv);
         time = createNode(["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
@@ -1175,7 +1175,7 @@ function updateUI() {
 
     function showQuestion(article) {
         if(article) setHeight(article);
-        questions.forEach(element => element.classList.toggle("w3-hide"));
+        questions.forEach(element => { if (!element.className.includes("passage")) element.classList.toggle("w3-hide")});
         questionDiv = createNode(["div", {class:"w3-section", id:"question"}, ""], main);
         if(article) { 
             questionDiv.style.height = screen.height / 3 + "px";
@@ -1184,7 +1184,6 @@ function updateUI() {
         pageBar = createNode(["div", {class:"w3-bar"}, ""], questionDiv);
         questionDiv = createNode(["div", {class:"w3-display-container"}, ""], questionDiv);
         for (let i = 0; i < questions.length; i++) {
-            const element = questions[i];
             let button = createNode(["button", {class:"w3-bar-item w3-button " + color}, i + 1], pageBar);
             if (uri.includes("reading") && mobileFlag) { button.style.padding = "5px"; }
             button.onclick = e => {
@@ -1192,7 +1191,7 @@ function updateUI() {
                 questionDiv.innerHTML = questions[parseInt(e.target.textContent) - 1].innerHTML
 
                 // Verbal reasoning
-                if(uri.includes("verbal")) {
+                if((/verbal|quantitative/).exec(uri)) {
                     let div = createNode(["div", {class:"w3-bar"}, ""], questionDiv) // this div is for button to display in block
                     var btn = createNode(["button", {class:"w3-btn " + color}, "Toggle Answer"], div);
                     btn.onclick = e => {
@@ -1205,7 +1204,7 @@ function updateUI() {
                     }
                 }
 
-                if(!uri.includes("verbal")) {
+                if(!(/verbal|quantitative/).exec(uri)) {
                     article.querySelectorAll(".highlight").forEach(element => addHighlight(element));
                     article.querySelectorAll(".highlight").forEach(element => toggleHighlight(element));
                     showSpecialQuestion(article, questionDiv);
@@ -1225,38 +1224,28 @@ function updateUI() {
         showQuestion(article);
     }
     // Update Verbal Reasoning UI
-    else if(uri.includes("verbal")) {
+    else if((/verbal|quantitative/).exec(uri)) {
         // Hide passage and choices
-        document.querySelectorAll(".passage").forEach(element => element.classList.toggle("w3-hide"));
-        document.querySelectorAll(".choices > p").forEach(element => element.classList.toggle("w3-hide"));
+        document.querySelectorAll(".passage").forEach(element => element.classList.add("w3-hide"));
+        document.querySelectorAll(".choices > p").forEach(element => element.classList.add("w3-hide"));
         
-        questions = document.querySelectorAll("#questions > div"); 
-         
         questions.forEach(question => { 
             let choices = question.querySelectorAll(".choices") // Choices in one question
             let choiceType; // Radio Checkbox Select(reading comprehension select sentence)
             choicesDiv = createNode(["div", {}, ""], question);
 
             // Decide choice type based on question type
-            if(question.className.includes("text")) { 
-                
-                choiceType = "radio";
-            }
-            else if (question.className.includes("sentence")) {
-                choiceType = "checkbox";
-            }
-            else {
-                choiceType = question.getAttribute("data-choice-type");
-
+            choiceType = question.getAttribute("data-choice-type");
+            if ( question.getAttribute("data-passage")) {
                 // Show reading comprehension question related passage
                 passageDiv = createNode(["div", {class:"passage"}, ""], question, true);
-                passageDiv.innerHTML = document.querySelector("#passage" + question.getAttribute("data-passage")).innerHTML;
+                passageDiv.innerHTML = document.querySelector("#" +question.getAttribute("data-passage")).innerHTML;
             }
 
             // Update choices
             for (let i = 0; i < choices.length; i++) {
                 choice = choices[i]
-                choiceDiv = createNode(["div", {class:"w3-margin w3-left"}, ""], choicesDiv);
+                choiceDiv = createNode(["div", {class:"w3-padding-small w3-left"}, ""], choicesDiv);
                 if(question.className.includes("text")) choiceDiv.className += " w3-left"
 
                 for (let j = 0; j < choice.children.length; j++) {
@@ -1266,7 +1255,7 @@ function updateUI() {
                     createNode(["span", {class:"my-" + choiceType}, ""], label);
                 }
             }
-            question.querySelector(".answer").classList.toggle("w3-hide");
+            if(!question.className.includes("passage")) question.querySelector(".answer").classList.toggle("w3-hide");
             
         });
         
@@ -1331,10 +1320,10 @@ function initialize() {
     }
 
     if((/toefl/).exec(uri)) { 
-        createNode( ["a", {href:"/github/gre/og/og.html",class:"w3-bar-item w3-button w3-hide-small"}, "GRE"], topNav); 
+        createNode( ["a", {href:"/gre/og/og.html",class:"w3-bar-item w3-button w3-hide-small"}, "GRE"], topNav); 
     }
     else if((/gre/).exec(uri)) { 
-        createNode( ["a", {href:"/github/toefl/og/og.html",class:"w3-bar-item w3-button w3-hide-small"}, "TOEFL"], topNav);
+        createNode( ["a", {href:"/toefl/og/og.html",class:"w3-bar-item w3-button w3-hide-small"}, "TOEFL"], topNav);
     }
     hideBarItems = document.querySelectorAll(".w3-hide-small");
 
@@ -1491,7 +1480,8 @@ function createWordSets() {
                         detailDiv.innerHTML = element[1][buttons.indexOf(e.target.textContent)];
 
                         // highlight word in example
-                        if (e.target.textContent == "example") {
+                        if (e.target.textContent == "definition") {
+
                         }
 
                         while(detailDiv.innerHTML.includes("a>")) {

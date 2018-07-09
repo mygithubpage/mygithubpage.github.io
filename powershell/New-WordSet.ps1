@@ -46,7 +46,6 @@ foreach ($sentence in $file.Content.Sentences) {
                 $pronuciation = $pronuciation.getAttribute("data-snd")
                 $sound += ",http://img.tfd.com/hm/mp3/$pronuciation.mp3" 
             }
-            #"<p>$sentence</p>", $definition, $synonyms, $sound
             $definition, $synonyms, $sound
         }
 
