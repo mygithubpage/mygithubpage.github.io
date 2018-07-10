@@ -1,9 +1,16 @@
 . .\Utility.ps1
-$name = "pt1-verbal1"
+$name = "pq-text-easy"
 $explanation = "C:\github\blog\text\$name-exp.html"
 $content = Get-Content "C:\github\blog\text\$name.html" -Raw -Encoding UTF8
 $path = "C:\github\gre\og\$name.html"
 # Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+
+function Remove-FootNote ($text) {
+    $text = [regex]::Replace($text, "\d{2,3}\r\n", "") # page number
+    $text = [regex]::Replace($text, "GRE Verbal Reasoning Practice Questions\r\n", "") # page footnote
+    $text = [regex]::Replace($text, "Question Type.*\r\n", "") # page footnote 
+    $text
+}
 
 function New-Og ($content, $path) {
     $beginning = "<div id=`"passage`" class=`"passage`"><p>"
@@ -12,36 +19,68 @@ function New-Og ($content, $path) {
     $text = $content
 
     # remove extra text
+    $text = [regex]::Replace($text, "PRACTICE( )?SET.*\r\n", "") # set title
     $text = [regex]::Replace($text, "SET.*\r\n", "") # question set easy medium hard title
     $text = [regex]::Replace($text, "For Questions.*text\.", "") # text completion introduction
     $text = [regex]::Replace($text, "For each of.*instructed\.\r\n1\. ", $end + $start) # text completion introduction
-    $text = [regex]::Replace($text, "For each of.*instructed\.", "") # text completion introduction
+    $text = [regex]::Replace($text, "For each of.*\.", "") # text completion introduction
     $text = [regex]::Replace($text, "For the following .*that apply.\r\n", "") # multi select passage question
     $text = [regex]::Replace($text, "For Questions.*in meaning\.", "") # sentence euivalence introduction
-    $text = [regex]::Replace($text, "line \d", "") # passage line number
-    $text = [regex]::Replace($text, "\d{2,3}\r\n", "") # page number
-    $text = [regex]::Replace($text, "GRE Verbal Reasoning Practice Questions\r\n", "") # page footnote
+    $text = [regex]::Replace($text, "(L|l)ine \d", "") # passage line number
     $text = [regex]::Replace($text, "\. \. \. ", "&#8230; ") # ellipse
+    $text = [regex]::Replace($text, "This passage is adapted.*?\.", "") # sentence euivalence introduction
+    $text = Remove-FootNote $text
+    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
 
     # add passage start then add question start to first question of each passage
     $text = [regex]::Replace($text, "Questions ", $end + $beginning + "Questions ")
-    $regex = "\nQuestions\s(?<questionID>\d+?)\s" 
+    $text = [regex]::Replace($text, "Question ", $end + $beginning + "Question ")
+    if ($text.Substring($end.length + $beginning.length,20) -like "*Question*1*") {
+        $text = $text.Substring($end.length,$text.length - $end.length - 1)
+    }
+    $regex = "\nQuestion(s)?\s(?<question>\d+?)\s" 
     foreach ($match in ($content | Select-String $regex -AllMatches).Matches) {
-        $text = [regex]::Replace($text, "\.(\u201D)*\r\n$($match.Value.Trim("`nQuestions ")). ", ".</p></div>$start")
+        $text = [regex]::Replace($text, "(\u201D)?[(\r\n)| ]$($match.Value.Trim("`nQuestions "))\. ", "</p></div>$start")
     }
 
     # remove extra text again
-    $text = [regex]::Replace($text, "Questions .* passage.\r\n", "")
+    $text = [regex]::Replace($text, "Question(s)? .* passage\.", "")
     $text = [regex]::Replace($text, "(\r\n)*Blank \(i*\)", "")
 
     # add question 
-    $text = [regex]::Replace($text, "\u0002 A", "</p></div><div class=`"choices`"><p>A") # add choice start
-    $text = [regex]::Replace($text, " \u0002 ", "</p><p>") # replace choice middle
+    $text = [regex]::Replace($text, "(\u0002)? A ", "</p></div><div class=`"choices`"><p>A ") # add choice start
+    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+
+    # remove chocie start in the middle, like remove E(start)A -> E A
+    $regex = "[A-F]</p></div><div class=`"choices`"><p>A" 
+    foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
+        $text = [regex]::Replace($text, "$($match.Value)", "$($match.Value.Replace('</p></div><div class="choices"><p>', ' '))")
+    }
+
+    # remove chocie start in the start, like remove 6. (start)A book -> 6. A book
+    $regex = "[0-9].</p></div><div class=`"choices`"><p>A" 
+    foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
+        $text = [regex]::Replace($text, "$($match.Value)", "$($match.Value.Replace('</p></div><div class="choices"><p>', ' '))")
+    }
+
+    foreach ($character in "BCDEFGHI".ToCharArray()) {
+        $text = [regex]::Replace($text, " $character ", "</p><p>$character ")
+        if( $character -eq 'I' ) {
+            # remove I word not the I choice, well,</p><p>I -> well, I 
+            $regex = "[^\w]</p><p>I " 
+            foreach ($match in ($text | Select-String $regex -AllMatches).Matches) {
+                $text = [regex]::Replace($text, "$($match.Value)", "$($match.Value.Replace('</p><p>', ' '))")
+            }
+        }
+    }
+    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+
     $text = [regex]::Replace($text, "\r\n1\. ", $start) # add question start and choice end
-    $text = [regex]::Replace($text, "\r\n\d. ", $end + $start) # add question start and choice end
+    $text = [regex]::Replace($text, "[(\r\n)| ]\d{1,2}\. ", $end + $start) # add question start and choice end
     $text = [regex]::Replace($text, "\.\s+\r\n", ".") # remove extra newline
-    $text = [regex]::Replace($text, "\r\n</p>", "</p>") # remove extra newline
+    $text = [regex]::Replace($text, "(\r)?(\n)?", "") # remove extra newline
     $text = "<div id=`"questions`">$text$end</div>"
+    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
 
     Set-Content -Path $path -Value $text.replace(" & ", " and ") -Encoding UTF8
     $xml = [xml] (Get-Content $path)
@@ -88,7 +127,7 @@ function New-Og ($content, $path) {
         }
 
         # single question passage
-        if (!$questionText.Contains("_") -and $questionText.Contains(".") -and $questionText.Length -gt 300) {
+        if (!$questionText.Contains("_") -and !$questionText.Contains("ii") -and $questionText.Contains(".") -and $questionText.Length -gt 300) {
             $passage = $questionText.Substring(0, (Get-AllIndexesOf $questionText ".")[-1] + 1)
             $passageNode = $xml.CreateElement("div")
             $passageNode.innerXml = "<p>$passage</p>"
@@ -122,29 +161,26 @@ function New-Og ($content, $path) {
         }
     }
     $html = "<!DOCTYPE html><html lang=`"en`"><head><title></title><script src=`"/initialize.js`"></script></head><body><main class=`"w3-container`">" + $xml.OuterXml + "</main></body></html>"
-
+    #$html = $xml.OuterXml
     New-Item -Path $path -value $html -ErrorAction SilentlyContinue | Out-Null
     Set-Content -Path $path -Value $html -Encoding UTF8
 }
 
 function Get-OgAnswer ($explanation, $path) {
+    Set-Content $explanation (Remove-FootNote (Get-Content $explanation -Encoding UTF8 -Raw)) -Encoding UTF8
     $content = Get-Content $explanation -Encoding UTF8
     $xml = [xml] (Get-Content $path)
     $answers = Select-Xml "//div[@class=`"answer`"]" $xml
     $count = 0
-    $choice = ($content[-1] | Select-String "(?<questionID>.):" -AllMatches).Matches
+    $choice = ($content[0] | Select-String "(?<questionID>.):" -AllMatches).Matches
     $number = 0
     foreach($line in $content) {
         if ($line.Contains("Explanation ")) {
             $answer = ""
-            foreach ($match in ($line | Select-String "\(Choice\s(?<questionID>.)" -AllMatches).Matches) {
-                $answer+=$match.Value.Replace("(Choice ","")
-            }
-            if(!$answer) { 
+            $answer += $choice[$number++].Value[0] 
+            while($content[0][$choice[$number].Index - 13] -eq ";" -or $content[0][$choice[$number].Index - 12] -eq ";" -or $content[0][$choice[$number].Index - 8] -eq ";") { 
                 $answer += $choice[$number++].Value[0] 
-                if($content[-1][$choice[$number].Index - 13] -eq ";") {
-                    $answer += $choice[$number++].Value[0] 
-                }
+                #if($number -eq $choice.Length) {break}
             }
             $answers[$count].Node.SetAttribute("data-answer",$answer)
             $answers[$count].Node.ChildNodes[0].InnerXml = "<p>"+$line.Replace("Explanation ", "")+"</p>"
@@ -158,3 +194,9 @@ function Get-OgAnswer ($explanation, $path) {
 
 New-Og $content $path
 Get-OgAnswer $explanation $path
+
+<#
+(Get-ChildItem "C:\github\blog\text\pq-reading-*.html").ForEach{
+    Copy-Item $_ ($_.PSPath -Replace "reading" , "text")
+    Copy-Item $_ ($_.PSPath -Replace "reading" , "sentence")
+}#>
