@@ -176,6 +176,7 @@ function Get-Oxford ($word) {
         $example = $document.getElementsByClassName("examples")[$i]
         if ($example) {
             # get all sentence in this defintion and get the longest one
+            $sentences = @()
             foreach($sentence in $example.getElementsByClassName("ex")) {
                 $sentences += , "<p>$($sentence.innerText.Substring(1,$sentence.innerText.Length -2))</p>"
             }
@@ -189,7 +190,7 @@ function Get-Oxford ($word) {
         }
         
     }
-    if ($document.getElementsByClassName("speaker")) {
+    if (!$document.getElementsByClassName("speaker")[0]) {
         $uri = "https://www.thefreedictionary.com/" + $word
         $html = Invoke-WebRequest $uri
         $document = $html.ParsedHtml.body

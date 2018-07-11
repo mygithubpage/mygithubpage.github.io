@@ -586,7 +586,7 @@ function startTest() {
     let audio;
     let testDiv = createNode(["div", {id:"testDiv", class:"w3-container"}, ""], document.body);
     let myAnswer = new Array(questions.length);
-    
+
 
     function setTimer(second) {
         var time = document.querySelector("#time");
@@ -854,7 +854,7 @@ function startTest() {
         id = questions[index].id;
         
         section.innerHTML = questions[index].innerHTML;
-
+        
         if(greFlag) {
             if(questions[index].getAttribute("data-passage")) {
                 section.querySelector(".passage").classList.add("w3-hide");
@@ -915,7 +915,13 @@ function startTest() {
             if(mobileFlag) { elem.classList.toggle("w3-padding-small"); }
             elem.onclick = e => navigateQuestion (e.target);
         });
-        
+
+        // show current number of all number
+        let numberDiv = createNode(["div", {class:"w3-section"}, ""], section);
+        let numberP = createNode(["p", {class:"w3-xlarge w3-center my-margin-small"}, ""], numberDiv);
+        numberP.innerHTML = "Questions " + (index + 1) + " of " + questions.length;
+        addHighlight(numberP);
+
         if(!questions[index].getAttribute("data-passage")) {
             article.style.height = "0px";
             if(!mobileFlag) {
@@ -1448,14 +1454,15 @@ function renameTitle() {
 }
 
 // #region Word Set
-function createWordSets() {
-    function rgb2hex(rgb) {
-        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-        function hex(x) {
-            return ("0" + parseInt(x).toString(16)).slice(-2);
-        }
-        return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+function rgb2hex(rgb) {
+    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    function hex(x) {
+        return ("0" + parseInt(x).toString(16)).slice(-2);
     }
+    return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+}
+
+function createWordSets() {
 
     var buttons = ["example", "definition", "synonyms"]
     vocabularySets.forEach(element => {
@@ -1505,7 +1512,7 @@ function createWordSets() {
                     }
                 }
 
-                // add pronounciation
+                // add pronunciation
                 for (let index = 0; index < element[1][element[1].length - 1].split(",").length; index++) {
                     const sound = element[1][element[1].length - 1].split(",")[index];
                     createNode(["audio",{src:sound, id:element[0] + index},""], termDiv)
@@ -1524,15 +1531,21 @@ function createWordSets() {
 function createWordTest() {
     toggleElement();
     var testDiv = createNode(["div", {id:"testDiv", class:"w3-container"}, ""], document.body);
-    var detailDiv = createNode(["div", {class:"show-article w3-card w3-white w3-padding w3-section"}, ""], testDiv);
-    var optionDiv = createNode(["div", {class:"w3-card w3-white w3-padding w3-section"}, ""], testDiv);
+    var numberDiv = createNode(["div", {class:"w3-section"}, ""], testDiv);
+    var numberP = createNode(["p", {class:"w3-large w3-center my-margin-small"}, ""], numberDiv);
+    var detailDiv = createNode(["div", {class:"show-article w3-section"}, ""], testDiv);
+    var optionDiv = createNode(["div", {class:" w3-section"}, ""], testDiv);
     var details = [];
+    var indexes; // vocabulary set indexes for random selection (n-1,0)
+    var wordCount; // word count in specific vocabulary set
+    var error = 0; // error count
+    var forgottenWords = []; // wrong word you select in the test and correct word you didn't select
 
     function showModal() {
-        modal = createNode(["div", {class:"w3-modal"}, ""], testDiv);
-        modalContent = createNode(["div", {class:"w3-modal-content"}, ""], modal);
-        div = createNode(["div", {class:"w3-container " + color}, ""], modalContent);
-        p = createNode(["p", {}, ""], modalContent);
+        let modal = createNode(["div", {class:"w3-modal"}, ""], testDiv);
+        let modalContent = createNode(["div", {class:"w3-modal-content"}, ""], modal);
+        createNode(["div", {class:"w3-padding "+color}, "Vocabulary Set"], modalContent);
+        let p = createNode(["div", {}, ""], modalContent);
         createNode(["button", {class:"w3-btn my-margin " + color, id:"set0"}, "All"], p).onclick = (e) => {
             modal.style.display = "none";
             showQuestion(e.target.id.substr(3,1) - 1);
@@ -1543,14 +1556,81 @@ function createWordTest() {
             var button = createNode(["button", {class:"w3-btn my-margin " + color, id:"set" + (vocabularySets.indexOf(element) + 1)}, setName], p);
             button.onclick = (e) => {
                 modal.style.display = "none";
+                testDiv.removeChild(testDiv.lastChild);
                 showQuestion(e.target.id.substr(3,1) - 1);
             }
 
         });        
         modal.style.display = "block";
     }
-    
-    function showQuestion(randomSet) {
+
+    function showReviewModal(setNumber) {
+        let modal = createNode(["div", {class:"w3-modal"}, ""], testDiv);
+        let modalContent = createNode(["div", {class:"w3-modal-content"}, ""], modal);
+        createNode(["div", {class:"w3-padding " + color}, "Review Test"], modalContent);
+        let p = createNode(["p", {class:"w3-padding w3-section"}, ""], modalContent);
+        let div = createNode(["div", {class:"w3-padding-small"}, ""], modalContent);
+        var buttons = ["example", "definition", "synonyms"];
+
+        // answering and correct rate
+        p.innerHTML = "You have <b>answered " + ((wordCount * 2) - indexes.length) + "</b> of " + (wordCount * 2) + " questions, <b>" + ((wordCount * 2) - indexes.length - error) + " of " + ((wordCount * 2) - indexes.length) + "</b> answered questions are correct."
+        for (let i = 0; i < p.children.length; i++) {
+            addHighlight(p.children[i]) ;
+        }
+
+        // forgotten words
+        forgottenWords.forEach(word => {
+
+            var index = vocabularySets[setNumber][1].indexOf(word);
+            for (let i = 0; i < vocabularySets[setNumber][1].length; i++) {
+                if(vocabularySets[setNumber][1][i][0] == word) index = i; 
+            }
+            let element = vocabularySets[setNumber][1][index];
+            var wordDiv = createNode(["div", {class:"w3-left w3-col l3"}, ""], div);
+            var buttonDiv = createNode(["div", {class:"my-margin-small w3-padding-small w3-center"}, ""], wordDiv);
+            var detailDiv = createNode(["div", {class:"my-margin-small"}, ""], wordDiv);
+                            
+            var termDiv = createNode(["div",{class:"highlight w3-large"},word], buttonDiv);
+            addHighlight(termDiv);
+
+            // Detail div
+            for (let i = 0; i < 3; i++) {
+                
+                let button = createNode(["button", {class:"w3-btn my-margin-small w3-padding-small " + color}, buttons[i]], buttonDiv);
+                button.onclick = (e) => { 
+                    detailDiv.classList.add("w3-padding-small");
+                    detailDiv.innerHTML = element[1][buttons.indexOf(e.target.textContent)];
+
+                    // button hide
+                    createNode(["button", {class:"w3-btn w3-bar w3-padding-small my-margin-top-small " + color}, "hide"], detailDiv).onclick = () => { 
+                        detailDiv.innerHTML = "";
+                        detailDiv.classList.remove("w3-padding-small");
+                    };
+                    document.querySelectorAll(".illustration").forEach(element => {addHighlight(element)})
+                }
+            }
+
+            // add pronunciation
+            for (let index = 0; index < element[1][element[1].length - 1].split(",").length; index++) {
+                const sound = element[1][element[1].length - 1].split(",")[index];
+                createNode(["audio",{src:sound, id:element[0] + index},""], termDiv)
+                let imgLink = "https://png.icons8.com/metro/20/"+rgb2hex(backgroundColor)+ "/speaker.png";
+                createNode(["img",{src:imgLink,class:"w3-padding-small"},""], termDiv).onclick = () => {
+                    document.getElementById(element[0] + index).play();
+                } 
+            }
+
+        });
+
+
+        modal.style.display = "block";
+        createNode(["button", {class:"w3-btn w3-padding w3-margin-top w3-bar " + color}, "Exit"], modalContent).onclick = () => {
+            document.body.removeChild(document.body.lastChild);
+            toggleElement();
+        };
+    }
+
+    function showQuestion(setNumber) {
 
         function shuffle(a) {
             for (let i = a.length - 1; i > 0; i--) {
@@ -1560,56 +1640,97 @@ function createWordTest() {
             return a;
         }
 
-        if(randomSet == -1) randomSet = Math.floor(Math.random() * vocabularySets.length);
-        var randomWord = Math.floor(Math.random() * vocabularySets[randomSet][1].length);
-        var randomDetail = Math.floor(Math.random() * 2) + 1;
-        detailDiv.innerHTML = vocabularySets[randomSet][1][randomWord][1][randomDetail];
+        /** 
+         * create question index array "0,0","0,1", ... , "0, n-1", "1,0", ... , "1, n-1"
+         * randomly pop item from array 
+         * if no item left, show review
+         * show current number of all number  
+         */
+        
+        // create question index array "0,0","0,1", ... , "0, n-1", "1,0", ... , "1, n-1"
+        if(setNumber == -1) setNumber = 0;
+        wordCount = vocabularySets[setNumber][1].length;
+        if(!indexes) {
+            indexes = new Array(wordCount * 2);
+            for (let i = 0; i < wordCount; i++) {
+                indexes[i] = i + ",1";
+                indexes[i + wordCount] = i + ",2";
+            }
+        }
+        
+        // randomly pop item from array
+        if (indexes.length == 0) { 
+            showReviewModal(setNumber); 
+            return;
+        }
+        
+        let random = Math.floor(Math.random() * indexes.length);
+        let temp = indexes[random];
+        indexes[random] = indexes[indexes.length - 1];
+        indexes[indexes.length - 1] = temp;
+        let number = indexes.pop();
+        wordNumber = parseInt(number.split(",")[0]);
+        detailNumber = parseInt(number.split(",")[1]);
+
+        // show current number of all number
+        numberP.innerHTML = "Questions " + ((wordCount * 2) - indexes.length) + " of " + (wordCount * 2);
+        addHighlight(numberP);
+        
+        // show detail
+        detailDiv.innerHTML = vocabularySets[setNumber][1][wordNumber][1][detailNumber];
         if(details.includes(detailDiv.innerHTML) || detailDiv.innerHTML == "") { 
-            showQuestion(randomSet); 
+            showQuestion(setNumber); 
             return;
         }
         details.push(detailDiv.innerHTML);
-
         detailDiv.querySelectorAll(".illustration").forEach(element => element.classList.add("w3-hide"));
         optionDiv.innerHTML = "";
 
+        // select 3 options randomly
         var options = new Array(4); 
-        var answer = vocabularySets[randomSet][1][randomWord][0];
-        options[0] = answer + "," + randomWord;
+        var answer = vocabularySets[setNumber][1][wordNumber][0];
+        options[0] = answer + "," + wordNumber;
         for (let i = 1; i < 4; i++) {
-            var randomword = Math.floor(Math.random() * vocabularySets[randomSet][1].length);
-            let option = vocabularySets[randomSet][1][randomword][0] + "," + randomword;
+            var wordNumber = Math.floor(Math.random() * vocabularySets[setNumber][1].length);
+            let option = vocabularySets[setNumber][1][wordNumber][0] + "," + wordNumber;
             while(options.includes(option)) {
-                randomword = Math.floor(Math.random() * vocabularySets[randomSet][1].length);
-                option = vocabularySets[randomSet][1][randomword][0] + "," + randomword;
+                wordNumber = Math.floor(Math.random() * vocabularySets[setNumber][1].length);
+                option = vocabularySets[setNumber][1][wordNumber][0] + "," + wordNumber;
             }
             options[i] = option;
         }
         options = shuffle(options);
+
+        // show options
         options.forEach(element => {
             let label = createNode(["label", {class:"my-label"}, ""], optionDiv);
             createNode(["span", {}, element.split(",")[0]], label);
             let input = createNode(["input", {name:"radio", type:"radio"}], label);
-            let audio = createNode(["audio",{src:vocabularySets[randomSet][1][element.split(",")[1]][1][3].split(",")[0]},""], testDiv);
+            let audio = createNode(["audio",{src:vocabularySets[setNumber][1][element.split(",")[1]][1][3].split(",")[0]},""], testDiv);
             input.onclick = (e) => audio.play(); 
             createNode(["span", {class:"my-radio"}], label);
         });
         addInputColor();
+
+        // add check-next button
         optionDiv.querySelectorAll(".my-label").forEach(element => toggleHighlight(element, true));
         createNode(["button", {class:"w3-btn w3-padding w3-section w3-bar " + color}, "Check"], optionDiv).onclick = (event) => {
-            if(event.target.textContent == "Next") showQuestion(randomSet);
+            if(event.target.textContent == "Next") showQuestion(setNumber);
+            
             optionDiv.querySelectorAll(".my-label").forEach(element => { 
                 
-                if(event.target.textContent == "Check" && element.children[0].textContent != answer) {
+                if (event.target.textContent == "Check" && element.children[0].textContent != answer) {
                     var flag = true;
                     var innerHTML = detailDiv.innerHTML;
+
+                    // add toggle detail in wrong option
                     createNode(["button", {class:"w3-btn w3-padding-small w3-margin-left w3-right " + color}, "Toggle Detail"], element).onclick = (event) => {
                         
                         options.forEach(option => { 
                             if(option.split(",")[0] != event.target.parentNode.children[0].textContent) {return}
                                 
                             if(flag) {
-                                detailDiv.innerHTML = "<p>"+element.children[0].textContent+"</p>" + vocabularySets[randomSet][1][option.split(",")[1]][1][randomDetail];
+                                detailDiv.innerHTML = "<p>"+element.children[0].textContent+"</p>" + vocabularySets[setNumber][1][option.split(",")[1]][1][detailNumber];
                                 flag = false;
                             }
                             else {
@@ -1619,15 +1740,17 @@ function createWordTest() {
                         });
                     };
                 }
-    
+                if (element.children[1].checked && element.children[0].textContent != answer) {
+                    // add forgotten word to array
+                    forgottenWords.push(answer);
+                    forgottenWords.push(element.children[0].textContent);
+                    error++;
+                }
             });
             event.target.textContent = "Next";
             
         };
-        createNode(["button", {class:"w3-btn w3-padding w3-section w3-bar " + color}, "Exit"], optionDiv).onclick = () => {
-            document.body.removeChild(document.body.lastChild);
-            toggleElement();
-        };
+        createNode(["button", {class:"w3-btn w3-padding w3-bar "+color}, "Exit"], optionDiv).onclick = () => showReviewModal(setNumber);
     }
 
     showModal();
