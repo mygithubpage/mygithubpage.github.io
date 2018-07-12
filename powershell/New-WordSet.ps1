@@ -209,7 +209,7 @@ function Get-Oxford ($word) {
     $examples, $definition, $synonyms, $sound
 }
 
-$list = "improvisation","harbingers","monotonous","subjective","timely","dictate","stark","apathy","affability","incongruous","equitable","fortuitous","mediator","dichotomy","discrepancy","milieu"
+$list = "rampant","proliferation","sweeping","resilient","dilute","pasture","fatality","fatality","stringent","negligible","pertain","premises","patron","compel","speculative","offset","defy","woo","cow","sinister","scornful","susceptible","irksome","gratify","predilection","prominent","pivotal","recondite","daunting","impediments","counterfeit","unappealing","canonizing","canonize","impair","retrofit","disseminate","promulgate","marginalized","ridicule","banal","insipid","witty","homogeneous"
 
 foreach($word in $list) {
     Write-Host $word

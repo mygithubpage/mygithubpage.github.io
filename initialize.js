@@ -106,7 +106,7 @@ function addTopNav(color) {
 
     else {
         var test = "/gre/";
-        var barItems = ["OG", "Princeton", "Manhattan", "Kaplan", "Barrons", "MGH", "Mangoosh", "Grubers", "Notes"];
+        var barItems = ["OG", "Princeton", "Manhattan", "Kaplan", "Barrons", "MH", "Mangoosh", "Grubers", "Notes"];
     }
     var nav = createNode( ["nav", {
         class : color + " w3-bar w3-card w3-center w3-margin-bottom", 
