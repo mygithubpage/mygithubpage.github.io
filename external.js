@@ -785,11 +785,21 @@ function startTest() {
         }
         else {
             modal = reviewQuestions();
+           
             modalContent = modal.children[0]
             let tr = modalContent.querySelectorAll("tbody tr");
             for (let i = 0; i < tr.length; i++) { 
                 tr[i].children[1].innerText = myAnswer[i]; 
             }
+            
+            let p = createNode(["p", {class:"w3-padding w3-section"}, ""], modalContent, true);
+            createNode(["div", {class:"w3-padding " + color}, "Review Test"], modalContent, true);
+
+            // answering and correct rate
+            var error = 0;
+            myAnswer.forEach(answer => { if (answer.includes("->") || !answer) { error++ }});
+            p.innerHTML = "<b>" + (myAnswer.length - error) + " of " + myAnswer.length + "</b> answered questions are correct.";
+            addHighlight(p.children[0]);
         }
         let buttonBar = testDiv.querySelector("#buttonBar");
         if (!buttonBar) { 
@@ -1012,13 +1022,13 @@ function startTest() {
         if (questions.length > 20) countdown = 2100
         else if (questions.length > 10) countdown = 1800
 
-        setTimer(countdown);
+        waitTime(countdown, showModal);
         showQuestion(0);
     }
     else if (uri.includes("reading")) {
         var section = createNode(["section", {class:"show-question w3-half"}, ""], testDiv);
         time = createNode(["p", {id:"time", class:"w3-jumbo w3-center w3-half"}, ""], testDiv);
-        setTimer(1200);
+        waitTime(1200, showModal);
         showQuestion(0);
 
     }
@@ -1467,12 +1477,35 @@ function rgb2hex(rgb) {
     return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
 
+function swap(value1, value2) {
+    
+}
+
+function addSound(link, parent) {
+    var audio = createNode(["audio",{src:link},""], parent)
+    let imgLink = "https://png.icons8.com/metro/20/"+rgb2hex(backgroundColor)+ "/speaker.png";
+    createNode(["img",{src:imgLink,class:"w3-padding-small"},""], parent).onclick = () => audio.play();
+}
+
 function createWordSets() {
 
     var buttons = ["example", "definition", "synonyms"]
     vocabularySets.forEach(element => {
+        
         var setName = element[0];
         var words = element[1];
+
+        // put new word in the beginning
+        var newWords;
+        let newWord = document.querySelector("#"+setName.replace(/ /g, "-").toLowerCase()) 
+        if (newWord) { // if current vocabulary set has new words div
+            newWords = newWord.innerText.split(" ");
+
+            for (let i = 0; i < words.length; i++) {
+                index = newWords.indexOf(words[i][0])
+                if(index != -1) { [words[i], words[index]] = [words[index], words[i]]}
+            }
+        }
 
         var button = createNode(["button", {class:"w3-btn my-margin-small " + color}, setName], main);
 
@@ -1483,12 +1516,12 @@ function createWordSets() {
             words.forEach(element => {
 
                 var word = element[0];
-
+                
                 var wordDiv = createNode(["div", {class:"w3-left w3-col l3"}, ""], div);
                 var buttonDiv = createNode(["div", {class:"w3-card my-margin-small w3-padding-small w3-center"}, ""], wordDiv);
                 var detailDiv = createNode(["div", {class:"w3-card my-margin-small"}, ""], wordDiv);
                                 
-                var termDiv = createNode(["div",{class:"highlight w3-xlarge"},word], buttonDiv);
+                var termDiv = createNode(["div",{class:"highlight w3-large"},word], buttonDiv);
                 addHighlight(termDiv);
 
                 // Detail div
@@ -1500,13 +1533,45 @@ function createWordSets() {
                         detailDiv.innerHTML = element[1][buttons.indexOf(e.target.textContent)];
 
                         // highlight word in example
-                        if (e.target.textContent == "definition") {
+                        if (e.target.textContent == "example") {
+                            detailDiv.querySelectorAll("p").forEach( sentence => {
+                                
+                                let words = sentence.innerText.split(" ")
+                                words.forEach(element => {
+                                    if (element.length >= word.length && word.includes(element.substring(0, element.length - 3))) { 
+                                        element = element.replace(/[,.]/, "")
+                                        sentence.innerHTML = sentence.innerHTML.replace(element, "<b>"+element+"</b>")
+                                    }
+                                });
+                                addHighlight(sentence.children[0]);
+                            });
+                        }
+                        else if (e.target.textContent == "synonyms") {
 
+                            detailDiv.querySelectorAll(".exs").forEach( element => {
+                                let synonyms = element.innerText.split(", ")
+                                for (let index = 0; index < synonyms.length; index++) {
+
+                                    // create link for each synonyms
+                                    let synonym = synonyms[index];
+                                    let href = "https://en.oxforddictionaries.com/definition/us/"+ synonym
+                                    let a = createNode(["a", {class:"my-link", href: href}, synonym], detailDiv);
+
+                                    // first word highlight and last word don't add delimiter ", "
+                                    if (index == 0) addHighlight(a)
+                                    if (index != synonyms.length - 1) createNode(["span", {}, ", "], detailDiv);
+                                }
+
+                                createNode(["p", {}, ""], detailDiv);
+                                element.classList.add("w3-hide")
+                            });
                         }
 
-                        while(detailDiv.innerHTML.includes("a>")) {
+                        /**
+                         * while(detailDiv.innerHTML.includes("a>")) {
                             detailDiv.innerHTML = detailDiv.innerHTML.replace(/<a href=".*?">/, '').replace(/(\w)<\/a>/, "$1")
                         }
+                         */
 
                         // button hide
                         createNode(["button", {class:"w3-btn w3-bar w3-padding-small my-margin-top-small " + color}, "hide"], detailDiv).onclick = () => { 
@@ -1520,11 +1585,7 @@ function createWordSets() {
                 // add pronunciation
                 for (let index = 0; index < element[1][element[1].length - 1].split(",").length; index++) {
                     const sound = element[1][element[1].length - 1].split(",")[index];
-                    createNode(["audio",{src:sound, id:element[0] + index},""], termDiv)
-                    let imgLink = "https://png.icons8.com/metro/20/"+rgb2hex(backgroundColor)+ "/speaker.png";
-                    createNode(["img",{src:imgLink,class:"w3-padding-small"},""], termDiv).onclick = () => {
-                        document.getElementById(element[0] + index).play();
-                    } 
+                    addSound(sound, termDiv);
                 }
 
             });
@@ -1569,13 +1630,31 @@ function createWordTest() {
         modal.style.display = "block";
     }
 
+    function showConfirmModal(type, setNumber) {
+        let modal = createNode(["div", {class:"w3-modal"}, ""], testDiv);
+        let modalContent = createNode(["div", {class:"w3-modal-content"}, ""], modal);
+        createNode(["div", {class:"w3-padding " + color}, "Confirm " + type], modalContent);
+        let p = createNode(["p", {class:"w3-padding w3-section"}, ""], modalContent);
+    
+        // answering and correct rate
+        p.innerHTML = "Do you really want to " + type + "?"
+    
+        let buttonBar = createNode(["div", {class:"w3-bar", id:"buttonBar"}, ""], modalContent);
+        yesBtn = createNode(["button", {class:"w3-btn w3-margin w3-left " + color}, "Yes"], buttonBar);
+        noBtn = createNode(["button", {class:"w3-btn w3-margin w3-right " + color}, "No"], buttonBar)
+        yesBtn.onclick = () => { showReviewModal(setNumber); }
+        noBtn.onclick = () => { modal.style.display = "none"; }
+    
+        modal.style.display = "block";
+    }
+    
     function showReviewModal(setNumber) {
+        var buttons = ["example", "definition", "synonyms"];
         let modal = createNode(["div", {class:"w3-modal"}, ""], testDiv);
         let modalContent = createNode(["div", {class:"w3-modal-content"}, ""], modal);
         createNode(["div", {class:"w3-padding " + color}, "Review Test"], modalContent);
         let p = createNode(["p", {class:"w3-padding w3-section"}, ""], modalContent);
         let div = createNode(["div", {class:"w3-padding-small"}, ""], modalContent);
-        var buttons = ["example", "definition", "synonyms"];
 
         // answering and correct rate
         p.innerHTML = "You have <b>answered " + ((wordCount * 2) - indexes.length) + "</b> of " + (wordCount * 2) + " questions, <b>" + ((wordCount * 2) - indexes.length - error) + " of " + ((wordCount * 2) - indexes.length) + "</b> answered questions are correct."
@@ -1618,11 +1697,7 @@ function createWordTest() {
             // add pronunciation
             for (let index = 0; index < element[1][element[1].length - 1].split(",").length; index++) {
                 const sound = element[1][element[1].length - 1].split(",")[index];
-                createNode(["audio",{src:sound, id:element[0] + index},""], termDiv)
-                let imgLink = "https://png.icons8.com/metro/20/"+rgb2hex(backgroundColor)+ "/speaker.png";
-                createNode(["img",{src:imgLink,class:"w3-padding-small"},""], termDiv).onclick = () => {
-                    document.getElementById(element[0] + index).play();
-                } 
+                addSound(sound, termDiv);
             }
 
         });
@@ -1653,6 +1728,7 @@ function createWordTest() {
          */
         
         // create question index array "0,0","0,1", ... , "0, n-1", "1,0", ... , "1, n-1"
+        document.body.scrollTop = 0;
         if(setNumber == -1) setNumber = 0;
         wordCount = vocabularySets[setNumber][1].length;
         if(!indexes) {
@@ -1670,66 +1746,153 @@ function createWordTest() {
         }
 
         let random = Math.floor(Math.random() * indexes.length);
-        let temp = indexes[random];
-        indexes[random] = indexes[indexes.length - 1];
-        indexes[indexes.length - 1] = temp;
+        [indexes[random], indexes[indexes.length - 1]] = [indexes[indexes.length - 1], indexes[random]]
         let number = indexes.pop();
-        wordNumber = parseInt(number.split(",")[0]);
-        detailNumber = parseInt(number.split(",")[1]);
+        var wordNumber = parseInt(number.split(",")[0]);
+        var detailNumber = parseInt(number.split(",")[1]);
+        let set = vocabularySets[setNumber][1]
+        let wordStructure = set[wordNumber];
+        let classes = ["", ".ind", ".exs"];
+        var answer = [];
 
         // show current number of all number
         numberP.innerHTML = "Questions " + ((wordCount * 2) - indexes.length) + " of " + (wordCount * 2);
         addHighlight(numberP);
         
         // show detail
-        detailDiv.innerHTML = vocabularySets[setNumber][1][wordNumber][1][detailNumber];
+        detailDiv.innerHTML = wordStructure[0]; // questions is word
+        addHighlight(detailDiv);
+        addSound(wordStructure[1][3], detailDiv);
+ 
+        //detailDiv.innerHTML = wordStructure[1][detailNumber]; // questions is detail
         if(details.includes(detailDiv.innerHTML) || detailDiv.innerHTML == "") { 
             showQuestion(setNumber); 
             return;
         }
         details.push(detailDiv.innerHTML);
         detailDiv.querySelectorAll(".illustration").forEach(element => element.classList.add("w3-hide"));
-        optionDiv.innerHTML = "";
+        
 
-        // select 3 options randomly
-        var options = new Array(4); 
-        var answer = vocabularySets[setNumber][1][wordNumber][0];
-        options[0] = answer + "," + wordNumber;
-        for (let i = 1; i < 4; i++) {
+        var options = new Array(6); 
+        var wordNumbers = new Array(options.length);
+        optionDiv.innerHTML = wordStructure[1][detailNumber];
+        answers = optionDiv.querySelectorAll(classes[detailNumber]);
+        for (let i = 0; i < answers.length; i++) {
+            var optionNumber;
+            do {
+                optionNumber = Math.floor(Math.random() * options.length);
+            } while (answer.includes(optionNumber) && answer.length < options.length)
+
+            options[optionNumber] = answers[i];
+            answer.push(optionNumber);
+        }
+        answer.sort();
+        // select options randomly
+        for (let i = 0; i < options.length; i++) {
+            let spans;
+            if(options[i]) { 
+                wordNumbers[i] = set.indexOf(wordStructure);
+                continue; 
+            }
+
+            do {
+                var wordNumber = Math.floor(Math.random() * vocabularySets[setNumber][1].length);
+            } while (wordNumbers.includes(wordNumber) && set.indexOf(wordStructure) != wordNumber)
+            wordNumbers[i] = wordNumber;
+            optionDiv.innerHTML = set[wordNumbers[i]][1][detailNumber];
+            spans = optionDiv.querySelectorAll(classes[detailNumber]);
+            options[i] = spans[Math.floor(Math.random() * spans.length)];
+
+            // exclude same option
+            /**
+             * while(options.includes(option)) {
+                wordNumber = Math.floor(Math.random() * vocabularySets[setNumber][1].length);
+                optionDiv.innerHTML = set[wordNumber][1][detailNumber];
+                spans = optionDiv.querySelectorAll(classes[detailNumber]);
+                options[i] = spans[Math.floor(Math.random() * spans.length)];
+                wordNumbers[i] = wordNumber;
+            }
+             */
+        }
+        /**
+         * // option is whole detail
+        var answer = wordStructure[0];
+        var wordNumbers = new Array(options.length);
+        options[0] = answer;
+        wordNumbers[0] = wordNumber;
+        for (let i = 1; i < options.length; i++) {
             var wordNumber = Math.floor(Math.random() * vocabularySets[setNumber][1].length);
-            let option = vocabularySets[setNumber][1][wordNumber][0] + "," + wordNumber;
+            wordNumbers[i] = wordNumber;
+            let option = set[wordNumber][0];
+
+            // exclude same option
             while(options.includes(option)) {
                 wordNumber = Math.floor(Math.random() * vocabularySets[setNumber][1].length);
-                option = vocabularySets[setNumber][1][wordNumber][0] + "," + wordNumber;
+                wordNumbers[i] = wordNumber;
+                option = set[wordNumber][0];
             }
             options[i] = option;
         }
-        options = shuffle(options);
+        let randomIndex = Math.floor(Math.random() * (options.length - 1)) + 1;
+
+        [options[0], options[randomIndex]] = [options[randomIndex], options[0]];
+        [wordNumbers[0], wordNumbers[randomIndex]] = [wordNumbers[randomIndex], wordNumbers[0]];
+         */
 
         // show options
-        options.forEach(element => {
+        optionDiv.innerHTML = "";
+        options.forEach(option => {
             let label = createNode(["label", {class:"my-label"}, ""], optionDiv);
-            createNode(["span", {}, element.split(",")[0]], label);
-            let input = createNode(["input", {name:"radio", type:"radio"}], label);
-            let audio = createNode(["audio",{src:vocabularySets[setNumber][1][element.split(",")[1]][1][3].split(",")[0]},""], testDiv);
-            input.onclick = (e) => audio.play(); 
-            createNode(["span", {class:"my-radio"}], label);
+            // createNode(["span", {}, option.split(",")[0]], label); // option is word 
+
+            
+            let detail = createNode(["span", {}, ""], label);
+            detail.innerHTML = option.innerHTML;
+            /**
+             * // option is whole detail
+            let index = wordNumbers[options.indexOf(option)];
+            detail.innerHTML = set[index][1][detailNumber];
+             */
+
+            // option is part detail
+
+            createNode(["input", {name:"checkbox", type:"checkbox"}], label);
+
+            // play audio when click word
+            /*
+                let audio = createNode(["audio",{src:vocabularySets[setNumber][1][option.split(",")[1]][1][3].split(",")[0]},""], testDiv);
+                input.onclick = (e) => audio.play();    
+            */
+
+            createNode(["span", {class:"my-checkbox"}], label);
+            
         });
         addInputColor();
 
         // add check-next button
-        optionDiv.querySelectorAll(".my-label").forEach(element => toggleHighlight(element, true));
+        var labels = optionDiv.querySelectorAll(".my-label");
+        labels.forEach(element => toggleHighlight(element, true));
         createNode(["button", {class:"w3-btn w3-padding w3-section w3-bar " + color}, "Check"], optionDiv).onclick = (event) => {
             if(event.target.textContent == "Next") showQuestion(setNumber);
-            
-            optionDiv.querySelectorAll(".my-label").forEach(element => { 
+            for (let i = 0; i < labels.length; i++) {
+                let label = labels[i];
+                let index = wordNumbers[i]
                 
-                if (event.target.textContent == "Check" && element.children[0].textContent != answer) {
-                    var flag = true;
-                    var innerHTML = detailDiv.innerHTML;
+                if (event.target.textContent == "Check" && !answer.includes(i)) {
+                    
+                    //var flag = true;
+                    let innerHTML = label.innerHTML;
 
+                    label.innerHTML = "<span>"+set[index][0]+"</span>";
+                    addHighlight(label.children[0]);
+                    let audio = createNode(["audio",{src:set[index][1][3]},""], label);
+                    label.onclick = () => audio.play();
+
+                    addSound(wordStructure[1][3], label);
+                    label.innerHTML = label.innerHTML + innerHTML;
                     // add toggle detail in wrong option
-                    createNode(["button", {class:"w3-btn w3-padding-small w3-margin-left w3-right " + color}, "Toggle Detail"], element).onclick = (event) => {
+                    /**
+                     * createNode(["button", {class:"w3-btn w3-padding-small w3-margin-left w3-right " + color}, "Toggle Detail"], element).onclick = (event) => {
                         
                         options.forEach(option => { 
                             if(option.split(",")[0] != event.target.parentNode.children[0].textContent) {return}
@@ -1744,18 +1907,22 @@ function createWordTest() {
                             }
                         });
                     };
+                     */
                 }
-                if (element.children[1].checked && element.children[0].textContent != answer) {
+                
+                if (label.children[1].checked && !answer.includes(i) || !label.children[1].checked && answer.includes(i)) {
                     // add forgotten word to array
-                    forgottenWords.push(answer);
-                    forgottenWords.push(element.children[0].textContent);
-                    error++;
+                    if (!forgottenWords.includes(set[index][0])) { forgottenWords.push(set[index][0]); }
+                    var flag = true;
                 }
-            });
+            }
+            if (flag) error++;
             event.target.textContent = "Next";
             
         };
-        createNode(["button", {class:"w3-btn w3-padding w3-bar "+color}, "Exit"], optionDiv).onclick = () => showReviewModal(setNumber);
+        createNode(["button", {class:"w3-btn w3-padding w3-bar "+color}, "Exit"], optionDiv).onclick = () => {
+            showConfirmModal("Exit", setNumber);
+        }
     }
 
     showModal();

@@ -190,6 +190,8 @@ function Get-Oxford ($word) {
         }
         
     }
+
+    # get pronunciation from the free dictionary if 0xford has not
     if (!$document.getElementsByClassName("speaker")[0]) {
         $uri = "https://www.thefreedictionary.com/" + $word
         $html = Invoke-WebRequest $uri
@@ -205,11 +207,26 @@ function Get-Oxford ($word) {
     }
     else { $sound = $document.getElementsByClassName("speaker")[0].ChildNodes[0].src }
     
+    # get synonyms from the free dictionary if 0xford has not
+    if (!$synonyms) {
+        $uri = "https://www.thefreedictionary.com/" + $word
+        $html = Invoke-WebRequest $uri
+        $document = $html.ParsedHtml.body
+        foreach ($item in $document.getElementsByClassName("Syn")) {
+            if($item.tagName -ne "span" -or $item.innerText.IndexOf(",") -lt 0) { continue }
+            $synonyms += $item.parentNode.outerHtml
+        }
+        if (!$synonyms) {
+            for ($i = 1; $i -lt $document.getElementsByClassName("Syn").Length; $i++) {
+                $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
+            }
+        }
+    }
 
     $examples, $definition, $synonyms, $sound
 }
 
-$list = "rampant","proliferation","sweeping","resilient","dilute","pasture","fatality","fatality","stringent","negligible","pertain","premises","patron","compel","speculative","offset","defy","woo","cow","sinister","scornful","susceptible","irksome","gratify","predilection","prominent","pivotal","recondite","daunting","impediments","counterfeit","unappealing","canonizing","canonize","impair","retrofit","disseminate","promulgate","marginalized","ridicule","banal","insipid","witty","homogeneous"
+$list = "rampant","proliferation","sweeping","resilient","dilute","pasture","fatality","stringent","negligible","pertain","premises","patron","compel","speculative","offset","defy","woo","cow","sinister","scornful","susceptible","irksome","gratify","predilection","prominent","pivotal","recondite","daunting","impediments","counterfeit","unappealing","canonizing","canonize","impair","retrofit","disseminate","promulgate","marginalize","ridicule","banal","insipid","witty","homogeneous"
 
 foreach($word in $list) {
     Write-Host $word

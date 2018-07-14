@@ -140,6 +140,5 @@ function toggleFixed(element) {
 }
 
 function addSiderbarBtn() {
-    var button = document.createElement("button");
     createNode( ["button", { id : "sidebarBtn", class : "w3-button w3-left" }, "\u2630"], document.querySelector("#topNav"), "before");
 }
