@@ -12,7 +12,7 @@ topNavBtn = document.querySelector("#topNavBtn");
 topNav = document.querySelector("#topNav"); 
 main = document.querySelector("main"); 
 backgroundColor = window.getComputedStyle(document.querySelector("footer")).backgroundColor;
-if(greFlag) questions = document.querySelector("#questions").querySelectorAll("[id^='question']");
+if(greFlag && document.querySelector("#questions")) questions = document.querySelector("#questions").querySelectorAll("[id^='question']");
 else questions = document.querySelectorAll("#question > div");
 
 num = parseInt(html.substr(html.indexOf(".") - 1, 1));
@@ -865,7 +865,7 @@ function startTest() {
         id = questions[index].id;
         
         section.innerHTML = questions[index].innerHTML;
-        
+        section.querySelector(".question").classList.add("w3-section");
         if(greFlag) {
             if(questions[index].getAttribute("data-passage")) {
                 section.querySelector(".passage").classList.add("w3-hide");
@@ -1209,7 +1209,7 @@ function updateUI() {
             button.onclick = e => {
                 id = "question" + e.target.textContent
                 questionDiv.innerHTML = questions[parseInt(e.target.textContent) - 1].innerHTML
-
+                questionDiv.querySelector(".question").classList.add("w3-section");
                 // Verbal reasoning
                 if(greFlag) {
                     let div = createNode(["div", {class:"w3-bar"}, ""], questionDiv) // this div is for button to display in block
@@ -1218,7 +1218,7 @@ function updateUI() {
                         let question = e.target.parentElement.parentElement
                         let answer = question.querySelector("#answer")
                         if(!answer) answer = createNode(["div", {class:"answer w3-hide", id:"answer"}, ""], question);
-                        answer.innerHTML = question.querySelector(".answer").getAttribute("data-answer") + question.querySelector(".answer").innerHTML;
+                        answer.innerHTML = "<p>" + question.querySelector(".answer").getAttribute("data-answer") + "</p>" + question.querySelector(".answer").innerHTML;
                         answer.classList.toggle("w3-hide");
                         
                     }
@@ -1232,7 +1232,7 @@ function updateUI() {
             }
         }
     }
-    if(greFlag) {
+    if(greFlag) { // Update Verbal Reasoning UI
         // Hide passage and choices
         document.querySelectorAll(".passage").forEach(element => element.classList.add("w3-hide"));
         document.querySelectorAll(".choices > p").forEach(element => element.classList.add("w3-hide"));
@@ -1279,8 +1279,7 @@ function updateUI() {
         article.children[0].classList.toggle("w3-hide");
         showQuestion(article);
     }
-    // Update Verbal Reasoning UI
-    else {
+    else { // Update Speaking and Writing
         response = document.querySelector("#responses");
         question = document.querySelector("#question");
         setHeight(response);
@@ -1309,7 +1308,7 @@ function initialize() {
     addInputColor();
     
     if((/blog|notes/).exec(uri)) { 
-        updateNotes(); 
+        if(!(/gre/).exec(uri)) updateNotes(); 
     } 
     
     if((/toefl\/og\/|tpo\//).exec(uri)) { 
@@ -1460,8 +1459,10 @@ function renameTitle() {
     }
 
     title = html.split(".")[0].replace(/-/g, ' ');
+    title = title.replace("og ", "Official Guide");
     title = title.replace("pq ", "Practice Questions");
     title = title.replace("mh ", "McGraw-Hill ");
+    title = title.replace("kap ", "Kaplan ");
     title = title.replace(" es", " Exercise Set");
     if(!document.title) document.title = titleCase(title);
     document.title = document.title.replace("Mcgraw-hill ", "McGraw-Hill ");
@@ -1475,10 +1476,6 @@ function rgb2hex(rgb) {
         return ("0" + parseInt(x).toString(16)).slice(-2);
     }
     return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-}
-
-function swap(value1, value2) {
-    
 }
 
 function addSound(link, parent) {
@@ -1546,12 +1543,29 @@ function createWordSets() {
                                 addHighlight(sentence.children[0]);
                             });
                         }
+                        else if (e.target.textContent == "definition") {
+                            detailDiv.querySelectorAll("b").forEach(node => { addHighlight(node); });
+                            
+                        }
                         else if (e.target.textContent == "synonyms") {
+                            selectors = [".sds-list",".illustration", "i", ".Ant", "b"]
+                            selectors.forEach(selector => {
+                                detailDiv.querySelectorAll(selector).forEach( element => element.classList.add("w3-hide"));
+                            });
+                            
+                            detailDiv.querySelectorAll(".Syn").forEach( element => {
+                                element.innerHTML = "<p>" + element.innerHTML + "</p>"
+                                element.querySelectorAll("a").forEach( link => { 
+                                    link.classList.add("my-link");
+                                    link.href = "https://www.thefreedictionary.com/" + link.href.split("/").slice(-1) 
+                                });
+                            });
+                            detailDiv.innerHTML = detailDiv.innerHTML.replace(/<br>/g, "")
 
                             detailDiv.querySelectorAll(".exs").forEach( element => {
                                 let synonyms = element.innerText.split(", ")
                                 for (let index = 0; index < synonyms.length; index++) {
-
+                                    if ((/[ |-]/).exec(synonyms[index])) continue;
                                     // create link for each synonyms
                                     let synonym = synonyms[index];
                                     let href = "https://en.oxforddictionaries.com/definition/us/"+ synonym
@@ -1578,7 +1592,7 @@ function createWordSets() {
                             detailDiv.innerHTML = "";
                             detailDiv.classList.remove("w3-padding-small");
                         };
-                        document.querySelectorAll(".illustration").forEach(element => {addHighlight(element)})
+
                     }
                 }
 
@@ -1690,7 +1704,7 @@ function createWordTest() {
                         detailDiv.innerHTML = "";
                         detailDiv.classList.remove("w3-padding-small");
                     };
-                    document.querySelectorAll(".illustration").forEach(element => {addHighlight(element)})
+                    document.querySelectorAll(".illustration").forEach(element => {element.classList.add("w3-hide")})
                 }
             }
 
@@ -1801,8 +1815,10 @@ function createWordTest() {
             wordNumbers[i] = wordNumber;
             optionDiv.innerHTML = set[wordNumbers[i]][1][detailNumber];
             spans = optionDiv.querySelectorAll(classes[detailNumber]);
+            if(spans.length == 0) spans = optionDiv.querySelectorAll(".Syn");
             options[i] = spans[Math.floor(Math.random() * spans.length)];
-
+            if(!options[i])
+            spans = optionDiv.querySelectorAll(".Syn");
             // exclude same option
             /**
              * while(options.includes(option)) {

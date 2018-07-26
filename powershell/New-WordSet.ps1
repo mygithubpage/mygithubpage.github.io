@@ -1,6 +1,6 @@
 # Get Vocabulary 
 
-$sets = @()
+$global:sets = @()
 
 <#
     $msWord = New-Object -ComObject Word.Application 
@@ -103,49 +103,7 @@ $sets = @()
                 
                 $example, $definition, $synonyms, $sound
             }
-            function Get-Affix ($word) {
-                $xml = [xml](Get-Content "..\toefl\notes\affix.html")
-                (Select-Xml "//tr" $xml).Node.ForEach{
-                    $string = ""
-                    for ($i = 1; $i -lt $word.Length; $i++) {
-                        $suffix = $word.Substring($i)
-                        $prefix = $word.Substring(0,$word.Length - $i)
-                        $affix = $_
-                        $roots = @()
-                        $roots = $affix.ChildNodes[0].InnerText
-
-                        if(!$roots -and $affix.ChildNodes[1].InnerText.Contains("/")) {
-                            $array = $affix.ChildNodes[1].innerText.Split("/")
-                            for ($j = 1; $j -lt $array.Count; $j++) {
-                                if($affix.ChildNodes[1].innerText.StartsWith("-")) { $roots += $array[$j] + "," }
-                                else { $roots += $array[0] + $array[$j] + "," }
-                                
-                            }
-                            $roots += $array[0].TrimEnd(",")
-                        }
-                        $roots = $roots.Trim(" ").Replace("-", "").Split(",")
-                        $roots.ForEach{
-                            if($prefix -eq $_) { $string += "<p>Prefix: $prefix</p>" }
-                            elseif($suffix -eq $_) { $string += "<p>Suffix: $suffix</p>" }
-                            else { return }
-
-                            $i = $word.Length
-                            if($affix.ChildNodes[0].InnerText) {
-                                $string += "<p>Meaning: $($affix.ChildNodes[1].InnerText)</p>"
-                                $string += "<p>Example: $($affix.ChildNodes[2].InnerText)</p>"
-                            }
-                            else {
-                                $string += "<p>Meaning: $($affix.ChildNodes[2].InnerText)</p>"
-                                $string += "<p>Example: $($affix.ChildNodes[$affix.ChildNodes.Count - 1].InnerText)</p>"
-                            }
-                            
-                        }
-                    }
-                }
-                $string
-            }
             
-            $affix = Get-Affix $string
             $sets += , @($string, (Get-Oxford $string))
             break
             
@@ -158,6 +116,64 @@ $sets = @()
 #>
 
 function Get-Oxford ($word) {
+    function Get-Affix ($word) {
+        $xml = [xml](Get-Content "blog\text\affix.html")
+        $nodes = $(Select-Xml "//tr" $xml).Node
+        $maxPrefixString = ""
+        $maxSuffixString = ""
+        $maxPrefixIndex = 0
+        $maxSuffixIndex = 0
+        $maxPrefixLength = 0
+        $maxSuffixLength = 0
+        $affixes = "Prefix", "Suffix"
+        for ($i = 1; $i -lt $nodes.Count; $i++) {
+            
+            $affix = $nodes[$i]
+            $roots = $affix.ChildNodes[0].InnerText
+
+            if($affix.ChildNodes[0].InnerText.Contains("/")) {
+                $roots = ""
+                $array = $affix.ChildNodes[0].innerText.Split("/")
+                for ($j = 0; $j -lt $array.Count; $j++) {
+                    if($array[0].Trim(" ").StartsWith("-") -and !$array[$j].StartsWith("-")) { 
+                        $array[$j] = "-" + $array[$j]
+                    }
+                    $roots += $array[$j] + ","
+                }
+            }
+            $roots = $roots.Trim(" ").Split(", ")
+            $roots.ForEach{
+                $root = $_
+                if (!$root -or $root-eq "-" -or $word.length -le $root.length) { return }
+                $prefix = $word.Substring(0,$_.length)
+                $suffix = $word.Substring($word.length - $root.length)
+                for ($j = 0; $j -lt $affixes.Count; $j++) {
+                    $affix = $affixes[$j]
+                    if( $root.StartsWith("-") -and $word.EndsWith($root.Trim("-")) -or $word.StartsWith($root.Trim("-"))) { 
+                        if ( (Get-Variable "max$($affix)Length" -ValueOnly) -lt $root.length) {
+                            Set-Variable "max$($affix)Length" $root.length
+                            Set-Variable "max$($affix)Index"  $i
+                            Set-Variable "max$($affix)String" "<p><b>$($affixes[$j]):</b> $(Get-Variable $affix -ValueOnly)</p>" 
+                        }
+                    }
+                }
+            }
+        }
+
+        for ($j = 0; $j -lt $affixes.Count; $j++) {
+            if( !(Get-Variable $affixes[$j] -ValueOnly) ) { continue }
+            $affix = $nodes[(Get-Variable "max$($affixes[$j])Index" -ValueOnly)]
+            $contents = "", "Meaning", "Example"
+            for ($k = 1; $k -lt 3; $k++) {
+                if (!(Get-Variable "max$($affixes[$j])String" -ValueOnly)) {continue}
+                Set-Variable "max$($affixes[$j])String" "$(Get-Variable "max$($affixes[$j])String" -ValueOnly)<p><b>$($contents[$k]):</b> $($affix.ChildNodes[$k].InnerText)</p>"
+            }
+            $string += Get-Variable "max$($affixes[$j])String" -ValueOnly
+        }
+        $string
+    }
+    
+    $affix = Get-Affix $word
     $uri = "https://en.oxforddictionaries.com/definition/us/" + $word
     $html = Invoke-WebRequest $uri
     $document = $html.ParsedHtml.body
@@ -168,7 +184,9 @@ function Get-Oxford ($word) {
 
     # example and synonym are based on definition
     $count = $document.getElementsByClassName("ind").Length
+    if ($count -eq 0) { Write-Host "See root of $word"}
     for ($i = 0; $i -lt $count; $i++) {
+        
         # defintion
         $definition += "<p>$($document.getElementsByClassName("ind")[$i].outerHtml)</p>"
 
@@ -208,36 +226,36 @@ function Get-Oxford ($word) {
     else { $sound = $document.getElementsByClassName("speaker")[0].ChildNodes[0].src }
     
     # get synonyms from the free dictionary if 0xford has not
+    $uri = "https://www.thefreedictionary.com/" + $word
+    $html = Invoke-WebRequest $uri
+    $document = $html.ParsedHtml.body
+    foreach ($item in $document.getElementsByClassName("Syn")) {
+        if($item.tagName -ne "span" -or $item.innerText.IndexOf(",") -lt 0) { continue }
+        $synonyms += $item.parentNode.outerHtml
+    }
     if (!$synonyms) {
-        $uri = "https://www.thefreedictionary.com/" + $word
-        $html = Invoke-WebRequest $uri
-        $document = $html.ParsedHtml.body
-        foreach ($item in $document.getElementsByClassName("Syn")) {
-            if($item.tagName -ne "span" -or $item.innerText.IndexOf(",") -lt 0) { continue }
-            $synonyms += $item.parentNode.outerHtml
-        }
-        if (!$synonyms) {
-            for ($i = 1; $i -lt $document.getElementsByClassName("Syn").Length; $i++) {
-                $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
-            }
+        for ($i = 1; $i -lt $document.getElementsByClassName("Syn").Length; $i++) {
+            $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
         }
     }
 
-    $examples, $definition, $synonyms, $sound
+    $examples, ($definition + "<div class=`"affix`">" + $affix + "</div>"), $synonyms, $sound
 }
 
-$list = "rampant","proliferation","sweeping","resilient","dilute","pasture","fatality","stringent","negligible","pertain","premises","patron","compel","speculative","offset","defy","woo","cow","sinister","scornful","susceptible","irksome","gratify","predilection","prominent","pivotal","recondite","daunting","impediments","counterfeit","unappealing","canonizing","canonize","impair","retrofit","disseminate","promulgate","marginalize","ridicule","banal","insipid","witty","homogeneous"
+$name = "MH Verbal Example"
+$list = "blare"
 
 foreach($word in $list) {
     Write-Host $word
-    $sets += , @($word, (Get-Oxford $word))
+    $affix = Get-Affix $word
+    #$sets += , @($word, (Get-Oxford $word))
 }
-$name = "Verbal Easy"
-Set-Content "$name.json" (ConvertTo-Json $sets) -Encoding UTF8
-(Get-Content "$name.json") -replace "\s{2,}" -join "" -replace "\[\[", "[`"$name`",[[" -replace "\]\]\]", "]]]]," | Set-Clipboard
-Remove-Item "$name.json"
 
+$string = (ConvertTo-Json $sets) -replace "\s{2,}" -join "" -replace "\[\[", "[`"$name`",[[" -replace "\]\]\]", "]]]]," 
+$content = Get-Content .\variable.js -Raw
+#Set-Content .\variable.js ($content.Substring(0, $content.Length - 5) + "$string`n];")
 <#
+
     Remove-Item $docx
                                 xml to json
     $ie = Invoke-InternetExplorer "http://www.utilities-online.info/xmltojson/"

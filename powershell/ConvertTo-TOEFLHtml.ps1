@@ -131,7 +131,7 @@ for($j = 1; $j -le 14; $j++) {
     Add-XmlNode ("div", @{class="explanation"}, $explanation.TrimEnd("`r`n")) $xml $div | Out-Null
 }
 (Select-Xml "//article" $xml).Node.InnerXml = $innerXml
-Set-Content $path (Format-Xml $xml.OuterXml -Indent 2).Replace("html[]", "html") -Encoding UTF8
+Set-Content $path (Format-Xml $xml.OuterXml -Indent 2).Replace("html", "html") -Encoding UTF8
 
 #>
 function New-TPOHtml () {
@@ -576,7 +576,7 @@ for ($i = 1; $i -le -5; $i++) {
         $node.SetAttribute("class", "explanation")
     }
     $text = (Format-Xml $xml 2).ToString().Replace("</span><span class=`"highlight`">", "</span> <span class=`"highlight`">")
-    Set-Content $text.Replace("html[]", "html") -Path "C:\github\toefl\notes\listening-practice$i.html"
+    Set-Content $text.Replace("html", "html") -Path "C:\github\toefl\notes\listening-practice$i.html"
     return
 }
 #>

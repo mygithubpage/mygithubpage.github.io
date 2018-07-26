@@ -1,17 +1,17 @@
-. .\Utility.ps1
+. $PSScriptRoot\Utility.ps1
 $set = "mh"
-$name = "mh-sentence-es1"
+$name = "$set-verbal-example"
 #$explanation = "C:\github\blog\text\$name-exp.html"
 $content = Get-Content "C:\github\blog\text\gre\$set\$name.html" -Raw -Encoding UTF8
 $splitIndex = $content.IndexOf("Answers")
 $question = $content.Substring(0, $splitIndex)
 $explanation = $content.Substring($splitIndex + 7, $content.Length - $splitIndex - 7) 
 $path = "C:\github\gre\$set\$name.html"
-# Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+# Set-Content -Path "C:\github\gre\notes\test.html" -Value $text
 
 function Remove-FootNote ($text) {
     $text = [regex]::Replace($text, "CHAPTER.*\r\n", "") # page footnote
-    $text = [regex]::Replace($text, "\d{2,3}\r\n", "") # page number
+    $text = [regex]::Replace($text, "\d{1,3}\r\n", "") # page number
     $text = [regex]::Replace($text, "GRE Verbal Reasoning Practice Questions\r\n", "") # page footnote
     $text = [regex]::Replace($text, "Question Type.*\r\n", "") # page footnote
     $text = [regex]::Replace($text, "\d{2,3} PART .*\r\n", "") # page footnote
@@ -19,6 +19,14 @@ function Remove-FootNote ($text) {
 }
 
 function New-GreHtml ($content, $path) {
+    
+    function Update-Text($regex, $oldText, $newText) {
+        foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
+            $text = [regex]::Replace($text, (Invoke-Expression $oldText), (Invoke-Expression $newText))
+        }
+        $text
+    }
+
     $beginning = "<div id=`"passage`" class=`"passage`"><p>"
     $end = "</p></div><div class=`"answer`" data-answer=`"`"><div class=`"explanation`"><p></p></div></div></div>"
     $start = "<div id=`"question`" data-choice-type=`"`"><div class=`"question`"><p>"
@@ -30,63 +38,63 @@ function New-GreHtml ($content, $path) {
     $text = [regex]::Replace($text, "For Questions.*(text|meaning)\.", "") # question introduction
     $text = [regex]::Replace($text, "For each of.*instructed\.\r\n1\. ", $end + $start) # text completion introduction
     $text = [regex]::Replace($text, "For each of.*\.", "") # text completion introduction
-    $text = [regex]::Replace($text, "For the following .*(apply|choices|meaning)\.\r\n", "") # question introduction
+    $text = [regex]::Replace($text, "For (the following|this question).*(apply|choices|meaning)\.\r\n", "") # question introduction
     $text = [regex]::Replace($text, "(L|l)ine \d", "") # passage line number
     $text = [regex]::Replace($text, "\. \. \. ", "&#8230; ") # ellipse
     $text = [regex]::Replace($text, "This passage is adapted.*?\.", "") # sentence euivalence introduction
     $text = Remove-FootNote $text
-    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+    Set-Content -Path "C:\github\gre\notes\test.html" -Value $text
 
     # add passage start then add question start to first question of each passage
     $text = [regex]::Replace($text, "Questions ", $end + $beginning + "Questions ")
     $text = [regex]::Replace($text, "Question ", $end + $beginning + "Question ")
     if ($text.Substring($end.length + $beginning.length,20) -like "*Question*1*") {
-        $text = $text.Substring($end.length,$text.length - $end.length - 1)
+        $text = $text.Substring($end.length + $text.IndexOf($end), $text.length - 1 - $end.length - $text.IndexOf($end))
     }
-    $regex = "\nQuestion(s)?\s(?<question>\d+?)\s" 
-    foreach ($match in ($content | Select-String $regex -AllMatches).Matches) {
-        $text = [regex]::Replace($text, "(\u201D)?[(\r\n)| ]$($match.Value.Trim("`nQuestions "))\. ", "</p></div>$start")
-    }
+    
+    $regex = "<p>Question(s)?\s(?<question>\d+?)\s" 
+    $oldText = "`"(\u201D)?[(\r\n)| ]`$(`$match.Value.Trim(`"<p>Questions `"))\. `""
+    $text = Update-Text $regex $oldText "`"</p></div>`$start`""
 
     # remove extra text again
-    $text = [regex]::Replace($text, "Question(s)? .* passage\.", "")
+    $text = [regex]::Replace($text, "Question(s)? .* passage(\.|:)", "")
     $text = [regex]::Replace($text, "(\r\n)*Blank \(i*\)", "")
 
     # add question 
     $text = [regex]::Replace($text, "(\u0002)?( |\r\n)A ", "</p></div><div class=`"choices`"><p>A ") # add choice start
-    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+    Set-Content -Path "C:\github\gre\notes\test.html" -Value $text
 
+    $prefixes = "[A-F]", "[0-9]."
     # remove chocie start in the middle, like remove E(start)A -> E A
-    $regex = "[A-F]</p></div><div class=`"choices`"><p>A" 
-    foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
-        $text = [regex]::Replace($text, "$($match.Value)", "$($match.Value.Replace('</p></div><div class="choices"><p>', ' '))")
-    }
-
     # remove chocie start in the start, like remove 6. (start)A book -> 6. A book
-    $regex = "[0-9].</p></div><div class=`"choices`"><p>A" 
-    foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
-        $text = [regex]::Replace($text, "$($match.Value)", "$($match.Value.Replace('</p></div><div class="choices"><p>', ' '))")
+    $oldText = "`$match.Value"
+    $newText = "`"`$(`$match.Value.Replace('</p></div><div class=`"choices`"><p>', ' '))`""
+    
+    foreach ($prefix in $prefixes) {
+        $regex = "$prefix</p></div><div class=`"choices`"><p>A"
+        $text = Update-Text $regex $oldText $newText
     }
-    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+    $text = [regex]::Replace($text, "class=`"passage`"><p></p></div><div class=`"choices`"><p>", "class=`"passage`"><p>")
+
+    Set-Content -Path "C:\github\gre\notes\test.html" -Value $text
 
     foreach ($character in "BCDEFGHI".ToCharArray()) {
         $text = [regex]::Replace($text, " $character ", "</p><p>$character ")
         if( $character -eq 'I' ) {
             # remove I word not the I choice, well,</p><p>I -> well, I 
             $regex = "[^\w]</p><p>I " 
-            foreach ($match in ($text | Select-String $regex -AllMatches).Matches) {
-                $text = [regex]::Replace($text, "$($match.Value)", "$($match.Value.Replace('</p><p>', ' '))")
-            }
+            $newText = "`"`$(`$match.Value.Replace('</p><p>', ' '))`""
+            $text = Update-Text $regex $oldText $newText
         }
     }
-    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+    Set-Content -Path "C:\github\gre\notes\test.html" -Value $text
 
     $text = [regex]::Replace($text, "[(\r\n)| ]1\. ", $start) # add question start and choice end
     $text = [regex]::Replace($text, "[(\r\n)| ]\d{1,2}\. ", $end + $start) # add question start and choice end
     $text = [regex]::Replace($text, "\.\s+\r\n", ".") # remove extra newline
     $text = [regex]::Replace($text, "(\r)?(\n)?", "") # remove extra newline
     $text = "<div id=`"questions`">$text$end</div>"
-    Set-Content -Path "C:\github\gre\og\test.html" -Value $text
+    Set-Content -Path "C:\github\gre\notes\test.html" -Value $text
 
     Set-Content -Path $path -Value $text.replace(" & ", " and ") -Encoding UTF8
     $xml = [xml] (Get-Content $path)
@@ -143,8 +151,9 @@ function New-GreHtml ($content, $path) {
             $question.Node.AppendChild($passageNode) | Out-Null
             $question.Node.ChildNodes[0].InnerText = $questionText.Substring((Get-AllIndexesOf $questionText ".")[-1] + 2, $questionText.Length - (Get-AllIndexesOf $questionText ".")[-1] - 2)
         }
+        $question.Node.ChildNodes[0].InnerText = [regex]::Replace($questionText, " \(.*?\)", "") # remove extra newline
     }
-
+    Set-Content -Path "C:\github\gre\notes\test.html" -Value $xml.OuterXml
     $passages = Select-Xml "//div[@id=`"passage`"]" $xml
     for ($i = 0; $i -lt $passages.Count; $i++) {
         $passage = $passages[$i]
@@ -167,7 +176,6 @@ function New-GreHtml ($content, $path) {
         }
     }
     $html = "<!DOCTYPE html><html lang=`"en`"><head><title></title><script src=`"/initialize.js`"></script></head><body><main class=`"w3-container`">" + $xml.OuterXml + "</main></body></html>"
-    #$html = $xml.OuterXml
     New-Item -Path $path -value $html -ErrorAction SilentlyContinue | Out-Null
     Set-Content -Path $path -Value $html -Encoding UTF8
 }
@@ -177,7 +185,7 @@ function Get-Answer ($explanation, $path) {
     $xml = [xml] (Get-Content $path)
     $answers = Select-Xml "//div[@class=`"answer`"]" $xml
 
-    if($path.Contains("\og\")) {
+    if($path.Contains("\notes\")) {
         Set-Content $explanation (Remove-FootNote (Get-Content $explanation -Encoding UTF8 -Raw)) -Encoding UTF8
         $content = Get-Content $explanation -Encoding UTF8
         $count = 0
@@ -199,15 +207,15 @@ function Get-Answer ($explanation, $path) {
     }
     else {
         $explanation = Remove-FootNote $explanation
-        $choices = ( $explanation | Select-String "\d{1,2}\. [A-F]" -AllMatches).Matches
+        $choices = ( $explanation | Select-String "\d{1,2}\. ([A-F]|\d{1,2})" -AllMatches).Matches
         for ($i = 0; $i -lt $choices.Count; $i++) {
             $start = $explanation.IndexOf($choices[$i].Value)
 
             # answer
             $answer = $choices[$i].Value[-1]
             
-            $string = $explanation.substring($start + $choices[$i].Value.Length, 2)
-            if ($string -eq " a") {
+            $string = $explanation.substring($start + $choices[$i].Value.Length, 4)
+            if ($string -eq " and") {
                 $answer += $explanation.substring($start + $choices[$i].Value.Length + 5, 1)
             }
             elseif ($string -eq ", ") {
@@ -225,7 +233,7 @@ function Get-Answer ($explanation, $path) {
 
 
     New-Item -Path $path -value $xml.OuterXml -ErrorAction SilentlyContinue | Out-Null
-    Set-Content -Path $path -Value $xml.OuterXml.Remove("html[]", "html") -Encoding UTF8
+    Set-Content -Path $path -Value $xml.OuterXml.Replace("html[]", "html") -Encoding UTF8
 }
 
 New-GreHtml $question $path

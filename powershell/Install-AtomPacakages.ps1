@@ -1,6 +1,12 @@
-apm install file-icons # https://atom.io/packages/file-icons
-apm install script # https://atom.io/packages/script
-apm install atom-beautify # https://atom.io/packages/atom-beautify
-apm install language-vbscript # https://atom.io/packages/language-vbscript
-apm install language-powershell # https://atom.io/packages/language-powershell
-apm install intentions # https://atom.io/packages/intentions
+$xml = [xml](Get-Content "blog\text\affix.html")
+$nodes = $(Select-Xml "//tr" $xml).Node
+
+for ($i = 577; $i -lt $nodes.Count; $i++) {
+    
+    $affix = $nodes[$i]
+    $roots = $affix.ChildNodes[0].InnerText
+    
+    if ($roots.Contains("/")) { 
+        $roots.Contains(", ")
+    }
+}

@@ -99,14 +99,14 @@ function addFooter(color) {
 }
 
 function addTopNav(color) {
-    if(document.location.href.includes("/toefl/")) {
+    if(document.location.href.includes("/gre/")) {
+        var test = "/gre/";
+        var barItems = ["OG", "PQ", "MH", "PR", "Kap", "Manhattan", "Barrons", "Mangoosh", "Grubers", "Notes"];
+    }
+    
+    else {
         var test = "/toefl/"
         var barItems = ["TPO", "Essay", "OG", "EQ", "Barrons", "Cambridge", "Longman", "Notes"];
-    }
-
-    else {
-        var test = "/gre/";
-        var barItems = ["OG", "Princeton", "Manhattan", "Kaplan", "Barrons", "MH", "Mangoosh", "Grubers", "Notes"];
     }
     var nav = createNode( ["nav", {
         class : color + " w3-bar w3-card w3-center w3-margin-bottom", 
@@ -116,7 +116,8 @@ function addTopNav(color) {
     for (let index = 0; index < barItems.length; index++) {
         const element = barItems[index];
         let suffix = "";
-        if(index > 2) { suffix = " w3-hide-small" }
+        if (document.location.href.includes("/gre/")) { if(index > 4) { suffix = " w3-hide-small" } }
+        else { if(index > 2) { suffix = " w3-hide-small" } }
         createNode( ["a", {
             href : folder + test + element.toLowerCase() + "/" + element.toLowerCase() + ".html",
             class : "w3-bar-item w3-button" + suffix
