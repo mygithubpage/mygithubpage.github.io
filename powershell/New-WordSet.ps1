@@ -1,6 +1,8 @@
+. $PSScriptRoot\Utility.ps1
+
 # Get Vocabulary 
 
-$global:sets = @()
+
 
 <#
     $msWord = New-Object -ComObject Word.Application 
@@ -115,72 +117,11 @@ $global:sets = @()
     Set-Content "$name.json" (ConvertTo-Json $sets) -Encoding UTF8
 #>
 
-function Get-Oxford ($word) {
-    function Get-Affix ($word) {
-        $xml = [xml](Get-Content "blog\text\affix.html")
-        $nodes = $(Select-Xml "//tr" $xml).Node
-        $maxPrefixString = ""
-        $maxSuffixString = ""
-        $maxPrefixIndex = 0
-        $maxSuffixIndex = 0
-        $maxPrefixLength = 0
-        $maxSuffixLength = 0
-        $affixes = "Prefix", "Suffix"
-        for ($i = 1; $i -lt $nodes.Count; $i++) {
-            
-            $affix = $nodes[$i]
-            $roots = $affix.ChildNodes[0].InnerText
+function Get-Definition ($word) {
 
-            if($affix.ChildNodes[0].InnerText.Contains("/")) {
-                $roots = ""
-                $array = $affix.ChildNodes[0].innerText.Split("/")
-                for ($j = 0; $j -lt $array.Count; $j++) {
-                    if($array[0].Trim(" ").StartsWith("-") -and !$array[$j].StartsWith("-")) { 
-                        $array[$j] = "-" + $array[$j]
-                    }
-                    $roots += $array[$j] + ","
-                }
-            }
-            $roots = $roots.Trim(" ").Split(", ")
-            $roots.ForEach{
-                $root = $_
-                if (!$root -or $root-eq "-" -or $word.length -le $root.length) { return }
-                $prefix = $word.Substring(0,$_.length)
-                $suffix = $word.Substring($word.length - $root.length)
-                for ($j = 0; $j -lt $affixes.Count; $j++) {
-                    $affix = $affixes[$j]
-                    if( $root.StartsWith("-") -and $word.EndsWith($root.Trim("-")) -or $word.StartsWith($root.Trim("-"))) { 
-                        if ( (Get-Variable "max$($affix)Length" -ValueOnly) -lt $root.length) {
-                            Set-Variable "max$($affix)Length" $root.length
-                            Set-Variable "max$($affix)Index"  $i
-                            Set-Variable "max$($affix)String" "<p><b>$($affixes[$j]):</b> $(Get-Variable $affix -ValueOnly)</p>" 
-                        }
-                    }
-                }
-            }
-        }
-
-        for ($j = 0; $j -lt $affixes.Count; $j++) {
-            if( !(Get-Variable $affixes[$j] -ValueOnly) ) { continue }
-            $affix = $nodes[(Get-Variable "max$($affixes[$j])Index" -ValueOnly)]
-            $contents = "", "Meaning", "Example"
-            for ($k = 1; $k -lt 3; $k++) {
-                if (!(Get-Variable "max$($affixes[$j])String" -ValueOnly)) {continue}
-                Set-Variable "max$($affixes[$j])String" "$(Get-Variable "max$($affixes[$j])String" -ValueOnly)<p><b>$($contents[$k]):</b> $($affix.ChildNodes[$k].InnerText)</p>"
-            }
-            $string += Get-Variable "max$($affixes[$j])String" -ValueOnly
-        }
-        $string
-    }
-    
-    $affix = Get-Affix $word
-    $uri = "https://en.oxforddictionaries.com/definition/us/" + $word
+    $uri = "https://en.oxforddictionaries.com/definition/us/$word"
     $html = Invoke-WebRequest $uri
     $document = $html.ParsedHtml.body
-    
-    $definition = ""
-    $examples = ""
-    $synonyms = ""
 
     # example and synonym are based on definition
     $count = $document.getElementsByClassName("ind").Length
@@ -188,7 +129,7 @@ function Get-Oxford ($word) {
     for ($i = 0; $i -lt $count; $i++) {
         
         # defintion
-        $definition += "<p>$($document.getElementsByClassName("ind")[$i].outerHtml)</p>"
+        $definitions += "<p>$($document.getElementsByClassName("ind")[$i].outerHtml)</p>"
 
         # example
         $example = $document.getElementsByClassName("examples")[$i]
@@ -208,25 +149,26 @@ function Get-Oxford ($word) {
         }
         
     }
+    $etymology = "<p>" + $document.getElementsByClassName("etymology")[0].innerText + "</p>"
 
     # get pronunciation from the free dictionary if 0xford has not
     if (!$document.getElementsByClassName("speaker")[0]) {
-        $uri = "https://www.thefreedictionary.com/" + $word
+        $uri = "https://www.thefreedictionary.com/$word"
         $html = Invoke-WebRequest $uri
         $document = $html.ParsedHtml.body
         $pronuciation = $document.getElementsByClassName("snd")[0].getAttribute("data-snd")
-        $sound = "http://img.tfd.com/hm/mp3/$pronuciation.mp3"
+        $sounds = "http://img.tfd.com/hm/mp3/$pronuciation.mp3"
 
-        if(!$sound) { 
+        if(!$sounds) { 
             $pronuciation = $document.getElementsByClassName("snd2")[0]
             $pronuciation = $pronuciation.getAttribute("data-snd")
-            $sound = "http://img2.tfd.com/pron/mp3/$pronuciation.mp3" 
+            $sounds = "http://img2.tfd.com/pron/mp3/$pronuciation.mp3" 
         }
     }
-    else { $sound = $document.getElementsByClassName("speaker")[0].ChildNodes[0].src }
+    else { $sounds = $document.getElementsByClassName("speaker")[0].ChildNodes[0].src }
     
     # get synonyms from the free dictionary if 0xford has not
-    $uri = "https://www.thefreedictionary.com/" + $word
+    $uri = "https://www.thefreedictionary.com/$word"
     $html = Invoke-WebRequest $uri
     $document = $html.ParsedHtml.body
     foreach ($item in $document.getElementsByClassName("Syn")) {
@@ -238,25 +180,153 @@ function Get-Oxford ($word) {
             $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
         }
     }
-
-    $examples, ($definition + "<div class=`"affix`">" + $affix + "</div>"), $synonyms, $sound
+    $etymology += "<p>" + $document.getElementsByClassName("etyseg")[0].innerText + "</p>"
+    New-Object PSObject -Property @{ word = $word; examples = $examples; definitions = $definitions; synonyms = $synonyms; sounds = $sounds; etymology = $etymology}
 }
 
-$name = "MH Verbal Example"
-$list = "blare"
+function Get-Etymology ($word) {
+    $terms = @()
+    $etymology = @()
+    
+    $uri = "https://en.wiktionary.org/wiki/$word"
+    $html = Invoke-WebRequest $uri
+    $document = $html.ParsedHtml.body
+    $etymology = $document.getElementsByTagName("p") | ForEach-Object { if ($_.previousSibling.innerText -like "*Etymology*") { $_.innerHTML } }
+
+    $xml = [xml](Get-Content "blog\text\affix.html")
+    $nodes = $(Select-Xml "//tr" $xml).Node
+    $maxPrefixString = ""
+    $maxSuffixString = ""
+    $maxPrefixIndex = 0
+    $maxSuffixIndex = 0
+    $maxPrefixLength = 0
+    $maxSuffixLength = 0
+    $etymologyes = "Prefix", "Suffix"
+    for ($i = 1; $i -lt $nodes.Count; $i++) {
+        
+        $affix = $nodes[$i]
+        $roots = $affix.ChildNodes[0].InnerText
+
+        if($affix.ChildNodes[0].InnerText.Contains("/")) {
+            $roots = ""
+            $array = $affix.ChildNodes[0].innerText.Split("/")
+            for ($j = 0; $j -lt $array.Count; $j++) {
+                if($array[0].Trim(" ").StartsWith("-") -and !$array[$j].StartsWith("-")) { 
+                    $array[$j] = "-" + $array[$j]
+                }
+                $roots += $array[$j] + ","
+            }
+        }
+        $roots = $roots.Trim(" ").Split(", ")
+        $roots.ForEach{
+            $root = $_
+            if (!$root -or $root-eq "-" -or $word.length -le $root.length) { return }
+            $prefix = $word.Substring(0,$_.length)
+            $suffix = $word.Substring($word.length - $root.length)
+            for ($j = 0; $j -lt $affix.Count; $j++) {
+                $affix = $affix[$j]
+                if( $root.StartsWith("-") -and $word.EndsWith($root.Trim("-")) -or $word.StartsWith($root.Trim("-"))) { 
+                    if ( (Get-Variable "max$($affix)Length" -ValueOnly) -lt $root.length) {
+                        Set-Variable "max$($affix)Length" $root.length
+                        Set-Variable "max$($affix)Index"  $i
+                        Set-Variable "max$($affix)String" "<p><b>$($affix[$j]):</b> $(Get-Variable $affix -ValueOnly)</p>" 
+                    }
+                }
+            }
+        }
+    }
+
+    for ($j = 0; $j -lt $affix.Count; $j++) {
+        if( !(Get-Variable $affix[$j] -ValueOnly) ) { continue }
+        $etymology = $nodes[(Get-Variable "max$($affix[$j])Index" -ValueOnly)]
+        $contents = "", "Meaning", "Example"
+        for ($k = 1; $k -lt 3; $k++) {
+            if (!(Get-Variable "max$($affix[$j])String" -ValueOnly)) {continue}
+            Set-Variable "max$($affix[$j])String" "$(Get-Variable "max$($affix[$j])String" -ValueOnly)<p><b>$($contents[$k]):</b> $($etymology.ChildNodes[$k].InnerText)</p>"
+        }
+        $string += Get-Variable "max$($affix[$j])String" -ValueOnly
+    }
+    "<div class=`"etymology`">" + $string + $etymology + "</div>"
+}
+
+function Get-WordFamily ($word) {
+
+    function Get-Children($Parent) {
+        $words = @()
+        $words = $members.Where{$_.Parent -eq $Parent}.Word
+        if(!$words) { return }
+        foreach ($word in $words) {
+            $global:family = $family.Insert(($family.IndexOf($Parent) + $Parent.Length),"<ul><li>$word</li></ul>")
+            Get-Children $word
+        }
+        
+    }
+
+    $uri = "https://www.vocabulary.com/dictionary/$word"
+    $members = @()
+    $html = Get-Html $uri $word
+    $innerHtml = $html.body.getElementsByClassName("family")[0].innerHtml
+    $global:family = ""
+    if ($innerHtml) {
+        # add member
+        $regex = "`"word`":`"(?<word>.*?)`",(`"hw`":true,)?(`"parent`":`"(?<parent>.*?)`")?"
+        foreach ($match in ($innerHtml | Select-String $regex -AllMatches -CaseSensitive).Matches) {
+            $members += New-Object PSObject -Property @{ Word = $match.Groups["word"].Value; Parent = $($match.Groups["parent"].Value)}
+        }
+    }
+    else {
+        Write-Host "Manually create word family for $word"
+        $ie = Invoke-InternetExplorer "https://www.vocabulary.com/dictionary/$word"
+        $words = $ie.Document.IHTMLDocument3_getElementsByTagName("a") | ForEach-Object { if($_.className -like "*bar*" -and $_.innerText -notlike "the*family") {$_.innerText}}
+        $words = $words | Sort-Object -Unique | Sort-Object Length
+        $members += New-Object PSObject -Property @{ Word = $words[0]; Parent = ""}
+        for ($i = 1; $i -lt $words.Count; $i++) {
+            $j = 0
+            do {
+                $parent = @(($members.Where{$words[$i].Contains($_.Word.Substring(0,$_.Word.Length - $j))}.Word) | Sort-Object Length -Descending)[0]
+                $j++
+            }
+            while(!$parent)
+            $members += New-Object PSObject -Property @{ Word = $words[$i]; Parent = $parent}
+        }
+    }
+    Get-Children ""
+    Remove-Item "$PSScriptRoot\$word.html"
+    $family
+}
+
+$words = @()
+$sets = ConvertFrom-Json ((Get-Content C:\github\vocabulary.js -Raw) -replace "sets = ")
+$id = "pq-easy"
+$name = (Get-Culture).TextInfo.ToTitleCase(($id -replace "-", " "))
+$name = $name.Split(" ")[0].ToUpper() + " " + $name.Split(" ")[1]
+$xml = [xml](Get-Content "C:\github\blog\text\gre\vocabulary.html")
+$list = (Select-Xml "//div[@id=`"$id`"]" $xml).Node.InnerXml.Split(" ")
+$set = New-Object PSObject -Property @{name = $name}
 
 foreach($word in $list) {
+    if(!$word) { continue }
     Write-Host $word
-    $affix = Get-Affix $word
-    #$sets += , @($word, (Get-Oxford $word))
+    $etymology = Get-Etymology $word 
+    $family = Get-WordFamily $word
+    $word = Get-Definition $word
+    $word.etymology += $etymology
+    $word | Add-Member -Type NoteProperty -Name family -Value $family
+    $words += $word
 }
 
-$string = (ConvertTo-Json $sets) -replace "\s{2,}" -join "" -replace "\[\[", "[`"$name`",[[" -replace "\]\]\]", "]]]]," 
-$content = Get-Content .\variable.js -Raw
-#Set-Content .\variable.js ($content.Substring(0, $content.Length - 5) + "$string`n];")
-<#
+$set | Add-Member -Type NoteProperty -Name words -Value $words
+if ($sets -and $sets.Name.Contains($set.Name)) { $sets[$sets.Name.IndexOf($set.Name)] = $set } else { $sets += , $set }
+$content = "sets = " + (ConvertTo-Json $sets) 
+$details = ($sets[0].words[0] | Get-Member -MemberType NoteProperty).Name
+foreach($detail in $details) {
+    $content = $content -replace "$detail=", "`"$detail`"`:`""
+}
+$content = $content -replace ",`r`n\s+`"Count`".*`r`n}" -replace "{`r`n\s+`"value`":" 
+$content = $content -replace "; `"", "`", `"" -replace "`"@{", "{" -replace "}`"", "`"}"
+Set-Content C:\github\vocabulary.js $content -Encoding UTF8
 
-    Remove-Item $docx
+<#
                                 xml to json
     $ie = Invoke-InternetExplorer "http://www.utilities-online.info/xmltojson/"
     while (!$ie.Document.IHTMLDocument3_getElementById("xml")) { Start-Sleep 1 }
@@ -277,4 +347,7 @@ $content = Get-Content .\variable.js -Raw
         $xml
     }
 
+        function Get-Etymology ($word) {
+        
+    
 #>

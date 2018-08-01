@@ -49,6 +49,13 @@ $parseString =
 } 
 Select-String $regex $cspath | ForEach-Object $parseString
 
+# Search and repalce words
+$regex = "`"word`":`"(?<word>.*?)`",(`"hw`":true,)?(`"parent`":`"(?<parent>.*?)`")?"
+foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
+	$text = [regex]::Replace($text, $oldText, $newText)
+	New-Object PSObject -Property @{ Word = $match.Groups["word"].Value; Parent = $($match.Groups["parent"].Value)}
+}
+
 # Replace Unicode Character
 $string = [regex]::Replace($string, "\u2192", "&#8594;") # →
 
@@ -113,6 +120,9 @@ Get-ChildItem @parameters
 Get-ChildItem -Path $env:windir\*.log |
 Select-String -List error |
 Format-Table Path, LineNumber -AutoSize
+
+# First Letter Uppercase
+(Get-Culture).TextInfo.ToTitleCase($category)
 
 # https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands
 

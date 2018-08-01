@@ -71,6 +71,7 @@ function addHead() {
 
     // My javascript
     createNode( ["script", {src : folder + "/variable.js"}] );
+    createNode( ["script", {src : folder + "/vocabulary.js"}] );
     createNode( ["script", {src : folder + "/external.js"}] );
     
 }
