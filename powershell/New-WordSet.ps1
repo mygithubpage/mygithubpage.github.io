@@ -172,12 +172,14 @@ function Get-Definition ($word) {
     $html = Invoke-WebRequest $uri
     $document = $html.ParsedHtml.body
     foreach ($item in $document.getElementsByClassName("Syn")) {
-        if($item.tagName -ne "span" -or $item.innerText.IndexOf(",") -lt 0) { continue }
+        if($item.tagName -ne "span" -or !$item.innerText.Contains(",") -or $item.innerText.Contains("(")) { continue }
         $synonyms += $item.parentNode.outerHtml
     }
     if (!$synonyms) {
         for ($i = 1; $i -lt $document.getElementsByClassName("Syn").Length; $i++) {
-            $synonyms += $document.getElementsByClassName("Syn")[$i].outerHtml
+            $item = $document.getElementsByClassName("Syn")[$i]
+            if(!$item.innerText.Contains(",") -or $item.innerText.Contains("(")) { continue }
+            $synonyms += $item.outerHtml
         }
     }
     $etymology += "<p>" + $document.getElementsByClassName("etyseg")[0].innerText + "</p>"
@@ -297,7 +299,7 @@ function Get-WordFamily ($word) {
 
 $words = @()
 $sets = ConvertFrom-Json ((Get-Content C:\github\vocabulary.js -Raw) -replace "sets = ")
-$id = "pq-easy"
+$id = "mh-example"
 $name = (Get-Culture).TextInfo.ToTitleCase(($id -replace "-", " "))
 $name = $name.Split(" ")[0].ToUpper() + " " + $name.Split(" ")[1]
 $xml = [xml](Get-Content "C:\github\blog\text\gre\vocabulary.html")
@@ -316,15 +318,14 @@ foreach($word in $list) {
 }
 
 $set | Add-Member -Type NoteProperty -Name words -Value $words
-if ($sets -and $sets.Name.Contains($set.Name)) { $sets[$sets.Name.IndexOf($set.Name)] = $set } else { $sets += , $set }
+if ($sets -and $sets.Name.Contains($set.Name)) { $sets[$sets.Name.IndexOf($set.Name)] = $set } 
+else { $sets += , $set }
 $content = "sets = " + (ConvertTo-Json $sets) 
 $details = ($sets[0].words[0] | Get-Member -MemberType NoteProperty).Name
-foreach($detail in $details) {
-    $content = $content -replace "$detail=", "`"$detail`"`:`""
-}
+foreach($detail in $details) { $content = $content -replace "$detail=", "`"$detail`"`:`"" }
 $content = $content -replace ",`r`n\s+`"Count`".*`r`n}" -replace "{`r`n\s+`"value`":" 
 $content = $content -replace "; `"", "`", `"" -replace "`"@{", "{" -replace "}`"", "`"}"
-Set-Content C:\github\vocabulary.js $content -Encoding UTF8
+#Set-Content C:\github\vocabulary.js $content -Encoding UTF8
 
 <#
                                 xml to json

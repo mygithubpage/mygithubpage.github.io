@@ -267,4 +267,21 @@ function Get-AllIndexesOf {
 
 }
 
+function Add-XmlNode {
+    Param($Node, $Xml, $Parent, $Before)
+    if (!$Parent) { $Parent = $Xml }
+    $element = $Xml.createElement($Node[0])
+    foreach ($attribute in $Node[1].GetEnumerator()) { 
+        $element.SetAttribute($attribute.Name, $attribute.Value) 
+    }
+    if ($Node[2] -ne $null) {
+        if ($Node[2].Contains("</") -or $Node[2].Contains("</")) { $element.InnerXml = $Node[2] }
+        else { $element.InnerText = $Node[2] }
+    }
+    if (!$Before) {$element = $Parent.appendChild($element)}
+    else {
+        $element = $Parent.InsertBefore($element, $Parent.FirstChild)
+    }
+    $element
+}
 

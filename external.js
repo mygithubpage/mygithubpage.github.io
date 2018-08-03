@@ -702,7 +702,7 @@ function startTest() {
                 for (let index = 0; index < article.querySelectorAll(".sentence").length; index++) {
                     const element = article.querySelectorAll(".sentence")[index];
                     if (element.style.fontWeight !== "bold") { continue }
-                    myAnswer[id-1] = index + 1;
+                    myAnswer[id-1] = index + 1 + "";
                 }
             }
             if (myAnswer[id-1] !== answer) { myAnswer[id-1] += "->" + answer };
@@ -966,7 +966,7 @@ function startTest() {
             // split sentence with span
             let passage = article.innerHTML.replace(". . . ", "&#8230; ")
             while(passage.includes(". ")) {
-                passage = passage.replace(". ", ".</span><span class=\"sentence\"> ")
+                passage = passage.replace(/([?!.])\s/, "$1</span><span class=\"sentence\"> ")
             }
             for (let index = 0; index < article.querySelectorAll("p").length; index++) {
                 passage = passage.replace("<p>", "<p><span class=\"sentence\"> ")
@@ -1021,7 +1021,7 @@ function startTest() {
         time = createNode(["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
         if (questions.length > 20) countdown = 2100
         else if (questions.length > 10) countdown = 1800
-
+        else countdown = 1500
         waitTime(countdown, showModal);
         showQuestion(0);
     }
@@ -1537,18 +1537,24 @@ function createWordSets() {
                     });
                     
                     detailDiv.querySelectorAll(".Syn").forEach( element => {
-                        element.innerHTML = "<p>" + element.innerHTML + "</p>"
+                        element.innerHTML = "<p>" + element.innerHTML.replace(",", "<span>,</span>") + "</p>"
                         element.querySelectorAll("a").forEach( link => { 
-                            link.classList.add("my-link");
-                            link.href = "https://www.thefreedictionary.com/" + link.href.split("/").slice(-1) 
+                            if(/(.*\s.*|.*-.*)/.exec(link.innerText)) {
+                                link.classList.add("w3-hide");
+                            }
+                            else {
+                                link.classList.add("my-link");
+                                link.href = "https://www.thefreedictionary.com/" + link.href.split("/").slice(-1) 
+                            }
                         });
+                        element.querySelectorAll(".w3-hide").forEach( node => { if(node.nextSibling) node.nextSibling.textContent = ""});
                     });
                     detailDiv.innerHTML = detailDiv.innerHTML.replace(/<br>/g, "")
-
+                    detailDiv.querySelectorAll("b.w3-hide").forEach( node => { if(node.innerText == "Quotations")node.parentNode.classList.add("w3-hide") });
                     detailDiv.querySelectorAll(".exs").forEach( element => {
                         let synonyms = element.innerText.split(", ")
                         for (let index = 0; index < synonyms.length; index++) {
-                            if ((/[ |-]/).exec(synonyms[index])) continue;
+                            if ((/.*\s.*|.*-.*/).exec(synonyms[index])) continue;
                             // create link for each synonyms
                             let synonym = synonyms[index];
                             let href = "https://en.oxforddictionaries.com/definition/us/"+ synonym
@@ -1790,7 +1796,7 @@ function createWordTest() {
         detailDiv.querySelectorAll(".illustration").forEach(element => element.classList.add("w3-hide"));
         
 
-        var options = new Array(6); 
+        var options = new Array(4); 
         var wordNumbers = new Array(options.length);
         optionDiv.innerHTML = word[detail];
         answers = optionDiv.querySelectorAll(classes[detail]);
