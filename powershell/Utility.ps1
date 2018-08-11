@@ -153,7 +153,7 @@ function Submit-Website {
 }
 
 function Invoke-InternetExplorer {
-    Param($Uri)
+    Param($Uri, $Condition)
     $ie = (New-Object -COM "Shell.Application").Windows() | ForEach-Object { if($_.Name -like "*Internet Explorer*") {$_}}
 
     #Get-Process -Name iexplore -ErrorAction Ignore | Stop-Process
@@ -161,7 +161,11 @@ function Invoke-InternetExplorer {
     if (!$ie) { $ie = New-Object -ComObject InternetExplorer.Application }
     if ($ie.LocationURL -ne $Uri) { $ie.Navigate($Uri) }
 
-    while ($ie.Busy) { Start-Sleep -Milliseconds 100 }
+    while ($ie.Busy) { 
+        Start-Sleep -Milliseconds 100 
+        Invoke-Expression $Condition
+        if($flag) { break }
+    }
     $ie
 }
 

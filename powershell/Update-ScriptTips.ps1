@@ -124,7 +124,11 @@ Format-Table Path, LineNumber -AutoSize
 # First Letter Uppercase
 (Get-Culture).TextInfo.ToTitleCase($category)
 
+# Dynamically Call different Function
+Invoke-Expression "Get-$name `$argument"
+
 # https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands
+Get-Verb
 
 <#
 	1. Start your scripts with a standard set of comments (name, date, author, purpose and keywords) to easily find them later.

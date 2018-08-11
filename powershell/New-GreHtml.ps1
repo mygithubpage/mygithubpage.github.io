@@ -1,63 +1,128 @@
 . $PSScriptRoot\Utility.ps1
 $set = "kap"
-$name = "$set-reading-example"
-$type = "xml"
-$content = Get-Content "C:\github\blog\text\gre\$set\$name.$type" -Raw -Encoding UTF8
+$name = "$set-reading-ps"
+$type = "html"
+$content = Get-Content "C:\github\gre\notes\gre\$set\$name.$type" -Raw -Encoding UTF8
 $path = "C:\github\gre\$set\$name.html"
 
 function ConvertFrom-Kap ($content, $path) {
     $content = $content -replace " xmlns=`".*?`"" -replace " id=`".*?`"" 
     $content = $content -replace " style=`".*?`"" -replace " data-uuid=`".*?`""
-    $content = $content -replace "<hr.*?/>" -replace "\s+<a></a>" -replace "`r`n\s+<i", " <i"
-    $content = $content -replace "`r`n\s+<span class=`"blank-s`"></span>", " ________"
-    $content = $content -replace "(\s+)?</span>" -replace "`r`n\s+<span class=`"no-break`">", " "
-    Set-Content -Path "C:\github\gre\notes\test.html" -Value $content
+    $content = $content -replace "<hr.*?/>" -replace "\s+<a>(\s+`r`n\s+)*</a>" -replace "`r`n\s+<i", " <i"
+    $content = $content -replace "(`r`n)?\s+<span class=`"blank-s`"></span>", " ________"
+
+    $regex = "(`r`n)?\s+<span class=`"no-break`">(`r`n\s+)?(?<word>.*?)(`r`n\s+)?</span>"
+    foreach ($match in ($content | Select-String $regex -AllMatches -CaseSensitive).Matches) {
+        $content = $content.Replace($match.Value, (" " + $match.Groups["word"].Value))
+    }
+    #Set-Content -Path "C:\github\gre\notes\test.html" -Value $content -Encoding UTF8
+    Set-Content -Path $path -Value $content -Encoding UTF8
 
     $xml = [xml]($content)
-    $html = [xml](Get-Content "C:\github\blog\text\gre\vocabulary.html")
+    $html = [xml](Get-Content "C:\github\gre\notes\gre\vocabulary.html")
     $questions = (Select-Xml "//div[@id=`"questions`"]" $html).Node
     $questions.InnerXml = ""
 
     # questions
-    (Select-Xml "//li[@class=`"ktp-question`"]" $xml).Node.ForEach{
-        $node = $_
-        if($node.InnerXml.Contains("ktp-feedback")) { # explanation
-            $question = (Select-Xml "//div[@id=`"question$($node.value)`"]" $html).Node
-            if($question."data-choice-type" -ne "select") { 
-                $answer = $node.ChildNodes[0].InnerXml.Replace(", ", "") 
-                $text = $node.ChildNodes[1].InnerXml
-            }
-            else {
-                $answer = $node.ChildNodes[0].ChildNodes[0].InnerText
-                $text = $node.ChildNodes[0].InnerXml
-            }
-            $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=$answer}, "") $html $question
-            $explanation = Add-XmlNode ("div", @{class="explanation"}, "") $html $answer
-            $explanation.InnerXml = $text -replace "i>", "b>"
-        }
-        else { # question
-            if($node.InnerXml.Contains("list-lower-alpha")) { $type = "checkbox" }
-            else {$type = "radio"}
-            $question = Add-XmlNode ("div", @{id="question$($node.value)";"data-choice-type"=$type}, "") $html $questions
-            Add-XmlNode ("div", @{class="question"}, $node.ChildNodes[0].InnerXml) $html $question | Out-Null
-            
-            # choice
-            
-            $choices = (Select-Xml "//li[@value=`"$($node.value)`"]//ol[contains(@class,'ktp-answer-set')]" $xml).Node
-            if(!$choices) { 
-                $question.'data-choice-type' = "select" 
-                return
-            }
-            if($node.InnerXml.Contains("blank-")) { # multiple blank
-                $choices.ForEach{
-                    $question.InnerXml += $_.OuterXml -replace "li>", "p>" -replace "ol", "div" -replace "ktp-answer-set.*?`"", "choices`""
+    $nodes = (Select-Xml "//li[@class=`"ktp-question`"]" $xml).Node
+    if($nodes.Count) {
+        $nodes.ForEach{
+            $node = $_
+            if($node.InnerXml.Contains("ktp-feedback")) { # explanation
+                $question = (Select-Xml "//div[@id=`"question$($node.value)`"]" $html).Node
+                if($question."data-choice-type" -ne "select") { 
+                    $answer = $node.ChildNodes[0].InnerXml.Replace(", ", "") 
+                    $text = $node.ChildNodes[1].InnerXml
                 }
+                else {
+                    $answer = $node.ChildNodes[0].ChildNodes[0].InnerText
+                    $text = $node.ChildNodes[0].InnerXml
+                }
+                $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=$answer}, "") $html $question
+                $explanation = Add-XmlNode ("div", @{class="explanation"}, "") $html $answer
+                $explanation.InnerXml = $text -replace "i>", "b>"
             }
-            else {
-                $question.InnerXml += $choices.OuterXml -replace "li>", "p>" -replace "ol", "div" -replace "ktp-answer-set.*?`"", "choices`""
+            else { # question
+                if($node.InnerXml.Contains("list-lower-alpha")) { $type = "checkbox" }
+                else {$type = "radio"}
+                $question = Add-XmlNode ("div", @{id="question$($node.value)";"data-choice-type"=$type}, "") $html $questions
+                Add-XmlNode ("div", @{class="question"}, $node.ChildNodes[0].InnerXml) $html $question | Out-Null
+                
+                # choice
+                
+                $choices = (Select-Xml "//li[@value=`"$($node.value)`"]//ol[contains(@class,'ktp-answer-set')]" $xml).Node
+                if(!$choices) { 
+                    $question.'data-choice-type' = "select" 
+                    return
+                }
+                if($node.InnerXml.Contains("blank-")) { # multiple blank
+                    $choices.ForEach{
+                        $question.InnerXml += $_.OuterXml -replace "li>", "p>" -replace "ol>", "div>" -replace "ktp-answer-set.*?`"", "choices`""
+                    }
+                }
+                else {
+                    $question.InnerXml += $choices.OuterXml -replace "li>", "p>" -replace "ol", "div" -replace "ktp-answer-set.*?`"", "choices`""
+                }
             }
         }
     }
+    <#
+    Sample Questions
+    (Select-Xml "//li[@class=`"sample-question`"]" $xml).Node.class += " counter-reset-1"
+    # sample question
+    $nodes = (Select-Xml "//li[ @class=`"ktp-question`" or contains(@class,'counter-reset')]" $xml).Node
+    for ($i = 0; $i -lt $nodes.Count; $i++) {
+        $node = $nodes[$i]
+        if($node.OuterXml.Contains(" no-number")) { $type = "radio" }
+        else {$type = "checkbox"}
+        if($node.InnerXml.Contains("list-lower-alpha")) { $type = "checkbox" }
+        else {$type = "radio"}
+        $question = Add-XmlNode ("div", @{id="question$($i+1)";"data-choice-type"=$type}, "") $html $questions
+        Add-XmlNode ("div", @{class="question"}, $node.ChildNodes[0].InnerXml) $html $question | Out-Null
+        if(!$node.value) { $node.SetAttribute("value", $i + 1) }
+        # choice
+        $choices = (Select-Xml "//li[@value=`"$($node.value)`"]//ol[contains(@class,'ktp-answer-set')]" $xml).Node
+        if(!$choices) { 
+            $question.'data-choice-type' = "select" 
+            $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=""}, "") $html $question
+            $explanation = Add-XmlNode ("div", @{class="explanation"}, "") $html $answer
+            $explanation.InnerXml = $node.ParentNode.ParentNode.NextSibling.OuterXml
+            if($i -gt 4) { $explanation.InnerXml = (Select-Xml "//section[@class=`"ktp-feedback`"]" $xml).Node[$i-5].InnerXml}
+            continue
+        }
+        if($node.InnerXml.Contains("blank-")) { # multiple blank
+            $choices.ForEach{
+                $question.InnerXml += $_.OuterXml -replace "li>", "p>" -replace "ol", "div" -replace "ktp-answer-set.*?`"", "choices`""
+            }
+        }
+        else {
+            $question.InnerXml += $choices.OuterXml -replace "li>", "p>" -replace "ol", "div" -replace "ktp-answer-set.*?`"", "choices`""
+        }
+        
+        $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=""}, "") $html $question
+        $explanation = Add-XmlNode ("div", @{class="explanation"}, "") $html $answer
+        $explanation.InnerXml = $node.ParentNode.ParentNode.NextSibling.OuterXml
+        if($i -gt 4) { $explanation.InnerXml = (Select-Xml "//section[@class=`"ktp-feedback`"]" $xml).Node[$i-5].InnerXml}
+    }
+
+    $nodes = (Select-Xml "//section[@class=`"ktp-passage`"]" $xml).Node
+    for ($i = 1; $i -le $nodes.Count; $i++) {
+        $passage = Add-XmlNode ("div", @{id="passage$i";class="passage"}, "") $html $questions
+        $passage.InnerXml = $nodes[$i-1].InnerXml
+        $start = [int]$nodes[$i-1].ParentNode.PreviousSibling.InnerText.Split(" ")[1]
+        $end = [int]$nodes[$i-1].ParentNode.PreviousSibling.InnerText.Split(" ")[3]
+        for ($j = $start; $j -le $end; $j++) {
+            $question = (Select-Xml "//div[@id=`"question$j`"]" $html).Node
+            if($question.'data-choice-type' -eq "select") {
+                $sentences = $passage.InnerText -split "[?.!] "
+                $index = $sentences.indexOf($question.ChildNodes[2]."data-answer".TrimEnd("`r`n ."))
+                $question.ChildNodes[2].SetAttribute("data-answer", $index+1)
+            }
+            $question.SetAttribute("data-passage", "passage$i")
+        }
+    }
+
+    #>
 
     # passages
     $nodes = (Select-Xml "//li[@class=`"ktp-stimulus`"]" $xml).Node
@@ -65,9 +130,9 @@ function ConvertFrom-Kap ($content, $path) {
 
         $passage = Add-XmlNode ("div", @{id="passage$i";class="passage"}, "") $html $questions
         $passage.InnerXml = $nodes[$i-1].InnerXml
-        $nodes[$i-1].PreviousSibling.InnerText.Split(" ")[1] -split "\u2013"
-        $start = [int]($nodes[$i-1].PreviousSibling.InnerText.Split(" ")[1] -split "\u2013")[0]
-        $end = [int]($nodes[$i-1].PreviousSibling.InnerText.Split(" ")[1] -split "\u2013")[1]
+        $range = $nodes[$i-1].PreviousSibling.InnerText -replace "\u2013", " to "
+        $start = [int]$range.Split(" ")[1]
+        $end = [int]$range.Split(" ")[3]
         for ($j = $start; $j -le $end; $j++) {
             $question = (Select-Xml "//div[@id=`"question$j`"]" $html).Node
             if($question.'data-choice-type' -eq "select") {
@@ -80,6 +145,10 @@ function ConvertFrom-Kap ($content, $path) {
     }
 
     Set-Content -Path $path -Value $html.OuterXml.Replace("html[]", "html") -Encoding UTF8
+}
+
+function ConvertFrom-PR ($content, $path) {
+
 }
 
 function Remove-FootNote ($text) {
@@ -317,7 +386,7 @@ if ($type -eq "txt") {
     Get-Answer $explanation $path
 }
 else {
-    ConvertFrom-Kap $content $path
+    Invoke-Expression "ConvertFrom-$set `$content `$path"
 }
 
 <#

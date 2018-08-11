@@ -1,9 +1,9 @@
 ﻿#. ".\Utility.ps1"
 
-$movies = Get-ChildItem "$Home\Downloads" -Directory | Where-Object { $_.BaseName -like "*20*" }
+$movies = Get-ChildItem "$Home\Downloads" -Directory | Where-Object { $_.BaseName -match ".*(19|20).*" }
 foreach ($movie in $movies) {
     $mp4 = $movie.GetFiles("*.mp4")
-    $newName = "$($mp4.BaseName.Substring(0, $mp4.BaseName.Indexof("1080p") + 5)).mp4"
+    $newName = "$($mp4.BaseName.Substring(0, $mp4.BaseName.Indexof(".1080p"))).mp4"
     $newName
     $name = $newName.substring(0,$newName.Length - 10)
     $uri = $name.ToLower() -replace "\.", "-"
@@ -25,4 +25,11 @@ foreach ($movie in $movies) {
     Remove-Item "$name.zip"
     Remove-Item $movie.FullName
 }
+
+<#
+$files = Get-ChildItem "$Home\Downloads\Movies\"
+foreach ($file in $files) {
+    $newName = "$($file.BaseName.Substring(0, $file.BaseName.Indexof(".1080p")))$($file.Extension)"
+    Rename-Item $file.FullName $newName
+}#>
 

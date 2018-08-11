@@ -1,10 +1,7 @@
 // My Personal JavaScript
 
-// #region tpo category string
-categoryString = "Politics:og1-reading1.html;Psychology:og1-reading2.html,tpo06-reading3.html,tpo13-reading3.html,tpo21-reading3.html,tpo30-reading1.html;Geography:og1-reading3.html,og2-reading3.html,tpo01-reading1.html,tpo03-reading2.html,tpo04-reading3.html,tpo06-reading2.html,tpo07-reading1.html,tpo15-reading3.html,tpo19-reading3.html,tpo21-reading1.html,tpo27-reading2.html,tpo28-reading1.html,tpo36-reading1.html,tpo52-reading1.html;Biology:og2-reading1.html,tpo02-reading2.html,tpo04-reading1.html,tpo05-reading3.html,tpo08-reading2.html,tpo09-reading3.html,tpo11-reading2.html,tpo11-reading3.html,tpo13-reading2.html,tpo15-reading1.html,tpo17-reading2.html,tpo17-reading3.html,tpo20-reading3.html,tpo24-reading2.html,tpo25-reading3.html,tpo26-reading2.html,tpo27-reading3.html,tpo28-reading3.html,tpo30-reading2.html,tpo31-reading1.html,tpo32-reading3.html,tpo34-reading3.html,tpo36-reading2.html,tpo36-reading3.html,tpo37-reading2.html,tpo38-reading1.html,tpo38-reading2.html,tpo38-reading3.html,tpo40-reading3.html,tpo42-reading1.html,tpo44-reading1.html,tpo47-reading2.html,tpo47-reading3.html;Art:og2-reading2.html,tpo01-reading2.html,tpo02-reading3.html,tpo03-reading1.html,tpo04-reading2.html,tpo10-reading1.html,tpo11-reading1.html,tpo12-reading2.html,tpo22-reading2.html,tpo23-reading3.html,tpo27-reading1.html,tpo29-reading1.html,tpo34-reading1.html,tpo41-reading1.html,tpo44-reading2.html;Sociology:og3-reading1.html,tpo13-reading1.html,tpo29-reading2.html,tpo31-reading2.html,tpo33-reading2.html,tpo41-reading3.html,tpo46-reading2.html,tpo47-reading1.html,tpo50-reading1.html;Ecology:og3-reading2.html,og3-reading3.html,tpo02-reading1.html,tpo03-reading3.html,tpo05-reading1.html,tpo12-reading3.html,tpo19-reading2.html,tpo23-reading1.html,tpo24-reading1.html,tpo31-reading3.html,tpo39-reading2.html,tpo39-reading3.html,tpo40-reading2.html,tpo42-reading2.html,tpo45-reading2.html,tpo45-reading3.html,tpo46-reading3.html,tpo53-reading2.html;Botany:tpo01-reading3.html,tpo22-reading1.html,tpo32-reading1.html,tpo44-reading3.html;Anthropology:tpo05-reading2.html,tpo08-reading1.html,tpo09-reading1.html,tpo12-reading1.html,tpo14-reading2.html,tpo14-reading3.html,tpo20-reading2.html,tpo24-reading3.html,tpo28-reading2.html,tpo37-reading1.html,tpo51-reading3.html;History:tpo06-reading1.html,tpo07-reading2.html,tpo07-reading3.html,tpo10-reading3.html,tpo16-reading1.html,tpo17-reading1.html,tpo18-reading1.html,tpo18-reading2.html,tpo19-reading1.html,tpo26-reading1.html,tpo26-reading3.html,tpo29-reading3.html,tpo30-reading3.html,tpo33-reading1.html,tpo34-reading2.html,tpo37-reading3.html,tpo39-reading1.html,tpo40-reading1.html,tpo43-reading1.html,tpo46-reading1.html,tpo49-reading2.html,tpo49-reading3.html,tpo50-reading2.html,tpo51-reading1.html,tpo53-reading1.html;Astronomy:tpo08-reading3.html,tpo16-reading3.html,tpo22-reading3.html,tpo41-reading2.html,tpo42-reading3.html,tpo50-reading3.html,tpo51-reading2.html;Education:tpo09-reading2.html;Meteorology:tpo10-reading2.html,tpo18-reading3.html,tpo43-reading3.html,tpo48-reading3.html;Business:tpo14-reading1.html,tpo25-reading2.html;Archeology:tpo15-reading2.html,tpo33-reading3.html,tpo48-reading2.html,tpo52-reading2.html,tpo53-reading3.html;Chemistry:tpo16-reading2.html,tpo43-reading2.html;Demographics:tpo20-reading1.html,tpo32-reading2.html,tpo48-reading1.html;Agriculture:tpo21-reading2.html,tpo23-reading2.html,tpo35-reading1.html,tpo35-reading2.html,tpo35-reading3.html,tpo52-reading3.html;Child:tpo25-reading1.html,tpo45-reading1.html;Youth:tpo49-reading1.html&Teacher And Student Discussion:og1-listening1.html,og2-listening1.html,og3-listening4.html,tpo01-listening4.html,tpo02-listening1.html,tpo03-listening1.html,tpo04-listening1.html,tpo04-listening4.html,tpo05-listening4.html,tpo06-listening4.html,tpo08-listening4.html,tpo09-listening1.html,tpo10-listening1.html,tpo12-listening1.html,tpo13-listening1.html,tpo14-listening4.html,tpo15-listening4.html,tpo16-listening4.html,tpo17-listening1.html,tpo19-listening1.html,tpo20-listening4.html,tpo21-listening1.html,tpo22-listening1.html,tpo22-listening4.html,tpo24-listening4.html,tpo25-listening1.html,tpo25-listening4.html,tpo26-listening4.html,tpo27-listening4.html,tpo28-listening1.html,tpo28-listening4.html,tpo29-listening4.html,tpo30-listening4.html,tpo31-listening1.html,tpo32-listening4.html,tpo33-listening4.html,tpo34-listening4.html,tpo35-listening4.html,tpo36-listening4.html,tpo37-listening1.html,tpo37-listening4.html,tpo38-listening4.html,tpo39-listening1.html,tpo39-listening4.html,tpo40-listening1.html,tpo42-listening1.html,tpo43-listening4.html,tpo44-listening1.html,tpo44-listening4.html,tpo45-listening4.html,tpo47-listening4.html,tpo50-listening1.html,tpo50-listening2.html,tpo51-listening1.html,tpo51-listening4.html,tpo52-listening1.html,tpo52-listening4.html,tpo53-listening1.html;Environmental Science:og1-listening2.html,og3-listening2.html,tpo03-listening2.html,tpo09-listening3.html,tpo11-listening5.html,tpo12-listening6.html,tpo17-listening3.html,tpo20-listening3.html,tpo23-listening3.html,tpo33-listening3.html,tpo34-listening3.html,tpo36-listening2.html,tpo40-listening3.html,tpo40-listening5.html,tpo42-listening5.html,tpo44-listening6.html,tpo47-listening6.html,tpo48-listening3.html,tpo52-listening3.html,tpo53-listening3.html;Philosophy:og1-listening3.html,tpo02-listening5.html,tpo28-listening2.html;Course Inquiry:og1-listening4.html,og2-listening4.html,og3-listening1.html,tpo03-listening4.html,tpo21-listening4.html,tpo23-listening4.html,tpo29-listening1.html,tpo31-listening4.html,tpo36-listening1.html,tpo41-listening1.html,tpo46-listening4.html,tpo47-listening1.html,tpo48-listening4.html,tpo49-listening4.html;Botany:og1-listening5.html,tpo02-listening3.html,tpo19-listening5.html,tpo28-listening5.html,tpo34-listening5.html,tpo38-listening2.html,tpo41-listening2.html,tpo43-listening2.html,tpo51-listening2.html;Business:og1-listening6.html,tpo06-listening2.html,tpo11-listening6.html,tpo12-listening3.html,tpo21-listening3.html,tpo26-listening2.html,tpo34-listening6.html,tpo38-listening3.html,tpo42-listening6.html,tpo47-listening5.html;History:og2-listening2.html,og3-listening3.html,tpo08-listening5.html,tpo10-listening3.html,tpo17-listening5.html,tpo18-listening5.html,tpo25-listening5.html,tpo41-listening3.html,tpo45-listening2.html,tpo48-listening6.html,tpo49-listening3.html,tpo51-listening3.html,tpo51-listening6.html,tpo53-listening2.html,tpo53-listening5.html;Biology:og2-listening3.html,tpo01-listening6.html,tpo04-listening2.html,tpo06-listening3.html,tpo07-listening3.html,tpo08-listening2.html,tpo11-listening2.html,tpo12-listening2.html,tpo15-listening6.html,tpo16-listening5.html,tpo18-listening6.html,tpo20-listening6.html,tpo21-listening5.html,tpo24-listening2.html,tpo25-listening2.html,tpo25-listening6.html,tpo26-listening3.html,tpo28-listening3.html,tpo30-listening3.html,tpo32-listening3.html,tpo33-listening5.html,tpo35-listening2.html,tpo36-listening6.html,tpo37-listening6.html,tpo39-listening6.html,tpo45-listening3.html,tpo46-listening2.html,tpo47-listening3.html,tpo48-listening5.html,tpo50-listening3.html;Astronomy:og2-listening5.html,og3-listening6.html,tpo02-listening6.html,tpo03-listening6.html,tpo05-listening3.html,tpo13-listening6.html,tpo14-listening5.html,tpo18-listening2.html,tpo19-listening3.html,tpo21-listening2.html,tpo22-listening3.html,tpo24-listening6.html,tpo26-listening5.html,tpo30-listening5.html,tpo38-listening6.html,tpo41-listening6.html,tpo42-listening3.html,tpo53-listening6.html;Art Category:og2-listening6.html,og3-listening5.html,tpo01-listening2.html,tpo03-listening3.html,tpo03-listening5.html,tpo07-listening2.html,tpo08-listening3.html,tpo09-listening2.html,tpo12-listening5.html,tpo15-listening5.html,tpo16-listening3.html,tpo16-listening6.html,tpo17-listening2.html,tpo18-listening3.html,tpo19-listening6.html,tpo21-listening6.html,tpo22-listening6.html,tpo23-listening6.html,tpo24-listening3.html,tpo25-listening3.html,tpo26-listening6.html,tpo27-listening3.html,tpo27-listening6.html,tpo30-listening6.html,tpo31-listening2.html,tpo33-listening6.html,tpo34-listening2.html,tpo35-listening5.html,tpo37-listening5.html,tpo38-listening5.html,tpo40-listening2.html,tpo41-listening5.html,tpo42-listening2.html,tpo44-listening3.html,tpo46-listening3.html,tpo46-listening5.html,tpo51-listening5.html,tpo52-listening2.html;Library And Bookstore:tpo01-listening1.html,tpo07-listening4.html,tpo09-listening4.html,tpo10-listening4.html,tpo13-listening4.html,tpo14-listening1.html,tpo20-listening1.html,tpo24-listening1.html,tpo27-listening1.html,tpo32-listening1.html,tpo34-listening1.html,tpo49-listening1.html;Geography:tpo01-listening3.html,tpo04-listening5.html,tpo06-listening6.html,tpo07-listening6.html,tpo09-listening5.html,tpo15-listening3.html,tpo16-listening2.html,tpo31-listening3.html,tpo32-listening5.html,tpo35-listening6.html,tpo37-listening2.html,tpo39-listening2.html,tpo49-listening2.html,tpo50-listening6.html;Archeology:tpo01-listening5.html,tpo14-listening6.html,tpo23-listening2.html,tpo24-listening5.html,tpo28-listening6.html,tpo29-listening5.html,tpo31-listening6.html,tpo32-listening2.html,tpo33-listening2.html,tpo35-listening3.html,tpo37-listening3.html,tpo49-listening6.html,tpo52-listening6.html;Psychology:tpo02-listening2.html,tpo10-listening6.html,tpo14-listening2.html,tpo15-listening2.html,tpo30-listening2.html,tpo43-listening3.html;Domestic Services:tpo02-listening4.html,tpo05-listening1.html,tpo06-listening1.html,tpo07-listening1.html,tpo08-listening1.html,tpo11-listening1.html,tpo11-listening4.html,tpo12-listening4.html,tpo15-listening1.html,tpo16-listening1.html,tpo17-listening4.html,tpo18-listening1.html,tpo18-listening4.html,tpo19-listening4.html,tpo23-listening1.html,tpo26-listening1.html,tpo30-listening1.html,tpo33-listening1.html,tpo35-listening1.html,tpo38-listening1.html,tpo40-listening4.html,tpo41-listening4.html,tpo42-listening4.html,tpo43-listening1.html,tpo45-listening1.html,tpo46-listening1.html,tpo48-listening1.html,tpo48-listening2.html,tpo50-listening4.html,tpo53-listening4.html;Literature:tpo04-listening3.html,tpo05-listening6.html,tpo06-listening5.html,tpo13-listening5.html,tpo20-listening5.html,tpo43-listening5.html,tpo47-listening2.html,tpo50-listening5.html;Sociology:tpo04-listening6.html,tpo05-listening2.html,tpo40-listening6.html;Chemistry:tpo05-listening5.html,tpo08-listening6.html,tpo44-listening2.html,tpo45-listening5.html,tpo46-listening6.html,tpo52-listening5.html;Anthropology:tpo07-listening5.html,tpo22-listening2.html,tpo36-listening3.html,tpo39-listening3.html,tpo44-listening5.html,tpo45-listening6.html;Linguistics:tpo09-listening6.html,tpo19-listening2.html,tpo20-listening2.html;Marine Biology:tpo10-listening2.html,tpo17-listening6.html,tpo23-listening5.html,tpo27-listening2.html,tpo31-listening5.html;Ecology:tpo10-listening5.html,tpo13-listening3.html,tpo29-listening2.html;Architecture:tpo11-listening3.html,tpo13-listening2.html,tpo29-listening3.html,tpo29-listening6.html,tpo32-listening6.html,tpo36-listening5.html;Zoology:tpo14-listening3.html,tpo22-listening5.html,tpo27-listening5.html,tpo49-listening5.html;Literature:tpo39-listening5.html;Physics:tpo43-listening6.html&Location:og1-speaking1.html,tpo02-speaking1.html,tpo05-speaking1.html,tpo07-speaking1.html,tpo24-speaking1.html,tpo40-speaking1.html,tpo52-speaking1.html;Learn:og1-speaking2.html,og3-speaking2.html,tpo02-speaking2.html,tpo03-speaking2.html,tpo04-speaking2.html,tpo05-speaking2.html,tpo07-speaking2.html,tpo13-speaking2.html,tpo17-speaking2.html,tpo24-speaking2.html,tpo29-speaking2.html,tpo31-speaking2.html,tpo38-speaking2.html,tpo39-speaking2.html,tpo41-speaking2.html,tpo49-speaking2.html;Logistics Services:og1-speaking3.html,og3-speaking3.html,tpo02-speaking3.html,tpo03-speaking3.html,tpo05-speaking3.html,tpo16-speaking3.html,tpo27-speaking3.html,tpo31-speaking3.html,tpo37-speaking3.html,tpo49-speaking3.html,tpo53-speaking3.html;Sociology:og1-speaking4.html,tpo02-speaking4.html,tpo03-speaking4.html,tpo17-speaking6.html,tpo23-speaking4.html,tpo25-speaking4.html,tpo52-speaking4.html,tpo53-speaking6.html;Time Conflict:og1-speaking5.html,og3-speaking5.html,tpo02-speaking5.html,tpo03-speaking5.html,tpo08-speaking5.html,tpo12-speaking5.html,tpo19-speaking5.html,tpo20-speaking5.html,tpo23-speaking5.html,tpo27-speaking5.html,tpo31-speaking5.html,tpo33-speaking5.html,tpo34-speaking5.html,tpo36-speaking5.html,tpo39-speaking5.html,tpo40-speaking5.html,tpo46-speaking5.html,tpo49-speaking5.html,tpo52-speaking5.html;Business:og1-speaking6.html,og3-speaking6.html,tpo07-speaking6.html,tpo08-speaking6.html,tpo18-speaking6.html,tpo26-speaking6.html,tpo29-speaking6.html,tpo33-speaking6.html,tpo40-speaking6.html,tpo44-speaking4.html,tpo48-speaking6.html;Life:og2-speaking1.html,tpo08-speaking2.html,tpo16-speaking2.html,tpo18-speaking2.html,tpo19-speaking2.html,tpo23-speaking2.html,tpo25-speaking2.html,tpo33-speaking2.html,tpo36-speaking2.html,tpo42-speaking2.html,tpo45-speaking2.html,tpo46-speaking2.html,tpo48-speaking2.html;Friend:og2-speaking2.html;Infrastructure Construction:og2-speaking3.html,tpo01-speaking3.html,tpo08-speaking3.html,tpo10-speaking3.html,tpo11-speaking3.html,tpo12-speaking3.html,tpo13-speaking3.html,tpo15-speaking3.html,tpo17-speaking3.html,tpo19-speaking3.html,tpo20-speaking3.html,tpo24-speaking3.html,tpo28-speaking3.html,tpo29-speaking3.html,tpo30-speaking3.html,tpo32-speaking3.html,tpo33-speaking3.html,tpo40-speaking3.html,tpo46-speaking3.html,tpo48-speaking3.html,tpo50-speaking3.html,tpo51-speaking3.html;Psychology:og2-speaking4.html,og2-speaking6.html,og3-speaking4.html,tpo01-speaking6.html,tpo03-speaking6.html,tpo04-speaking4.html,tpo05-speaking6.html,tpo06-speaking4.html,tpo07-speaking4.html,tpo10-speaking6.html,tpo12-speaking4.html,tpo13-speaking4.html,tpo14-speaking4.html,tpo15-speaking4.html,tpo16-speaking4.html,tpo16-speaking6.html,tpo19-speaking4.html,tpo20-speaking6.html,tpo22-speaking4.html,tpo30-speaking4.html,tpo31-speaking4.html,tpo34-speaking4.html,tpo40-speaking4.html,tpo41-speaking4.html,tpo41-speaking6.html,tpo46-speaking6.html,tpo47-speaking4.html,tpo49-speaking4.html,tpo50-speaking4.html,tpo53-speaking4.html;Dilemma Choice:og2-speaking5.html,tpo53-speaking5.html;Feature:og3-speaking1.html,tpo03-speaking1.html,tpo20-speaking1.html,tpo30-speaking1.html;Object:tpo01-speaking1.html,tpo06-speaking1.html,tpo11-speaking1.html,tpo12-speaking1.html,tpo13-speaking1.html,tpo14-speaking1.html,tpo26-speaking1.html,tpo40-speaking2.html,tpo46-speaking1.html,tpo53-speaking1.html;Media:tpo01-speaking2.html,tpo20-speaking2.html,tpo26-speaking2.html,tpo28-speaking2.html;Marketing:tpo01-speaking4.html,tpo05-speaking4.html,tpo10-speaking4.html,tpo20-speaking4.html,tpo28-speaking4.html,tpo39-speaking4.html,tpo51-speaking4.html;Social Activity:tpo01-speaking5.html,tpo05-speaking5.html,tpo13-speaking5.html,tpo15-speaking5.html,tpo21-speaking5.html,tpo26-speaking5.html,tpo47-speaking5.html,tpo51-speaking5.html;Economic:tpo02-speaking6.html,tpo12-speaking6.html,tpo38-speaking6.html;Situation:tpo04-speaking1.html,tpo16-speaking1.html,tpo19-speaking1.html,tpo23-speaking1.html,tpo28-speaking1.html,tpo29-speaking1.html,tpo32-speaking1.html,tpo33-speaking1.html;Teaching Activities:tpo04-speaking3.html,tpo06-speaking3.html,tpo07-speaking3.html,tpo09-speaking3.html,tpo14-speaking3.html,tpo26-speaking3.html,tpo34-speaking3.html,tpo35-speaking3.html,tpo36-speaking3.html,tpo41-speaking3.html,tpo42-speaking3.html,tpo47-speaking3.html;Other:tpo04-speaking5.html,tpo06-speaking5.html,tpo28-speaking5.html,tpo30-speaking5.html,tpo35-speaking6.html,tpo37-speaking5.html,tpo38-speaking5.html,tpo43-speaking5.html,tpo45-speaking5.html;Art Appreciation:tpo04-speaking6.html;Jobs:tpo06-speaking2.html,tpo32-speaking2.html,tpo43-speaking2.html,tpo43-speaking3.html,tpo44-speaking1.html,tpo44-speaking2.html;Education:tpo06-speaking6.html,tpo21-speaking4.html,tpo35-speaking1.html,tpo35-speaking2.html,tpo36-speaking1.html,tpo37-speaking1.html,tpo37-speaking2.html,tpo39-speaking1.html,tpo47-speaking2.html,tpo51-speaking2.html;Job Completed:tpo07-speaking5.html,tpo10-speaking5.html,tpo16-speaking5.html,tpo17-speaking5.html,tpo18-speaking5.html,tpo22-speaking5.html,tpo29-speaking5.html,tpo32-speaking5.html,tpo42-speaking5.html,tpo48-speaking5.html,tpo50-speaking5.html;Experience:tpo08-speaking1.html,tpo09-speaking1.html,tpo10-speaking1.html,tpo17-speaking1.html;Biology:tpo08-speaking4.html,tpo09-speaking6.html,tpo13-speaking6.html,tpo14-speaking6.html,tpo15-speaking6.html,tpo17-speaking4.html,tpo18-speaking4.html,tpo19-speaking6.html,tpo22-speaking6.html,tpo23-speaking6.html,tpo26-speaking4.html,tpo27-speaking4.html,tpo29-speaking4.html,tpo30-speaking6.html,tpo31-speaking6.html,tpo32-speaking4.html,tpo32-speaking6.html,tpo33-speaking4.html,tpo34-speaking6.html,tpo36-speaking6.html,tpo37-speaking4.html,tpo38-speaking4.html,tpo39-speaking6.html,tpo42-speaking4.html,tpo43-speaking6.html,tpo44-speaking6.html,tpo45-speaking4.html,tpo45-speaking6.html,tpo46-speaking4.html,tpo48-speaking4.html,tpo49-speaking6.html,tpo50-speaking6.html,tpo51-speaking6.html;Development Of:tpo09-speaking2.html,tpo10-speaking2.html,tpo11-speaking2.html,tpo12-speaking2.html,tpo22-speaking2.html,tpo27-speaking2.html,tpo30-speaking2.html,tpo34-speaking2.html;Art:tpo09-speaking4.html,tpo11-speaking4.html,tpo36-speaking4.html;Stay:tpo09-speaking5.html,tpo11-speaking5.html,tpo14-speaking5.html,tpo24-speaking5.html,tpo25-speaking5.html,tpo35-speaking5.html,tpo41-speaking5.html,tpo44-speaking5.html;Interior Design:tpo11-speaking6.html;Abstract:tpo14-speaking2.html,tpo15-speaking2.html,tpo21-speaking2.html;Method:tpo15-speaking1.html,tpo25-speaking1.html,tpo31-speaking1.html,tpo47-speaking1.html,tpo48-speaking1.html;Variety:tpo18-speaking1.html,tpo22-speaking1.html;Extracurricular Activities:tpo18-speaking3.html,tpo21-speaking3.html,tpo22-speaking3.html,tpo23-speaking3.html,tpo25-speaking3.html,tpo38-speaking3.html,tpo39-speaking3.html,tpo43-speaking4.html,tpo44-speaking3.html,tpo45-speaking3.html,tpo52-speaking3.html;Event:tpo21-speaking1.html,tpo34-speaking1.html,tpo42-speaking1.html,tpo43-speaking1.html,tpo50-speaking1.html,tpo53-speaking2.html;History:tpo21-speaking6.html,tpo27-speaking6.html,tpo37-speaking6.html,tpo47-speaking6.html;Environmental Science:tpo24-speaking4.html,tpo35-speaking4.html,tpo42-speaking6.html,tpo52-speaking6.html;Literature:tpo24-speaking6.html;Geology:tpo25-speaking6.html,tpo28-speaking6.html;Character:tpo27-speaking1.html,tpo41-speaking1.html,tpo45-speaking1.html,tpo50-speaking2.html;Suggest:tpo38-speaking1.html,tpo49-speaking1.html,tpo51-speaking1.html;Activity:tpo52-speaking2.html&Biology:og1-writing1.html,tpo04-writing1.html,tpo10-writing1.html,tpo15-writing1.html,tpo24-writing1.html,tpo26-writing1.html,tpo29-writing1.html,tpo31-writing1.html,tpo34-writing1.html,tpo43-writing1.html,tpo45-writing1.html,tpo47-writing1.html,tpo48-writing1.html,tpo49-writing1.html,tpo51-writing1.html;Family:og1-writing2.html,tpo13-writing2.html,tpo26-writing2.html,tpo28-writing2.html;Education:og2-writing1.html,tpo01-writing2.html,tpo06-writing1.html,tpo07-writing2.html,tpo11-writing1.html,tpo12-writing2.html,tpo18-writing2.html,tpo22-writing2.html,tpo29-writing2.html,tpo33-writing2.html,tpo40-writing2.html,tpo43-writing2.html,tpo50-writing2.html;Lifestyle:og2-writing2.html,tpo03-writing2.html,tpo14-writing2.html,tpo16-writing2.html,tpo37-writing2.html,tpo49-writing2.html;Art:og3-writing1.html,tpo03-writing1.html,tpo12-writing1.html;Friend:og3-writing2.html;Business:tpo01-writing1.html,tpo02-writing1.html,tpo19-writing1.html;Abstract:tpo02-writing2.html,tpo31-writing2.html,tpo38-writing2.html;Society:tpo04-writing2.html,tpo05-writing2.html,tpo06-writing2.html,tpo35-writing2.html,tpo41-writing2.html,tpo52-writing2.html;Archeology:tpo05-writing1.html,tpo13-writing1.html,tpo16-writing1.html,tpo25-writing1.html,tpo33-writing1.html;Ecology:tpo07-writing1.html,tpo14-writing1.html,tpo17-writing1.html,tpo18-writing1.html,tpo20-writing1.html,tpo21-writing1.html,tpo23-writing1.html,tpo39-writing1.html;History:tpo08-writing1.html,tpo28-writing1.html,tpo30-writing1.html,tpo32-writing1.html,tpo35-writing1.html,tpo44-writing1.html;Media:tpo08-writing2.html,tpo17-writing2.html,tpo19-writing2.html,tpo47-writing2.html,tpo51-writing2.html;Science And Technology:tpo09-writing1.html,tpo09-writing2.html,tpo11-writing2.html,tpo22-writing1.html,tpo36-writing1.html,tpo37-writing1.html,tpo46-writing1.html,tpo50-writing1.html,tpo52-writing1.html;Child:tpo10-writing2.html,tpo15-writing2.html,tpo24-writing2.html,tpo34-writing2.html,tpo44-writing2.html;Jobs:tpo20-writing2.html,tpo21-writing2.html,tpo23-writing2.html,tpo27-writing2.html,tpo30-writing2.html,tpo39-writing2.html,tpo42-writing2.html;Youth:tpo25-writing2.html,tpo32-writing2.html,tpo45-writing2.html,tpo46-writing2.html,tpo48-writing2.html;Meteorology:tpo27-writing1.html,tpo40-writing1.html;Government:tpo36-writing2.html,tpo53-writing2.html;Surroundings:tpo38-writing1.html,tpo41-writing1.html,tpo42-writing1.html;Sociology:tpo53-writing1.html"
-// #endregion
 
-greFlag = (/verbal|quantitative|reading-|text|sentence/).exec(uri)
+greFlag = (/verbal|quantitative|reading-|text|sentence|issue|argument/).exec(uri)
 hideBarItems = document.querySelectorAll(".w3-hide-small");
 sidebarBtn = document.querySelector("#sidebarBtn");
 sidebar = document.querySelector("#sidebar");
@@ -14,6 +11,7 @@ main = document.querySelector("main");
 backgroundColor = window.getComputedStyle(document.querySelector("footer")).backgroundColor;
 if(greFlag && document.querySelector("#questions")) questions = document.querySelector("#questions").querySelectorAll("[id^='question']");
 else questions = document.querySelectorAll("#question > div");
+testFlag = questions.length > 0 || document.querySelector("#question");
 
 num = parseInt(html.substr(html.indexOf(".") - 1, 1));
 setFlag = html.includes("-");
@@ -281,7 +279,7 @@ function updateNav() {
     if(setFlag) { 
         href = "../" + uri.split("/").slice(-3)[0] + ".html"
         categoryBtn = createNode(["a", {class:"w3-btn w3-left w3-section w3-large " + color, href:href}, "See Same Category Questions"], div); 
-        testBtn = createNode(["button", {class:"w3-btn w3-right w3-section w3-large " + color, id:"test"}, "Test"], div); 
+        if(testFlag) testBtn = createNode(["button", {class:"w3-btn w3-right w3-section w3-large " + color, id:"test"}, "Test"], div); 
         if(mobileFlag) { 
             testBtn.className += " w3-block"; 
             categoryBtn.className += " w3-block"; 
@@ -691,7 +689,7 @@ function startTest() {
         
         if (!myAnswer[id-1] || !myAnswer[id-1].split("->")[0]) {  } 
         myAnswer[id-1] = "";
-        if (answer.length < 2) {
+        if (answer.length < 2 || questions[id-1].getAttribute("data-choice-type") == "select") {
             for (let index = 0; index < inputs.length; index++) {
                 const element = inputs[index];
                 if (!element.checked) { continue }
@@ -965,12 +963,10 @@ function startTest() {
 
             // split sentence with span
             let passage = article.innerHTML.replace(". . . ", "&#8230; ")
-            while(passage.includes(". ")) {
-                passage = passage.replace(/([?!.])\s/, "$1</span><span class=\"sentence\"> ")
-            }
-            for (let index = 0; index < article.querySelectorAll("p").length; index++) {
-                passage = passage.replace("<p>", "<p><span class=\"sentence\"> ")
-            }
+            passage = passage.replace(/\s{2,}</g, "<")
+            passage = passage.replace(/(\w{2,}[?!\.])\s{1}/g, "$1</span><span class=\"sentence\"> ")
+            passage = passage.replace(/<p>/g, "<p><span class=\"sentence\"> ")
+            passage = passage.replace(/<\/p>/g, "</span></p>")
             article.innerHTML = passage
 
             // Add sentence click event
@@ -1012,18 +1008,55 @@ function startTest() {
             }
         }
     }
+        
+    function addTextarea(note) {
+        function getAllIndexes(arr, val) {
+            var indexes = [], i = -1;
+            while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
+            return indexes;
+        }
+        wordCountDiv = createNode(["div", {class:"w3-half w3-padding w3-section"}, ""], testDiv);
+        wordCount = createNode(["span", {class:"w3-large"}, "Word Count: 0"], wordCountDiv);
+        toggleHighlight(wordCount);
+        let time = createNode(["span", {id:"time", class:"w3-large w3-right"}, ""], wordCountDiv);
+        toggleHighlight(time);
+        textarea = createNode(["textarea", {class:"w3-half"}, ""], testDiv);
+        textarea.oninput = e => wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1);
+
+        textarea.style.resize = "none";
+        textarea.style.border = "2px solid " + backgroundColor;
+        textarea.style.height = screen.height - textarea.offsetTop - 192 + "px";
+        textarea.style.height = "-webkit-fill-available";
+
+        if(mobileFlag) {
+            textarea.style.width = "-webkit-fill-available";
+            textarea.style.width = "-moz-available";
+        }
+        else {
+            article.classList.add("w3-padding");
+            textarea.style.width = note ? "-webkit-fill-available" : "none";
+        }
+    }
 
     toggleElement();
-    article = createNode(["article", {class:"show-article w3-half"}, ""], testDiv);
+    article = createNode(["article", {class:"show-article w3-half w3-section"}, ""], testDiv);
     if (greFlag) {
-        let countdown
-        var section = createNode(["section", {class:"show-question w3-half"}, ""], testDiv);
-        time = createNode(["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
-        if (questions.length > 20) countdown = 2100
-        else if (questions.length > 10) countdown = 1800
-        else countdown = 1500
-        waitTime(countdown, showModal);
-        showQuestion(0);
+        
+        if((/issue|argument/).exec(uri)) {
+            article.innerHTML = document.querySelector("#question").innerHTML
+            addTextarea();
+            waitTime(1800, showModal);
+        }
+        else {
+            var countdown;
+            var section = createNode(["section", {class:"show-question w3-half"}, ""], testDiv);
+            time = createNode(["p", {id:"time", class:"w3-xxlarge w3-center my-margin-small"}, ""], testDiv);
+            if (questions.length > 20) countdown = 2100
+            else if (questions.length > 15) countdown = 1800
+            else countdown = 1500
+            waitTime(countdown, showModal);
+            showQuestion(0);
+        }
     }
     else if (uri.includes("reading")) {
         var section = createNode(["section", {class:"show-question w3-half"}, ""], testDiv);
@@ -1134,36 +1167,6 @@ function startTest() {
         }
     }
     else if (uri.includes("writing")) {
-        
-        function addTextarea(note, parent, before) {
-            function getAllIndexes(arr, val) {
-                var indexes = [], i = -1;
-                while ((i = arr.indexOf(val, i+1)) != -1){ indexes.push(i); }
-                return indexes;
-            }
-            wordCountDiv = createNode(["div", {class:"w3-half w3-padding"}, ""], testDiv);
-            wordCount = createNode(["span", {class:"w3-large"}, "Word Count: 0"], wordCountDiv);
-            toggleHighlight(wordCount);
-            let time = createNode(["span", {id:"time", class:"w3-large w3-right"}, ""], wordCountDiv);
-            toggleHighlight(time);
-            textarea = createNode(["textarea", {class:"w3-half"}, ""], testDiv);
-            textarea.oninput = e => wordCount.innerText = "Word Count: " + (getAllIndexes(e.target.value, " ").length + 1);
-
-            textarea.style.resize = "none";
-            textarea.style.border = "2px solid " + backgroundColor;
-            textarea.style.height = screen.height - textarea.offsetTop - 192 + "px";
-            textarea.style.height = "-webkit-fill-available";
-
-            if(mobileFlag) {
-                textarea.style.width = "-webkit-fill-available";
-                textarea.style.width = "-moz-available";
-            }
-            else {
-                article.classList.add("w3-padding");
-                textarea.style.width = note ? "-webkit-fill-available" : "none";
-            }
-        }
-
         if (num == 1) {
             article.innerText = reading.innerText
             addTextarea();
@@ -1318,15 +1321,14 @@ function initialize() {
         updateUI(); 
     } 
     
-    if((/practice|sample/).exec(uri)) { 
+    if((/practice|sample/).exec(uri) && !greFlag) { 
         updateUI(); 
-        if(greFlag) testBtn = createNode(["button", {class:"w3-btn w3-right w3-margin " + color, id:"test"}, "Test"], main, true).createGreTest;
-        else testBtn = createNode(["button", {class:"w3-btn w3-right " + color, id:"test"}, "Test"], main.children[0]); 
+        if(testFlag) createNode(["button", {class:"w3-btn w3-right " + color, id:"test"}, "Test"], main.children[0]); 
     }
 
     if(greFlag) {
         updateUI();
-        testBtn = createNode(["button", {class:"w3-btn w3-right w3-margin " + color, id:"test"}, "Test"], main, true).createGreTest;
+        if(testFlag) createNode(["button", {class:"w3-btn w3-right w3-margin " + color, id:"test"}, "Test"], main, true);
     }
 
     if((/toefl/).exec(uri)) { 
@@ -1463,6 +1465,7 @@ function renameTitle() {
     title = title.replace("mh ", "McGraw-Hill ");
     title = title.replace("kap ", "Kaplan ");
     title = title.replace(" es", " Exercise Set");
+    title = title.replace(" ps", " Practice Set");
     if(!document.title) document.title = titleCase(title);
     document.title = document.title.replace("Mcgraw-hill ", "McGraw-Hill ");
 
@@ -1508,7 +1511,7 @@ function createWordSets() {
         for (let i = 0; i < details.length; i++) {
         
             if ((/word|sound/).exec(details[i])) { continue }
-            let button = createNode(["button", {class:"w3-btn my-margin-small w3-padding-small " + color}, details[i]], div);
+            let button = createNode(["button", {class:"w3-btn my-margin-small w3-padding-small " + color, id:details[i]}, details[i]], div);
             button.onclick = (e) => { 
                 detailDiv.classList.add("w3-padding-small");
                 detailDiv.innerHTML = word[e.target.textContent];
@@ -1531,7 +1534,7 @@ function createWordSets() {
                     
                 }
                 else if (e.target.textContent == "synonyms") {
-                    selectors = [".sds-list",".illustration", "i", ".Ant", "b"]
+                    selectors = [".sds-list",".illustration", "i", ".Ant", "b", ".runseg"]
                     selectors.forEach(selector => {
                         detailDiv.querySelectorAll(selector).forEach( element => element.classList.add("w3-hide"));
                     });
@@ -1585,8 +1588,10 @@ function createWordSets() {
                     });
                 }
             }
+            
         }
         let detailDiv = createNode(["div", {class:"my-margin-small w3-padding-small"}, ""], div);
+        div.querySelector("#synonyms").click();
 
         createNode(["button", {class:"w3-btn w3-bar w3-padding-small w3-section " + color}, "close"], div).onclick = () => { 
             modal.style.display = "none";

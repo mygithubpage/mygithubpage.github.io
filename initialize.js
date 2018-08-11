@@ -67,12 +67,16 @@ function addHead() {
     }] );
 
     // jQuery
-    createNode( ["script", {src : "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"}] );
+    // createNode( ["script", {src : "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"}] );
+
+    if ((/quantitative/).exec(document.location.href)) {
+        createNode( ["script", {src : "http://jsxgraph.uni-bayreuth.de/distrib/jsxgraphcore.js"}] );
+    }
 
     // My javascript
-    createNode( ["script", {src : folder + "/variable.js"}] );
-    createNode( ["script", {src : folder + "/vocabulary.js"}] );
-    createNode( ["script", {src : folder + "/external.js"}] );
+    createNode( ["script", {src : folder + "/js/variable.js"}] );
+    createNode( ["script", {src : folder + "/js/vocabulary.js"}] );
+    createNode( ["script", {src : folder + "/js/external.js"}] );
     
 }
 

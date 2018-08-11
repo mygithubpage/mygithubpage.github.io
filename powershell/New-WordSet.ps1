@@ -298,11 +298,11 @@ function Get-WordFamily ($word) {
 }
 
 $words = @()
-$sets = ConvertFrom-Json ((Get-Content C:\github\vocabulary.js -Raw) -replace "sets = ")
-$id = "mh-example"
+$sets = ConvertFrom-Json ((Get-Content C:\github\js\vocabulary.js -Raw) -replace "sets = ")
+$id = "kap-sample"
 $name = (Get-Culture).TextInfo.ToTitleCase(($id -replace "-", " "))
 $name = $name.Split(" ")[0].ToUpper() + " " + $name.Split(" ")[1]
-$xml = [xml](Get-Content "C:\github\blog\text\gre\vocabulary.html")
+$xml = [xml](Get-Content "C:\github\gre\notes\gre\vocabulary.html")
 $list = (Select-Xml "//div[@id=`"$id`"]" $xml).Node.InnerXml.Split(" ")
 $set = New-Object PSObject -Property @{name = $name}
 
@@ -325,30 +325,5 @@ $details = ($sets[0].words[0] | Get-Member -MemberType NoteProperty).Name
 foreach($detail in $details) { $content = $content -replace "$detail=", "`"$detail`"`:`"" }
 $content = $content -replace ",`r`n\s+`"Count`".*`r`n}" -replace "{`r`n\s+`"value`":" 
 $content = $content -replace "; `"", "`", `"" -replace "`"@{", "{" -replace "}`"", "`"}"
-#Set-Content C:\github\vocabulary.js $content -Encoding UTF8
-
-<#
-                                xml to json
-    $ie = Invoke-InternetExplorer "http://www.utilities-online.info/xmltojson/"
-    while (!$ie.Document.IHTMLDocument3_getElementById("xml")) { Start-Sleep 1 }
-    $ie.Document.IHTMLDocument3_getElementById("xml").value = $xml.OuterXml
-    while(!$ie.Document.IHTMLDocument3_getElementById("json").value) {
-        Start-Sleep 1
-        $ie.Document.IHTMLDocument3_getElementById("tojson").Click()
-        $json = $ie.Document.IHTMLDocument3_getElementById("json").value
-        $json
-    }
-                                json to xml
-    while (!$ie.Document.IHTMLDocument3_getElementById("json")) { Start-Sleep 1 }
-    $ie.Document.IHTMLDocument3_getElementById("json").value = $json
-    while(!$ie.Document.IHTMLDocument3_getElementById("xml").value) {
-        Start-Sleep 1
-        $ie.Document.IHTMLDocument3_getElementById("toxml").Click()
-        $xml = $ie.Document.IHTMLDocument3_getElementById("xml").value
-        $xml
-    }
-
-        function Get-Etymology ($word) {
-        
-    
-#>
+Set-Content C:\github\js\test.js $content -Encoding UTF8
+Set-Content C:\github\js\vocabulary.js $content -Encoding UTF8
