@@ -91,12 +91,10 @@ if($content -ne $comment) {
     Start-Sleep 2
     Set-Content $cssPath $ie.Document.IHTMLDocument3_getElementsByTagName("textarea")[0].value
 }
-#>
 
-git add .
-git commit -m "Update"
-git push -u origin master 
-#>
+
+
+
 
 (Get-ChildItem "C:\github\toefl\*\*.html" -Recurse).ForEach{
     $content = (Get-Content $_.FullName).Replace("/initialize.js", "/storage/sdcard1/toefl/initialize.js")
@@ -112,3 +110,15 @@ git push -u origin master
     $content = $content.Replace("folder + `"/toefl/`"", "folder + `"/`"")
     Set-Content $_.FullName.Replace("C:\github", "D:\toefl") $content
 }
+@("OneDrive", "Google Drive", "iCloudDrive").ForEach{
+    $folder = $_
+    $directory = "$env:USERPROFILE\$folder\"
+    (Get-ChildItem "C:\github" -Recurse -File).ForEach{
+        $item = $_
+    }
+}
+#>
+
+git add .
+git commit -m "update"
+git push -u origin master 

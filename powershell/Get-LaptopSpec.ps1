@@ -54,12 +54,12 @@ function Get-LaptopSpec()
             }
 
             $laptop = New-Object PSObject
-            $laptop | Add-Member -type NoteProperty -name ModelName -Value $modelName
-            $laptop | Add-Member -type NoteProperty -name Processor -Value $processor
-            $laptop | Add-Member -type NoteProperty -name Memory -Value $memory
-            $laptop | Add-Member -type NoteProperty -name Screen -Value $screen
-            $laptop | Add-Member -type NoteProperty -name Weight -Value $weight
-            $laptop | Add-Member -type NoteProperty -name Link -Value $link
+            $laptop | Add-Member ModelName $modelName
+            $laptop | Add-Member Processor $processor
+            $laptop | Add-Member Memory $memory
+            $laptop | Add-Member Screen $screen
+            $laptop | Add-Member Weight $weight
+            $laptop | Add-Member Link $link
 
             $laptops += $laptop
             remove-variable laptop

@@ -1,6 +1,6 @@
 ﻿#. ".\Utility.ps1"
 
-$movies = Get-ChildItem "$Home\Downloads" -Directory | Where-Object { $_.BaseName -match ".*(19|20).*" }
+$movies = Get-ChildItem "$Home\Downloads" -Directory.Where{ $_.BaseName -match ".*(19|20).*" }
 foreach ($movie in $movies) {
     $mp4 = $movie.GetFiles("*.mp4")
     $newName = "$($mp4.BaseName.Substring(0, $mp4.BaseName.Indexof(".1080p"))).mp4"
@@ -16,7 +16,7 @@ foreach ($movie in $movies) {
     $html = Invoke-Webrequest "http://www.yifysubtitles.com/movie-imdb/$link"
     if (!$html) { continue }
 
-    $uri = ($html.links | ForEach-Object {if($_.href -like "*english*") {$_.href} })[0].replace("subtitles", "subtitle")
+    $uri = ($html.links.ForEach{if($_.href -like "*english*") {$_.href} })[0].replace("subtitles", "subtitle")
     Invoke-WebRequest -Uri "http://www.yifysubtitles.com/$uri.zip" -OutFile "$name.zip"
 
     Move-Item -LiteralPath $mp4.FullName -Destination "$Home\Downloads\Movies\$newName" | Out-Null

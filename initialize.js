@@ -106,7 +106,7 @@ function addFooter(color) {
 function addTopNav(color) {
     if(document.location.href.includes("/gre/")) {
         var test = "/gre/";
-        var barItems = ["OG", "PQ", "MH", "PR", "Kap", "Manhattan", "Barrons", "Mangoosh", "Grubers", "Notes"];
+        var barItems = ["OG", "PQ", "MH", "PR", "Kap", "MP", "Barrons", "Mangoosh", "Grubers", "Notes"];
     }
     
     else {

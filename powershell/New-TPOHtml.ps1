@@ -85,45 +85,15 @@ function New-File ($file, $path) {
 
 function Update-Characters ($string) {
     # https://unicode-table.com
-    $string = [regex]::Replace($string, "\u2014", "-") 
-    $string = [regex]::Replace($string, "\u2018", "'") 
-    $string = [regex]::Replace($string, "\u2019", "'") 
-    $string = [regex]::Replace($string, "\u201C", "`"") 
-    $string = [regex]::Replace($string, "\u201D", "`"") 
-    $string = [regex]::Replace($string, "\u2026", "...") 
+    $string = $string -replace "\u2014", "-" 
+    $string = $string -replace "\u2018", "'" 
+    $string = $string -replace "\u2019", "'" 
+    $string = $string -replace "\u201C", "`"" 
+    $string = $string -replace "\u201D", "`"" 
+    $string = $string -replace "\u2026", "..." 
     
     # HTML Code
-    $string = [regex]::Replace($string, "\uFF08", "%EF%BC%88") # Fullwidth Left Parenthesis
-    $string = [regex]::Replace($string, "\uFF09", "%EF%BC%89") # Fullwidth Right Parenthesis
-    $string = [regex]::Replace($string, "\u91CD", "%E9%87%8D") # CJK Unified Ideographs - double 
-    $string = [regex]::Replace($string, "\u590D", "%E5%A4%8D") # CJK Unified Ideographs - repeat
-    $string = [regex]::Replace($string, "\u542C", "%E5%90%AC") # CJK Unified Ideographs - hear
-    $string = [regex]::Replace($string, "\u9898", "%E9%A2%98") # CJK Unified Ideographs - title
-    $string = [regex]::Replace($string, "\u76EE", "%E7%9B%AE") # CJK Unified Ideographs - look
-    $string = [regex]::Replace($string, "\u90E8", "%E9%83%A8") # CJK Unified Ideographs - part
-    $string = [regex]::Replace($string, "\u5206", "%E5%88%86") # CJK Unified Ideographs - divide
-    $string = [regex]::Replace($string, "\u9605", "%E9%98%85") # CJK Unified Ideographs - review
-    $string = [regex]::Replace($string, "\u8BFB", "%E8%AF%BB") # CJK Unified Ideographs - read
-    $string = [regex]::Replace($string, "\u8BED", "%E8%AF%AD") # CJK Unified Ideographs - saying
-    $string = [regex]::Replace($string, "\u6BB5", "%E6%AE%B5") # CJK Unified Ideographs - section
-    $string = [regex]::Replace($string, "\u97F3", "%E9%9F%B3") # CJK Unified Ideographs - sound
-    $string = [regex]::Replace($string, "\u9891", "%E9%A2%91") # CJK Unified Ideographs - frequently
-    $string = [regex]::Replace($string, "\u5BF9", "%E5%AF%B9") # CJK Unified Ideographs - facing
-    $string = [regex]::Replace($string, "\u8BDD", "%E8%AF%9D") # CJK Unified Ideographs - dialect
-    $string = [regex]::Replace($string, "\u95EE", "%E9%97%AE") # CJK Unified Ideographs - ask
-    $string = [regex]::Replace($string, "\u5E72", "%E5%B9%B2") # CJK Unified Ideographs - dried
-    $string = [regex]::Replace($string, "\u53E3", "%E5%8F%A3") # CJK Unified Ideographs - talk
-    $string = [regex]::Replace($string, "\u8BB2", "%E8%AE%B2") # CJK Unified Ideographs - talk
-    $string = [regex]::Replace($string, "\u5EA7", "%E5%BA%A7") # CJK Unified Ideographs - base
-    $string = [regex]::Replace($string, "\u8BD5", "%E8%AF%95") # CJK Unified Ideographs - test
-    $string = [regex]::Replace($string, "\u6F14", "%E6%BC%94") # CJK Unified Ideographs - perform
-    $string = [regex]::Replace($string, "\u6307", "%E6%8C%87") # CJK Unified Ideographs - finger
-    $string = [regex]::Replace($string, "\u5BFC", "%E5%AF%BC") # CJK Unified Ideographs - direct
-    $string = [regex]::Replace($string, "\u5408", "%E5%90%88") # CJK Unified Ideographs - join
-    $string = [regex]::Replace($string, "\u5E76", "%E5%B9%B6") # CJK Unified Ideographs - combine
-    $string = [regex]::Replace($string, "\u6587", "%E6%96%87") # CJK Unified Ideographs - cultrue
-    $string = [regex]::Replace($string, "\u4EF6", "%E4%BB%B6") # CJK Unified Ideographs - matter
-    $string
+    ConvertTo-Code $string "utf8"
 }
 
 function Remove-Characters ($string) {
@@ -140,8 +110,8 @@ function Remove-Characters ($string) {
     while ($string.Substring($string.Length - 1, 1) -eq " ") { $string = $string.Remove($string.Length - 1, 1) } 
     while ($string.Contains("  ")) { $string = $string.Replace("  ", " ") }
 
-    $string = [regex]::Replace($string, "\u2587", "") # Block Elements - Lower Seven Eighths Block
-    $string = [regex]::Replace($string, "\u25A0", "") # Geometric Shapes - Black Square
+    $string = $string -replace "\u2587", "" # Block Elements - Lower Seven Eighths Block
+    $string = $string -replace "\u25A0", "" # Geometric Shapes - Black Square
     #>
     Update-Characters $string.Replace("&nbsp;", "") 
 }
@@ -665,7 +635,7 @@ function Get-Translation ($Content) {
     $translation = Start-Translation $Content 0
 
     if(!$translation) { 
-        $indexes = Get-AllIndexesOf ([regex]::Replace($Content, "\u3002", "$")) "$"
+        $indexes = Get-AllIndexesOf ($Content -replace "\u3002", "$") "$"
         $midPoint = $indexes[[int](($indexes).Count / 2 )] + 1
         $firstHalf = $Content.Substring(0, $midPoint)
         $secondHalf = $Content.Substring($midPoint, $Content.Length - $midPoint)

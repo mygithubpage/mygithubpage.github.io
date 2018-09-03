@@ -1,15 +1,13 @@
 . $PSScriptRoot\Utility.ps1
-function Get-Dota2Items()
-{
+function Get-Dota2Items() {
     $ie = Start-InternetExplorer "http://steamcommunity.com/profiles/76561198161389877/inventory/#570"
     $links = $ie.Document.links
     while (!$links) { $links = $ie.Document.links }
     $links = $ie.Document.getElementsByTagName('a') 
-    $links = $links | ForEach-Object { if($_.ClassName -eq "inventory_item_link" ) {$_} }
+    $links = $links.ForEach{ if ($_.ClassName -eq "inventory_item_link" ) {$_} }
 
     $items = @()
-    foreach($link in $links)
-    {
+    foreach ($link in $links) {
         $link.Click()
         Start-Sleep 1
         
@@ -20,15 +18,16 @@ function Get-Dota2Items()
         while ($descriptor.Contains("`r`n`r`n")) {$descriptor = $descriptor -replace "`r`n`r`n", "`r`n"}
         if (!$descriptor.Contains("`r`n`r`n")) { $descriptor = "" }
 
-        $item = New-Object PSObject
-        $item | Add-Member -type NoteProperty -name Name -Value $name
-        $item | Add-Member -type NoteProperty -name Quality -Value $tags[0]
-        $item | Add-Member -type NoteProperty -name Rarity -Value $tags[1]
-        $item | Add-Member -type NoteProperty -name Slot -Value $tags[3]
-        $item | Add-Member -type NoteProperty -name Hero -Value $tags[4]
-        $item | Add-Member -type NoteProperty -name Availibility -Value $tags[5]
-        $item | Add-Member -type NoteProperty -name Descriptor -Value $descriptor
-        $item | Add-Member -type NoteProperty -name Link -Value $link.href
+        $item = New-Object PSObject @{
+            Name         = $name;
+            Quality      = $tags[0];
+            Rarity       = $tags[1];
+            Slot         = $tags[3];
+            Hero         = $tags[4];
+            Availibility = $tags[5];
+            Descriptor   = $descriptor;
+            Link         = $link.href
+        }
         
         $items += $item
     }
@@ -47,24 +46,26 @@ $loadings = "https://steamcommunity.com/market/listings/570/Acolyte%20of%20Venge
 
 $slot = "Loading Screen"
 $items = Import-Csv "C:\Users\decisactor\Downloads\VSCode\My Code\Dota2Item.csv" | 
-Where-Object { $_.Slot -like "*$slot*"} | Select-Object Name | Sort-Object * -Unique
+    Where-Object { $_.Slot -like "*$slot*"} | Select-Object Name | Sort-Object * -Unique
 $string = ""
 $items.ForEach{ $string += $_.Name + ","}
 
 $items = New-Object PSObject -Property @{
-    HUD     = $HUDs
-    Loading_Screen    = $loadings
+    HUD            = $HUDs
+    Loading_Screen = $loadings
 }
 
 $items."$($slot.Replace(" ", "_"))".Split(",").ForEach{ 
     $item = $_.Split("/")[-1].Replace("%20", " ")
-    if(!$string.Contains($item)) { Write-Host $_ }
+    if (!$string.Contains($item)) { Write-Host $_ }
 }
 
-$lines = Get-Content .\..\test.html
-for ($i = 0; $i -gt -$lines.Count; $i=$i+2) {
+$lines = $couriers -split ","
+for ($i = 0; $i -gt - $lines.Count; $i = $i++) {
     $link = "https://dota2.gamepedia.com/" + $lines[$i] -replace "about:/"
     $request = Invoke-WebRequest $link
     $links = $request.parsedHtml.links
-    $links | Foreach-object { if ($_.href -like "*Trading*" -and $_.innerText -like "*NOT*") {$link}}
+    $links.Foreach{ if ($_.href -like "*Trading*" -and $_.innerText -like "*NOT*") {$link}}
 }
+
+$couriers = "https://dota2.gamepedia.com/Antipode_Couriers,https://dota2.gamepedia.com/Basim,https://dota2.gamepedia.com/Bearzky,https://dota2.gamepedia.com/Billy_Bounceback,https://dota2.gamepedia.com/Blue_Lightning,https://dota2.gamepedia.com/Boooofus,https://dota2.gamepedia.com/Butter_Blunder,https://dota2.gamepedia.com/Cyril_the_Syrmeleon,https://dota2.gamepedia.com/Duskie,https://dota2.gamepedia.com/Forest_Faun,https://dota2.gamepedia.com/Jujak_the_Fiery_Rebirth,https://dota2.gamepedia.com/Jumo,https://dota2.gamepedia.com/Little_Green_Jade_Dragon,https://dota2.gamepedia.com/Raiq,https://dota2.gamepedia.com/Sappler_the_Eager,https://dota2.gamepedia.com/Scuttling_Scotty,https://dota2.gamepedia.com/Shroomy,https://dota2.gamepedia.com/Teron,https://dota2.gamepedia.com/Vaal_the_Animated_Construct,https://dota2.gamepedia.com/White_the_Blueheart,https://dota2.gamepedia.com/Wibbley,https://dota2.gamepedia.com/Alphid_of_Lecaciida,https://dota2.gamepedia.com/Amaterasu,https://dota2.gamepedia.com/Amphibian_Kid,https://dota2.gamepedia.com/Arnabus_the_Fairy_Rabbit,https://dota2.gamepedia.com/Atrophic_Skitterwing,https://dota2.gamepedia.com/Axolotl,https://dota2.gamepedia.com/Azuremir,https://dota2.gamepedia.com/Babka_the_Bewitcher,https://dota2.gamepedia.com/Beaver_Knight,https://dota2.gamepedia.com/Bluepaw,https://dota2.gamepedia.com/Braze_the_Zonkey,https://dota2.gamepedia.com/Captain_Bamboo,https://dota2.gamepedia.com/Carty,https://dota2.gamepedia.com/Chirpy,https://dota2.gamepedia.com/Coco_the_Courageous,https://dota2.gamepedia.com/Coral_the_Furryfish,https://dota2.gamepedia.com/Corsair,_Son_of_the_Storm,https://dota2.gamepedia.com/Deathripper,https://dota2.gamepedia.com/Devourling,https://dota2.gamepedia.com/Dolfrat_and_Roshinante,https://dota2.gamepedia.com/El_Gato,https://dota2.gamepedia.com/Enduring_War_Dog,https://dota2.gamepedia.com/Fearless_Badger,https://dota2.gamepedia.com/Filmtail,https://dota2.gamepedia.com/Flightless_Dod,https://dota2.gamepedia.com/Fraidy_Jack,https://dota2.gamepedia.com/Frull,https://dota2.gamepedia.com/Garran_Drywiz_and_Garactacus,https://dota2.gamepedia.com/Golden_Devourling,https://dota2.gamepedia.com/Golden_Seekling,https://dota2.gamepedia.com/Greevil,https://dota2.gamepedia.com/Grimoire_The_Book_Wyrm,https://dota2.gamepedia.com/Grimsneer,https://dota2.gamepedia.com/Hermes_the_Hermit_Crab,https://dota2.gamepedia.com/Hexgill_the_Lane_Shark,https://dota2.gamepedia.com/Hwytty_%26_Shyzzyrd,https://dota2.gamepedia.com/Inky_the_Hexapus,https://dota2.gamepedia.com/JanJou,https://dota2.gamepedia.com/Jin_and_Yin_Fox_Spirits,https://dota2.gamepedia.com/Kangdae_the_Dokkaebi,https://dota2.gamepedia.com/Kupu_the_Metamorpher,https://dota2.gamepedia.com/Lil%27_Nova,https://dota2.gamepedia.com/Masked_Fey,_Lord_of_Tempests,https://dota2.gamepedia.com/Master_Chocobo,https://dota2.gamepedia.com/Maximilian_the_Beetlebear,https://dota2.gamepedia.com/Mechjaw_the_Boxhound,https://dota2.gamepedia.com/Mega_Greevil_Courier,https://dota2.gamepedia.com/Mei_Nei_the_Jade_Rabbit,https://dota2.gamepedia.com/Mighty_Boar,https://dota2.gamepedia.com/MLG_Scalehound,https://dota2.gamepedia.com/Morok%27s_Mechanical_Mediary,https://dota2.gamepedia.com/Nibbles_the_Wartoise,https://dota2.gamepedia.com/Nilbog_the_Mad,https://dota2.gamepedia.com/Noble_and_Imperial_Pride,https://dota2.gamepedia.com/Oculopus,https://dota2.gamepedia.com/Patch,_Stash,_and_Hobb,https://dota2.gamepedia.com/Porcine_Princess_Penelope,https://dota2.gamepedia.com/Prismatic_Drake,https://dota2.gamepedia.com/Ramnaught_of_Underwool,https://dota2.gamepedia.com/Redhoof,https://dota2.gamepedia.com/Redhorn,https://dota2.gamepedia.com/Redpaw,https://dota2.gamepedia.com/Royal_Griffin_Cub,https://dota2.gamepedia.com/Scribbins_the_Scarab,https://dota2.gamepedia.com/Seekling,https://dota2.gamepedia.com/Snaggletooth_Jerry,https://dota2.gamepedia.com/Snapjaw,https://dota2.gamepedia.com/Snelfret_the_Snail,https://dota2.gamepedia.com/Snowl,https://dota2.gamepedia.com/Staglift,https://dota2.gamepedia.com/Star_Ladder_Grillhound,https://dota2.gamepedia.com/Strongback_the_Swift,https://dota2.gamepedia.com/The_Gama_Brothers,https://dota2.gamepedia.com/The_International_2017_Golden_Mystery_Courier,https://dota2.gamepedia.com/The_Llama_Llama,https://dota2.gamepedia.com/The_Wonderously_Encumbered_Travelling_Automaton,https://dota2.gamepedia.com/Throe,https://dota2.gamepedia.com/Tickled_Tegu,https://dota2.gamepedia.com/Tinkbot,https://dota2.gamepedia.com/Tory_the_Sky_Guardian,https://dota2.gamepedia.com/Vigilante_Fox,https://dota2.gamepedia.com/Virtus_Werebear,https://dota2.gamepedia.com/Warbler_and_Snikt,https://dota2.gamepedia.com/Woodchopper,https://dota2.gamepedia.com/Wynchell_the_Wyrmeleon,https://dota2.gamepedia.com/Zombie_Hopper,https://dota2.gamepedia.com/Baby_Roshan,https://dota2.gamepedia.com/Baekho,https://dota2.gamepedia.com/Bajie_the_Silken_Swineling,https://dota2.gamepedia.com/Blotto_and_Stick,https://dota2.gamepedia.com/Boris_Baumhauer,https://dota2.gamepedia.com/Butch,https://dota2.gamepedia.com/Cluckles_the_Brave,https://dota2.gamepedia.com/Flopjaw_the_Boxhound,https://dota2.gamepedia.com/Golden_Flopjaw_the_Boxhound,https://dota2.gamepedia.com/Goldhorn,https://dota2.gamepedia.com/Hollow_Jack,https://dota2.gamepedia.com/Hyeonmu,https://dota2.gamepedia.com/Itsy,https://dota2.gamepedia.com/Jade_Baby_Roshan,https://dota2.gamepedia.com/Jadehoof,https://dota2.gamepedia.com/Jadehorn,https://dota2.gamepedia.com/Krane_the_Enlightened,https://dota2.gamepedia.com/LGD%27s_Golden_Skipper,https://dota2.gamepedia.com/Lieutenant_Squawkins,https://dota2.gamepedia.com/Mok,https://dota2.gamepedia.com/Na%27Vi%27s_Weaselcrow,https://dota2.gamepedia.com/Nimble_Ben,https://dota2.gamepedia.com/Pudgling,https://dota2.gamepedia.com/Shagbark,https://dota2.gamepedia.com/Shagbark_the_Plush,https://dota2.gamepedia.com/Skip_the_Delivery_Frog,https://dota2.gamepedia.com/Speed_Demon,https://dota2.gamepedia.com/Waldi_the_Faithful,https://dota2.gamepedia.com/Wyvern_Hatchling,https://dota2.gamepedia.com/Yonex%27s_Rage,https://dota2.gamepedia.com/Beetlejaws_the_Boxhound,https://dota2.gamepedia.com/Dark_Moon_Baby_Roshan,https://dota2.gamepedia.com/Desert_Sands_Baby_Roshan,https://dota2.gamepedia.com/Doomling,https://dota2.gamepedia.com/Drodo_the_Druffin,https://dota2.gamepedia.com/Eimer_Hillburrow,https://dota2.gamepedia.com/Faceless_Rex,https://dota2.gamepedia.com/Fezzle-Feez_the_Magic_Carpet_Smeevil,https://dota2.gamepedia.com/Golden_Baby_Roshan,https://dota2.gamepedia.com/Golden_Beetlejaws_the_Boxhound,https://dota2.gamepedia.com/Golden_Doomling,https://dota2.gamepedia.com/Golden_Greevil,https://dota2.gamepedia.com/Golden_Huntling,https://dota2.gamepedia.com/Golden_Krobeling,https://dota2.gamepedia.com/Golden_Venoling,https://dota2.gamepedia.com/Hakobi_and_Tenneko,https://dota2.gamepedia.com/Huntling,https://dota2.gamepedia.com/Ice_Baby_Roshan,https://dota2.gamepedia.com/Krobeling,https://dota2.gamepedia.com/Lava_Baby_Roshan,https://dota2.gamepedia.com/Lockjaw_the_Boxhound,https://dota2.gamepedia.com/Murrissey_the_Smeevil,https://dota2.gamepedia.com/Onibi,https://dota2.gamepedia.com/Osky_the_Ottragon,https://dota2.gamepedia.com/Pholi_the_Squire,https://dota2.gamepedia.com/Platinum_Baby_Roshan,https://dota2.gamepedia.com/Stumpy_-_Nature%27s_Attendant,https://dota2.gamepedia.com/Trapjaw_the_Boxhound,https://dota2.gamepedia.com/Trusty_Mountain_Yak,https://dota2.gamepedia.com/Venoling,https://dota2.gamepedia.com/Defense_Season_2_War_Dog"

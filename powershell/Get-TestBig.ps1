@@ -1,8 +1,8 @@
 <#
 $links = @()
 $html = Invoke-WebRequest "https://www.testbig.com/toefl"
-$links += $html.Links | Where-Object {$_.href -like "*integrated*"} | Select-Object href
-$links += $html.Links | Where-Object {$_.href -like "*independent*"} | Select-Object href
+$links += $html.Links.Where{$_.href -like "*integrated*"} | Select-Object href
+$links += $html.Links.Where{$_.href -like "*independent*"} | Select-Object href
 $links | Export-Csv $PSScriptRoot\TestBig\TestBigW.csv
 #>
 . .\Utility.ps1
@@ -35,11 +35,11 @@ for($i = 1; $i -le $links.Length; $i++)
     for ($j = 1; $j -le $page; $j++) 
     {
         "page $j"
-        $responses = $html.Links | Where-Object {$_.innerText -like "*Read full essay*"} | Select-Object href
+        $responses = $html.Links.Where{$_.innerText -like "*Read full essay*"} | Select-Object href
         foreach($response in $responses)
         {
             $html = Invoke-WebRequest ("https://www.testbig.com$($response.href)")
-            $user = ($html.Links | Where-Object {$_.href -like "*users*" -and $_.class -eq "username"})[0]
+            $user = ($html.Links.Where{$_.href -like "*users*" -and $_.class -eq "username"})[0]
             $text = $html.ParsedHtml.body.getElementsByClassName("node__content")
             $text = $text[0].innerText -replace "`r`n","</p><p>"
             
@@ -67,7 +67,7 @@ for($i = 1; $i -le -$links.Length; $i++)
     $comments = $html.ParsedHtml.body.getElementsByClassName("comment__content") 
     if($comments) 
     { 
-        $comments = $comments | ForEach-Object {$_.getElementsByClassName("field__item")[0].innerHTML}
+        $comments = $comments.ForEach{$_.getElementsByClassName("field__item")[0].innerHTML}
         $path = "$HOME\Downloads\ETS\TOEFL Programs\Temp\TOEFLspeaking\forml1\TPO$n\Speaking\TPO$($n)S$question.xml"
         [xml]$xml = Get-Content $path
         foreach($comment in $comments)
@@ -83,7 +83,7 @@ for($i = 1; $i -le -$links.Length; $i++)
     for ($j = 1; $j -le $page; $j++) 
     {
         "page $j"
-        $responsess = $html.Links | Where-Object {$_.innerText -like "*Read full essay*"} | Select-Object href
+        $responsess = $html.Links.Where{$_.innerText -like "*Read full essay*"} | Select-Object href
         foreach($responses in $responsess)
         {
             $count++
@@ -96,15 +96,15 @@ for($i = 1; $i -le -$links.Length; $i++)
                 $end = $audio.IndexOf(".mp3") + 4
                 if($end -eq 3) { $end = $audio.IndexOf(".wav") + 4 }
                 $audio = $audio.Substring($start, $end - $start)
-                $user = ($html.Links | Where-Object {$_.href -like "*users*"})[0].innerText
+                $user = ($html.Links.Where{$_.href -like "*users*"})[0].innerText
                 
                 $name = "tpo$n" + "s$question$number" + $audio.Substring($audio.Length - 4, 4)
                 $name
 
                 $item = New-Object PSObject
-                $item | Add-Member -Type NoteProperty -Name Name -Value $name
-                $item | Add-Member -Type NoteProperty -Name User -Value $user
-                $item | Add-Member -Type NoteProperty -name Audio -Value $audio
+                $item | Add-Member Name $name
+                $item | Add-Member User $user
+                $item | Add-Member Audio $audio
                 $items += $item
             }
         }

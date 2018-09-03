@@ -1,8 +1,8 @@
 . .\Utility.ps1
 function ConvertTo-HtmlCharSets($string)
 {
-    $string = [regex]::Replace($string, "\u2103", "&#8451;") # ℃
-    $string = [regex]::Replace($string, "\u2013", "&#8211;") # –
+    $string = $string -replace "\u2103", "&#8451;" # ℃
+    $string = $string -replace "\u2013", "&#8211;" # –
     $string
 }
 
@@ -73,7 +73,7 @@ function New-Html ()
     (Select-Xml "//main" $xml).Node.InsertBefore($div, (Select-Xml "//main" $xml).Node.FirstChild) | Out-Null
     
     # Add Previous Next Button
-    $htmls = Get-ChildItem ".\..\toefl\tpo\$($title[0])\*.html" | ForEach-Object {$_.Name}
+    $htmls = Get-ChildItem ".\..\toefl\tpo\$($title[0])\*.html".ForEach{$_.Name}
     $index = $htmls.IndexOf($Path.Split('\\')[-1])
     $div = $xml.CreateElement("div")
     $div.SetAttribute("class", "w3-bar")

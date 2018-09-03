@@ -9,4 +9,4 @@ $ie.Document.IHTMLDocument3_getElementById("/math")
 
 $ie = Invoke-InternetExplorer $uri $condition
 $ie.Document.IHTMLDocument3_getElementById("ka-videoPageTabs-tabbedpanel-tab-1").click()
-$ie.Document.IHTMLDocument3_getElementsByTagName("ul") | ForEach-Object { if ($_.getAttribute("itemprop") -eq "transcript") { $_.outerHtml } }
+$ie.Document.IHTMLDocument3_getElementsByTagName("ul").ForEach{ if ($_.getAttribute("itemprop") -eq "transcript") { $_.outerHtml } }

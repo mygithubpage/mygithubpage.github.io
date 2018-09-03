@@ -4,6 +4,7 @@
 # FolderBrowserDialog https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.folderbrowserdialog
 using namespace System.Windows.Forms
 Add-Type -AssemblyName System.Windows.Forms
+
 $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog # Create
 $folderBrowserDialog.SelectedPath = $initialDirectory # Set Folder
 #$folderBrowserDialog.ShowDialog() | Out-Null # Show Folder
@@ -37,27 +38,29 @@ $form.Controls.Add($button)
 $regex = "\s+const\s+(?<type>.*)\s+(?<name>.*)\s+=\s+(?<value>.*);" # (?<name>subexpression)
 $parseString = 
 {
-    foreach($match in $PSItem.Matches) # Match https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.match
-    {
-        New-Object PSObject -Property `
-        @{
-            Name     = $match.Groups["name"].Value
-            Value    = $match.Groups["value"].Value
-            Type     = $match.Groups["type"].Value            
+    foreach ($match in $PSItem.Matches) { # Match https://docs.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.match
+        New-Object PSObject @{
+            Name  = $match.Groups["name"].Value
+            Value = $match.Groups["value"].Value
+            Type  = $match.Groups["type"].Value            
         }
     }
 } 
-Select-String $regex $cspath | ForEach-Object $parseString
+Select-String $regex $cspath.ForEach$parseString
 
 # Search and repalce words
 $regex = "`"word`":`"(?<word>.*?)`",(`"hw`":true,)?(`"parent`":`"(?<parent>.*?)`")?"
 foreach ($match in ($text | Select-String $regex -AllMatches -CaseSensitive).Matches) {
-	$text = [regex]::Replace($text, $oldText, $newText)
-	New-Object PSObject -Property @{ Word = $match.Groups["word"].Value; Parent = $($match.Groups["parent"].Value)}
+    $text = $text -replace $oldText, $newText
+
+    New-Object PSObject @{ Word = $match.Groups["word"].Value; Parent = $match.Groups["parent"].Value}
+
 }
 
 # Replace Unicode Character
-$string = [regex]::Replace($string, "\u2192", "&#8594;") # →
+$string = $string -replace "\u2192", "&#8594;" # →
+$string = $string -replace "([A-F])(\w)", " `$1 `$2" 
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_comparison_operators?view=powershell-6#substitutions-in-regular-expressions
 
 #endregion
 
@@ -68,8 +71,10 @@ $string = [regex]::Replace($string, "\u2192", "&#8594;") # →
 $array = @() # Create Empty Array
 $property = ""
 $element = New-Object PSObject
-$element | Add-Member -type NoteProperty -name Property -Value $property
+$element | Add-Member Property $property
+$element | Add-Member @{Property1 = $property1; Property2 = $property2}
 $array += $element
+#https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/add-member?view=powershell-6
 
 # Array Operation
 $animals = "cat", "dog", "bat"  # Create animal Array with 3 Elements
@@ -104,13 +109,27 @@ $s = "PowerShell"
 #endregion
 
 
+#region # CIM
+Start-Service winrm # Run as administrator
+Get-CimInstance 
+Get-CimInstance Win32_BIOS
+Get-CimInstance Win32_ComputerSystem
+Get-CimInstance Win32_Processor
+Get-CimInstance Win32_OperatingSystem # 
+Get-CimInstance Win32_LocalTime
+(Get-CimInstance Win32_LogicalDisk -Filter "DeviceID like `"C:`"").Size / (2 -shl 29) # GB
+
+Get-WmiObject Win32_OperatingSystem 
+# https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-provider
+#endregion
+
 # Variable use camelCase (first letter is lowercase)
 $camel
 $camelCase
 
 # Script Block {} can be Assign to a Variable and Use the Variable to Replace Script Block for Parameter
 $name = {$PSItem.Name}
-Get-Process | ForEach-Object $name
+Get-Process.ForEach$name
 
 # Hash Table can be used to replace Parameter List 
 $parameters = @{Filter = "D*"; Depth = 1; Recurse = $true}
@@ -118,8 +137,8 @@ Get-ChildItem @parameters
 
 # Pipeline Operator can be an indicator of line breaker
 Get-ChildItem -Path $env:windir\*.log |
-Select-String -List error |
-Format-Table Path, LineNumber -AutoSize
+    Select-String -List error |
+    Format-Table Path, LineNumber -AutoSize
 
 # First Letter Uppercase
 (Get-Culture).TextInfo.ToTitleCase($category)
