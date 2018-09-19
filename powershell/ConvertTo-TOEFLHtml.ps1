@@ -8,7 +8,7 @@ $article = (Select-Xml "//article" $xml).Node
 $questionsDiv = (Select-Xml "//div[@id='question']" $xml).Node
 
 $lines = Get-Content "$PSScriptRoot\..\rp$number.html" -Encoding UTF8
-Add-XmlNode ("h4", @{class = "w3-center"}, $lines[0]) $xml $article | Out-Null
+Add-XmlNode ("h4", @{class = "w3-center"}, $lines[0]) $article | Out-Null
 $text = $content.Substring($lines[0].Length, $content.indexOf("`nParagraph ") - $lines[0].Length)
 $text = $text.Replace("`r`n", "</p><p>")
 
@@ -61,9 +61,9 @@ for($j = 1; $j -le 14; $j++) {
     }
     $matchXml = $matchXml.TrimStart(" ").TrimEnd("`r`n")
     if($matchXml.Contains("highlighted")) { Write-Host "Highlighted Sentence $j" }
-    $questionDiv = Add-XmlNode ("div", @{id = "question$j"}, "") $xml $questionsDiv
-    $div = Add-XmlNode ("div", @{}, "") $xml $questionDiv
-    $p = Add-XmlNode ("p", @{}, $matchXml) $xml $div
+    $questionDiv = Add-XmlNode ("div", @{id = "question$j"}) $questionsDiv
+    $div = Add-XmlNode ("div") $questionDiv
+    $p = Add-XmlNode ("p", $matchXml) $div
     $type = if ($false) { "checkbox" } else { "radio" }
     $option = $match
     if($match -notmatch "Directions") {
@@ -79,26 +79,26 @@ for($j = 1; $j -le 14; $j++) {
             $option = ([char]($i+64)).ToString()
         }
 
-        $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $div
-        Add-XmlNode ("span", @{}, $option.TrimEnd("`r`n")) $xml $label | Out-Null
-        Add-XmlNode ("input", @{type = $type; name = $type}, "") $xml $label | Out-Null
-        Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+        $label = Add-XmlNode ("label", @{class = "my-label"}) $div
+        Add-XmlNode ("span", $option.TrimEnd("`r`n")) $label | Out-Null
+        Add-XmlNode ("input", @{type = $type; name = $type}) $label | Out-Null
+        Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
     }
     }
     else {
         $type = "checkbox" 
-        $table = Add-XmlNode ("table", @{class="w3-border w3-bordered w3-table"}, "") $xml $div
+        $table = Add-XmlNode ($1) $div
     
         # thead
-        $thead = Add-XmlNode ("thead", @{}, "") $xml $table
-        $tr = Add-XmlNode ("tr", @{}, "") $xml $thead
-        Add-XmlNode ("th", @{}, "") $xml $tr | Out-Null
+        $thead = Add-XmlNode ("thead") $table
+        $tr = Add-XmlNode ("tr") $thead
+        Add-XmlNode ("th") $tr | Out-Null
         for($i = 1; $i -le 2; $i++) {
-            Add-XmlNode ("th", @{}, "") $xml $tr | Out-Null
+            Add-XmlNode ("th") $tr | Out-Null
         }
     
         # tbody
-        $tbody = Add-XmlNode ("tbody", @{}, "") $xml $table
+        $tbody = Add-XmlNode ("tbody") $table
         $length = (Get-AllIndexesOf $content "`n@").Count
         for($i = 1; $i -le $length; $i++) {
 
@@ -107,14 +107,14 @@ for($j = 1; $j -le 14; $j++) {
             $option = ($content | Select-String "@.*`n").Matches[0].Value
             $option = $option.TrimStart("@").Substring(0,1).ToUpper() + $option.Substring(2,$option.Length - 2)
 
-            $tr = Add-XmlNode ("tr", @{}, "") $xml $tbody
-            Add-XmlNode ("td", @{}, $option.TrimEnd("`r`n")) $xml $tr | Out-Null
+            $tr = Add-XmlNode ("tr") $tbody
+            Add-XmlNode ("td", $option.TrimEnd("`r`n")) $tr | Out-Null
     
             for($k = 1; $k -le 2; $k++) {
-                $td = Add-XmlNode ("td", @{}, "") $xml $tr
-                $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $td
-                Add-XmlNode ("input", @{type = $type; name = "$type$i"}, "") $xml $label | Out-Null
-                Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                $td = Add-XmlNode ("td") $tr
+                $label = Add-XmlNode ("label", @{class = "my-label"}) $td
+                Add-XmlNode ($1) $label | Out-Null
+                Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
             }
            
         }
@@ -124,11 +124,11 @@ for($j = 1; $j -le 14; $j++) {
     $value = ($content | Select-String ($match + ".*`n") ).Matches[0].Value
     $explanation = $value.Substring($match.Length, $value.Length - $match.Length)
 
-    $div = Add-XmlNode ("div", @{}, "") $xml $questionDiv
-    $p = Add-XmlNode ("p", @{}, "") $xml $div
-    Add-XmlNode ("span", @{}, "Answer: ") $xml $p | Out-Null
-    Add-XmlNode ("span", @{class="answer"}, ([char]([int]$answer+64)).ToString()) $xml $p | Out-Null
-    Add-XmlNode ("div", @{class="explanation"}, $explanation.TrimEnd("`r`n")) $xml $div | Out-Null
+    $div = Add-XmlNode ("div") $questionDiv
+    $p = Add-XmlNode ("p") $div
+    Add-XmlNode ("span", "Answer: ") $p | Out-Null
+    Add-XmlNode ($1) $p | Out-Null
+    Add-XmlNode ($1) $div | Out-Null
 }
 (Select-Xml "//article" $xml).Node.InnerXml = $innerXml
 Set-Content $path (Format-Xml $xml.OuterXml -Indent 2).Replace("html", "html") -Encoding UTF8
@@ -152,68 +152,68 @@ function New-TPOHtml () {
         $xml.RemoveAll()
     
         # Create html Node and Set Attribute lang="en" <html lang="en"></html>
-        $html = Add-XmlNode ("html", @{lang = "en"}, "") $xml
+        $html = Add-XmlNode ("html", @{lang = "en"})
     
         # Create head Node
-        $head = Add-XmlNode ("head", @{}, "") $xml $html
+        $head = Add-XmlNode ("head") $html
      
         # Create title Node and Add title
-        Add-XmlNode ("title", @{}, "") $xml $head | Out-Null
+        Add-XmlNode ("title") $head | Out-Null
     
         # Create Script Element
-        Add-XmlNode ("script", @{src = "/initialize.js"}, "") $xml $head | Out-Null
+        Add-XmlNode ("script", @{src = "/index.js"}) $head | Out-Null
     
         # Create body Node
-        $body = Add-XmlNode ("body", @{class = "w3-light-gray"}, "") $xml $html
+        $body = Add-XmlNode ("body", @{class = "w3-light-gray"}) $html
         # Create body Node
-        $main = Add-XmlNode ("main", @{class = "w3-container"}, $Content) $xml $body
+        $main = Add-XmlNode ($1) $body
 
         # Add Select Question 
         if ($Path -match ".*reading|listening.*" ) {
             $match = ($Path | Select-String "[1-9]").Matches[0].value
             $n = 1
-            $questionsDiv = Add-XmlNode ("div", @{id = "question"}, "") $xml $main
+            $questionsDiv = Add-XmlNode ("div", @{id = "question"}) $main
             foreach ($item in Get-ChildItem "$xmlPath\$prefix*Q*.xml" -include "SAL$match*.xml") {
                 if($item.Name.Contains("00")) { continue }
                 Write-Host $item.BaseName
                 $questionXml = [xml] (Get-Content $item.FullName)
-                $questionDiv = Add-XmlNode ("div", @{id = "question$n"}, "") $xml $questionsDiv
-                $div = Add-XmlNode ("div", @{}, "") $xml $questionDiv
+                $questionDiv = Add-XmlNode ("div", @{id = "question$n"}) $questionsDiv
+                $div = Add-XmlNode ("div") $questionDiv
 
                 $replay = ConvertTo-HtmlName $item.Name
-                $replay = $Path.Replace($Path.Split("\")[-1], "") + $replay.insert($replay.length - 4, "-replay").replace("xml", "mp3")
+                $replay = $Path.Replace($Path.Split("\")[-1]) + $replay.insert($replay.length - 4, "-replay").replace("xml", "mp3")
                 if (Test-Path $replay) {  $div.SetAttribute("class", "replay")  }
 
-                $p = Add-XmlNode ("p", @{}, $questionXml.TestItem.Stem) $xml $div
+                $p = Add-XmlNode ("p", $questionXml.TestItem.Stem) $div
                 $nodes = (Select-Xml "//Distractor" $questionXml)
                 $type = if ($questionXml.TestItem.Key.Trim(" ").Length -gt 1) { "checkbox" } else { "radio" }
     
                 if ($questionXml.TestItem.Box) {
                     $type = "radio"
-                    $table = Add-XmlNode ("table", @{class="w3-border w3-bordered w3-table"}, "") $xml $div
+                    $table = Add-XmlNode ($1) $div
     
                     # thead
-                    $thead = Add-XmlNode ("thead", @{}, "") $xml $table
-                    $tr = Add-XmlNode ("tr", @{}, "") $xml $thead
+                    $thead = Add-XmlNode ("thead") $table
+                    $tr = Add-XmlNode ("tr") $thead
                     
                     $category = (Select-Xml "//Category" $questionXml)
-                    Add-XmlNode ("th", @{}, "") $xml $tr | Out-Null
+                    Add-XmlNode ("th") $tr | Out-Null
                     foreach($column in $category) {
-                        Add-XmlNode ("th", @{}, $column.Node.innerText) $xml $tr | Out-Null
+                        Add-XmlNode ("th", $column.Node.innerText) $tr | Out-Null
                     }
     
                     # tbody
-                    $tbody = Add-XmlNode ("tbody", @{}, "") $xml $table
+                    $tbody = Add-XmlNode ("tbody") $table
                     $j = 1
                     foreach ($node in $nodes) {
-                        $tr = Add-XmlNode ("tr", @{}, "") $xml $tbody
-                        Add-XmlNode ("td", @{}, $node.Node.InnerText) $xml $tr | Out-Null
+                        $tr = Add-XmlNode ("tr") $tbody
+                        Add-XmlNode ("td", $node.Node.InnerText) $tr | Out-Null
     
                         foreach($column in $category) {
-                            $td = Add-XmlNode ("td", @{}, "") $xml $tr
-                            $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $td
-                            Add-XmlNode ("input", @{type = $type; name = "$type$j"}, "") $xml $label | Out-Null
-                            Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                            $td = Add-XmlNode ("td") $tr
+                            $label = Add-XmlNode ("label", @{class = "my-label"}) $td
+                            Add-XmlNode ($1) $label | Out-Null
+                            Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
                         }
                         $j++
                     }
@@ -225,40 +225,40 @@ function New-TPOHtml () {
                             $innerText = $nodes[$i].Node.InnerText
                             if (!$innerText) { continue }
                             $innerText = $innerText.Substring($innerText.IndexOf(",0,") + 3)
-                            $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $div
-                            Add-XmlNode ("span", @{}, $innerText) $xml $label | Out-Null
-                            Add-XmlNode ("input", @{type = $type; name = $type}, "") $xml $label | Out-Null
-                            Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                            $label = Add-XmlNode ("label", @{class = "my-label"}) $div
+                            Add-XmlNode ("span", $innerText) $label | Out-Null
+                            Add-XmlNode ($1) $label | Out-Null
+                            Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
                         }
                         $innerText = $nodes[$i].Node.InnerText
                         $p.innerText = $innerText.Substring($innerText.IndexOf(",0,") + 3)
                     }
                     else {
-                        $table = Add-XmlNode ("table", @{class="w3-border w3-bordered w3-table"}, "") $xml $div
+                        $table = Add-XmlNode ($1) $div
     
                         # thead
-                        $thead = Add-XmlNode ("thead", @{}, "") $xml $table
-                        $tr = Add-XmlNode ("tr", @{}, "") $xml $thead
-                        Add-XmlNode ("th", @{}, "") $xml $tr | Out-Null
+                        $thead = Add-XmlNode ("thead") $table
+                        $tr = Add-XmlNode ("tr") $thead
+                        Add-XmlNode ("th") $tr | Out-Null
                         for ($i = -3; $i -lt -1; $i++) {
                             $innerText = $nodes[$i].Node.InnerText
                             $innerText = $innerText.Substring($innerText.IndexOf(",0,") + 3)
-                            Add-XmlNode ("th", @{}, $innerText) $xml $tr | Out-Null
+                            Add-XmlNode ("th", $innerText) $tr | Out-Null
                         }
     
                         # tbody
-                        $tbody = Add-XmlNode ("tbody", @{}, "") $xml $table
+                        $tbody = Add-XmlNode ("tbody") $table
                         for ($i = 0; $i -lt $nodes.Count - 3; $i++) {
-                            $tr = Add-XmlNode ("tr", @{}, "") $xml $tbody
+                            $tr = Add-XmlNode ("tr") $tbody
                             $innerText = $nodes[$i].Node.InnerText
                             $innerText = $innerText.Substring($innerText.IndexOf(",0,") + 3)
-                            Add-XmlNode ("td", @{}, $innerText) $xml $tr | Out-Null
+                            Add-XmlNode ("td", $innerText) $tr | Out-Null
     
                             for ($j = 0; $j -lt 2; $j++) {
-                                $td = Add-XmlNode ("td", @{}, "") $xml $tr
-                                $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $td
-                                Add-XmlNode ("input", @{type = $type; name = "$type$i"}, "") $xml $label | Out-Null
-                                Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                                $td = Add-XmlNode ("td") $tr
+                                $label = Add-XmlNode ("label", @{class = "my-label"}) $td
+                                Add-XmlNode ($1) $label | Out-Null
+                                Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
                             }
                         }
                         $innerText = $nodes[$nodes.Count - 1].Node.InnerText
@@ -268,18 +268,18 @@ function New-TPOHtml () {
                 elseif ($questionXml.TestItem.CLASS.Contains("insertText")) {
                     $p.innerText = $nodes.Node.innerText
                     for ($i = 1; $i -le 4; $i++) {
-                        $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $div
-                        Add-XmlNode ("span", @{}, "$([char]($i + 64))") $xml $label | Out-Null
-                        Add-XmlNode ("input", @{type = $type; name = $type}, "") $xml $label | Out-Null
-                        Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                        $label = Add-XmlNode ("label", @{class = "my-label"}) $div
+                        Add-XmlNode ("span", "$([char]($i + 64))") $label | Out-Null
+                        Add-XmlNode ($1) $label | Out-Null
+                        Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
                     }
                 }
                 else {
                     foreach ($node in $nodes) {
-                        $label = Add-XmlNode ("label", @{class = "my-label"}, "") $xml $div
-                        Add-XmlNode ("span", @{}, $node.Node.InnerText) $xml $label | Out-Null
-                        Add-XmlNode ("input", @{type = $type; name = $type}, "") $xml $label | Out-Null
-                        Add-XmlNode ("span", @{class = "my-$type"}, "") $xml $label | Out-Null
+                        $label = Add-XmlNode ("label", @{class = "my-label"}) $div
+                        Add-XmlNode ("span", $node.Node.InnerText) $label | Out-Null
+                        Add-XmlNode ($1) $label | Out-Null
+                        Add-XmlNode ("span", @{class = "my-$type"}) $label | Out-Null
                     }
                 }
     
@@ -288,13 +288,13 @@ function New-TPOHtml () {
                 foreach($item in $questionXml.TestItem.Key.Trim(" ").ToCharArray()) {
                     $answer += [char]([int]$item + 16)
                 }
-                $div = Add-XmlNode ("div", @{}, "") $xml $questionDiv
-                $p = Add-XmlNode ("p", @{}, "") $xml $div
-                Add-XmlNode ("span", @{}, "Answer: ") $xml $p | Out-Null
-                Add-XmlNode ("span", @{class="answer"}, $answer) $xml $p | Out-Null
+                $div = Add-XmlNode ("div") $questionDiv
+                $p = Add-XmlNode ("p") $div
+                Add-XmlNode ("span", "Answer: ") $p | Out-Null
+                Add-XmlNode ("span", @{class="answer"}, $answer) $p | Out-Null
 
                 #$explanation = $questionXml.TestItem.Explanation.InnerXml
-                Add-XmlNode ("div", @{class="my-explanation"}, "") $xml $div | Out-Null
+                Add-XmlNode ("div", @{class="my-explanation"}) $div | Out-Null
                 $n++
             }
         }
@@ -311,13 +311,13 @@ function New-TPOHtml () {
     function Add-Highlight($file, $path) {
         $flag = $false
         function Update-Content ($content) {
-            $content = $content.Replace("<script src=`"/<span class=`"question$num`">initial</span>ize.js`">", "<script src=`"/initialize.js`">")
+            $content = $content.Replace("<script src=`"/<span class=`"question$num`">initial</span>ize.js`">", "<script src=`"/index.js`">")
             $content.Replace("-s<span class=`"question$num`">peak</span>ing", "-speaking")
         }
         function Get-Match ($match) {
             $prefix = "(<span class=`"(highlight)? ?(question\d\d?)?`">)?"
             $pattern = "( ?(</span>)?\)?,?;?`"? ?`"?\(?$prefix)?"
-            $highlight = $match.TrimEnd(".`"").Replace(",", "").Replace("`"", "").Replace(".", "\.").Replace("'", "(</span>)?'")
+            $highlight = $match.TrimEnd(".`"").Replace(",").Replace("`"").Replace(".", "\.").Replace("'", "(</span>)?'")
             $highlight = $highlight.Replace(" ", $pattern).Replace("-", "(</span>)?-$prefix")
             $highlight = "$prefix$highlight ?(</span>)?\.?"
             $selection = ( Get-Content $path -Raw | Select-String $highlight ).Matches
@@ -348,7 +348,7 @@ function New-TPOHtml () {
                 $match = $_.Value.Trim("[")
                 $num = [int]$item.Name.SubString($setsLength + 3, 2)
                 foreach ($node in (Select-Xml "//article/p/span[@class='light']" $xml).Node) {
-                    $innerText = $node.InnerXml.Replace("</span><span class=`"highlight`">", " ").Replace("<span class=`"highlight`">", "").Replace("</span>", "")
+                    $innerText = $node.InnerXml.Replace("</span><span class=`"highlight`">", " ").Replace("<span class=`"highlight`">").Replace("</span>")
                     if ($innerText -ne $match) { continue }
                     if ($node.FirstChild.InnerText -eq $node.InnerText) {
                         $content = $content.Replace("<span class=`"light`"><span class=`"highlight`">", "<span class=`"light`">")
@@ -383,7 +383,7 @@ function New-TPOHtml () {
                 $flag = (Get-AllIndexesOf $text $match).Length -gt 1
                 if ($flag) {
                     $temp = $match
-                    $match = $text.Substring($text.IndexOf("[") - 10, 11 + $match.Length).Replace("[", "")
+                    $match = $text.Substring($text.IndexOf("[") - 10, 11 + $match.Length).Replace("[")
                 }
                 if (!$match.Contains(" ")) { 
                     $content = $content.Replace($match, "<span class=`"question$num`">$match</span>")
@@ -394,7 +394,7 @@ function New-TPOHtml () {
                 $selection = Get-Match $match
                 if (!$selection) {
                     if ($flag) {
-                        $match = $text.Substring($text.IndexOf("["), 11 + $temp.Length).Replace("[", "")
+                        $match = $text.Substring($text.IndexOf("["), 11 + $temp.Length).Replace("[")
                         $selection = Get-Match $match
                     }
                     if (!$selection) {
@@ -475,7 +475,7 @@ function New-TPOHtml () {
         $name = $_.Name -replace "SAS", "sample-speaking" -replace ".xml", ".html"
         #$name = "sample-listening1.html"
         #New-Item $path -ItemType "Directory" -ErrorAction SilentlyContinue | Out-Null
-        $text = $text.Replace("<span id=`"arrow`"></span>", "")
+        $text = $text.Replace("<span id=`"arrow`"></span>")
         $text = $text.Replace("<span class=`"underline`">", "<span class=`"highlight`">") -replace "<p></p>"
         New-Html $text "$htmlPath\$name"
     }
@@ -549,7 +549,7 @@ $files.forEach{
         $explanation = $explanation.TrimEnd("`r`n")
     } else { $explanation = $explanations[[int]$_.BaseName.Substring(5,2)] }
     $explanation = $explanation -replace "`n", "</p>`n<p>"
-    #Add-XmlNode ("Explanation", @{}, "<p>$explanation</p>") $Xml $element.Node | Out-Null
+    #Add-XmlNode ("Explanation", "<p>$explanation</p>") $element.Node | Out-Null
     Set-Content (Format-Xml $xml.OuterXml) -Path $_.FullName
 }
 #>

@@ -3,21 +3,20 @@
 
 <head>
   <title>Scoring Rubric</title>
-  <script src="/initialize.js"></script>
+  <script src="/index.js"></script>
 </head>
-
 
 <body>
 
   <main class="w3-container">
 
-    <section id="entry">
-      <h2><b>Scoring Rubric</b></h2>
+    <section>
+      <h2>Scoring Rubric</h2>
 
       <section>
         <h3>Speaking Independent Tasks (Questions 1 and 2)</h3>
 
-        <table class="w3-table-all w3-card" id="independent-table">
+        <table class="w3-table-all w3-card my-table">
           <thead>    
             <tr class="my-color">
               <th>Score</th>
@@ -60,78 +59,12 @@
           </tbody>
         </table>
 
-        <div class="speaking" id="independent">
-          <form>
-            <p>
-              <label class="my-label">
-                <span>General Description</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-              <label class="my-label">
-                <span>Delivery</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-            </p>
-
-            <p>
-              <label class="my-label">
-                <span>Language Use</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-              <label class="my-label">
-                <span>Topic Development</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-            </p>
-          </form>
-
-          <form>
-            <span>Score:</span>
-            <label class="my-label">
-              <span>4</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>3</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>2</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>1</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-          </form>
-          
-          <div class="w3-margin-top" id="independent-description">
-
-          </div>
-        </div>
-         
       </section>
 
       <section>
         <h3>Speaking Integrated Tasks (Questions 3, 4, 5, and 6)</h3>
 
-        <table class="w3-table-all w3-card" id="integrated-table">
+        <table class="w3-table-all w3-card my-table">
           <thead>    
             <tr class="my-color">
               <th>Score</th>
@@ -173,71 +106,6 @@
             </tr>
           </tbody>
         </table>
-
-        <div class="speaking" id="integrated">
-          <form>
-            <p>
-              <label class="my-label">
-                <span>General Description</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-              <label class="my-label">
-                <span>Delivery</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-            </p>
-
-            <p>
-              <label class="my-label">
-                <span>Language Use</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-              <label class="my-label">
-                <span>Topic Development</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-            </p>
-          </form>
-
-          <form>
-            <span>Score:</span>
-            <label class="my-label">
-              <span>4</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>3</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>2</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>1</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-          </form>
-
-          <div class="w3-margin-top" id="integrated-description">
-          </div>
-        </div>
 
       </section>
 
@@ -334,57 +202,12 @@
 
           <li>An essay at level <b>0</b> merely copies words from the topic, rejects the topic, or is otherwise not connected to the topic, is written in a foreign language, consists of keystroke characters, or is blank.</li>
         </ul>
-      </section> <!-- Independent Writing Scoring Rubric -->
+      </section> 
       
-    </section> <!-- Scoring Rubric -->
+    </section> 
 
   </main>
 
-
-  <script>
-    //
-    var labels = document.querySelectorAll(".my-label");
-    var independentTable = document.querySelector("#independent-table");
-    var independentDescription = document.querySelector("#independent-description");
-    var independentInputs = document.querySelectorAll("#independent input");
-
-    var integratedTable = document.querySelector("#integrated-table");
-    var integratedDescription = document.querySelector("#integrated-description");
-    var integratedInputs = document.querySelectorAll("#integrated input");
-
-    var criterias = ["General Description", "Delivery", "Language Use", "Topic Development"];
-
-    function getChecked(array, description, table) {
-      for (let index = 0; index < array.length; index++) {
-        const element = array[index];
-        if(element.checked) {
-          if(index > 3) { row = index - 3; }
-          else { col = index + 1; }
-        }
-      }
-      description.innerHTML = table.rows[row].cells[col].textContent;
-    }
-
-    document.querySelectorAll("table").forEach(element => {
-      element.classList.add("w3-hide");
-    });
-
-    row = 1; col = 1;
-    independentDescription.innerHTML = independentTable.rows[row].cells[col].textContent;   
-    integratedDescription.innerHTML = integratedTable.rows[row].cells[col].textContent;   
-
-    independentInputs.forEach(element => {
-      element.addEventListener("change", function() { 
-        getChecked(independentInputs, independentDescription, independentTable); } )
-    });
-
-    integratedInputs.forEach(element => {
-      element.addEventListener("change", function() { 
-        getChecked(integratedInputs, integratedDescription, integratedTable) } )
-    });
-    
-    labels.forEach(element => { element.style.display = "unset"; });
-  </script>
 </body>
 
 </html>

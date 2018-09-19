@@ -3,7 +3,7 @@
 
 <head>
   <title>Scoring Rubric</title>
-  <script src="/initialize.js"></script>
+  <script src="/index.js"></script>
 </head>
 
 
@@ -17,7 +17,7 @@
       <section>
         <h3>Analyze an Issue: Scoring</h3>
 
-        <table class="w3-table-all w3-card" id="issue-table">
+        <table class="w3-table-all w3-card my-table">
           <thead>
             <tr class="my-color">
               <th>SCORE </th>
@@ -72,89 +72,13 @@
             </tr>
           </tbody>
         </table>
-
-        <div id="issue">
-          <form>
-            <p>
-              <label class="my-label">
-                <span>Focus</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-
-              <label class="my-label">
-                <span>Organization</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-
-              <label class="my-label">
-                <span>Conventions</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-            </p>
-          </form>
-
-          <form>
-            <label class="my-label">
-              <span>0</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>1</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>2</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>3</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>4</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>5</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>6</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-          </form>
-
-          <div class="w3-margin-top" id="issue-description">
-
-          </div>
-        </div>
 
       </section>
 
       <section>
         <h3>Analyze an Argument: Scoring</h3>
 
-        <table class="w3-table-all w3-card" id="argument-table">
+        <table class="w3-table-all w3-card my-table">
           <thead>
             <tr class="my-color">
               <th>SCORE </th>
@@ -209,82 +133,6 @@
             </tr>
           </tbody>
         </table>
-
-        <div id="argument">
-          <form>
-            <p>
-              <label class="my-label">
-                <span>Focus</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-
-              <label class="my-label">
-                <span>Organization</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-
-              <label class="my-label">
-                <span>Conventions</span>
-                <input name="criteria" type="radio">
-                <span class="my-radio">
-                </span>
-              </label>
-            </p>
-          </form>
-
-          <form>
-            <label class="my-label">
-              <span>0</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>1</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>2</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>3</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>4</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>5</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-            <label class="my-label">
-              <span>6</span>
-              <input name="score" type="radio">
-              <span class="my-radio">
-              </span>
-            </label>
-          </form>
-
-          <div class="w3-margin-top" id="argument-description">
-
-          </div>
-        </div>
 
       </section>
 
@@ -407,58 +255,6 @@
 
   </main>
 
-  <script>
-    //
-    var labels = document.querySelectorAll(".my-label");
-    var issueTable = document.querySelector("#issue-table");
-    var issueDescription = document.querySelector("#issue-description");
-    var issueInputs = document.querySelectorAll("#issue input");
-
-    var argumentTable = document.querySelector("#argument-table");
-    var argumentDescription = document.querySelector("#argument-description");
-    var argumentInputs = document.querySelectorAll("#argument input");
-    var length = document.querySelector(".my-color").children.length - 2
-
-    function getChecked(array, description, table) {
-      for (let index = 0; index < array.length; index++) {
-        const element = array[index];
-        if (element.checked) {
-          if (index > length) { row = index - length; }
-          else { col = index + 1; }
-        }
-      }
-      description.innerHTML = table.rows[row].cells[col].textContent;
-    }
-
-    if (screen.width < 600 ) {
-      document.querySelectorAll("table").forEach(element => {
-        element.classList.add("w3-hide");
-      });
-    }
-    else {
-      document.querySelector("#issue").classList.add("w3-hide");
-      document.querySelector("#argument").classList.add("w3-hide");
-    }
-    
-
-    row = 1; col = 1;
-    issueDescription.innerHTML = issueTable.rows[row].cells[col].textContent;
-    argumentDescription.innerHTML = argumentTable.rows[row].cells[col].textContent;
-
-    issueInputs.forEach(element => {
-      element.addEventListener("change", function () {
-        getChecked(issueInputs, issueDescription, issueTable);
-      })
-    });
-
-    argumentInputs.forEach(element => {
-      element.addEventListener("change", function () {
-        getChecked(argumentInputs, argumentDescription, argumentTable)
-      })
-    });
-
-    labels.forEach(element => { element.style.display = "unset"; });
-  </script>
 </body>
 
 </html>

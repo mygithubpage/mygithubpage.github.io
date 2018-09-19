@@ -14,7 +14,7 @@ function Update-Xml()
     $content = $content -replace " description=`".*?`"", ""
     $content = $content.Replace(" `$pstart ", "<p>").Replace(" `$pend ", "</p>")
     $content = $content.Replace(" `$hstart ", "<span style=`"background: #D3D3D3`">").Replace(" `$hend ", "</span>")
-    $content = $content.Replace("`$nv ", "").Replace("`$ ", "")
+    $content = $content.Replace("`$nv ").Replace("`$ ")
     $content = $content -replace "</?(st1|font|w:r|w:t).*?>", ""
     $content = $content -replace "_____", "&#9724;"
     #$content = ConvertTo-HtmlCharSets $content
@@ -48,7 +48,7 @@ function New-Html ()
 
     # Create Script Element
     $scriptNode = $xml.CreateElement("script")
-    $scriptNode.SetAttribute("src", "/initialize.js") 
+    $scriptNode.SetAttribute("src", "/index.js") 
     $scriptNode.InnerText = ""
     $headNode.AppendChild($scriptNode) | Out-Null
 
@@ -61,7 +61,7 @@ function New-Html ()
     # Add Content
     $cdata = $xml.CreateCDataSection($Content)
     $bodyNode.AppendChild($cdata) | Out-Null
-    $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[", "").Replace("]]>", "")
+    $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[").Replace("]]>")
 
     # Add Navigation
     $node = (Select-Xml "//div[@id='$($title[0])']" ([xml](Get-Content .\..\toefl\tpo\tpo.html))).Node

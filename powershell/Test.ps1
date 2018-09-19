@@ -1,46 +1,66 @@
+. $PSScriptRoot\Utility.ps1
 $content = Get-Content "C:\github\gre\notes\test.html" -Encoding UTF8
 $content = $content -replace "<hr.*>" -replace "div.*>", "ol>"
 $content = $content -replace "strong>", "b>" -replace "<span.*?/span>"
 $content = $content -replace "p.*?`">", "li>" -replace "p>", "li>"
-Set-Clipboard $content
-function Get-ProgID {                       
-    #.Synopsis            
-    #   Gets all of the ProgIDs registered on a system            
-    #.Description            
-    #   Gets all ProgIDs registered on the system.  The ProgIDs returned can be used with New-Object -comObject            
-    #.Example            
-    #   Get-ProgID            
-    #.Example            
-    #   Get-ProgID.Where{ $_.ProgID -like "*Image*" }             
-    param()            
-    $paths = @("REGISTRY::HKEY_CLASSES_ROOT\CLSID")            
-    if ($env:Processor_Architecture -eq "amd64") {            
-        $paths+="REGISTRY::HKEY_CLASSES_ROOT\Wow6432Node\CLSID"            
-    }             
-    Get-ChildItem $paths -include VersionIndependentPROGID -recurse |            
-    Select-Object @{            
-        Name='ProgID'            
-        Expression={$_.GetValue("")}                    
-    }, @{            
-        Name='32Bit'            
-        Expression={            
-            if ($env:Processor_Architecture -eq "amd64") {            
-                $_.PSPath.Contains("Wow6432Node")                
-            } else {            
-                $true            
-            }                        
-        }            
-    }            
+#Set-Clipboard $content
+
+<# Test x   html 
+(Get-ChildItem "C:\github\*" -Recurse -File).ForEach{
+    $file = $_
+    if ($file.FullName -notmatch "ebook|notes\\gre\\|quantitative|ubuntu|temp" -and $file -match ".html$") {
+        Write-Host $file.FullName
+        [xml](gc $file.FullName)
+    }
 }
-
-<#
-$content = Get-Content "C:\github\blog\ubuntu\bash-beginners-guide.html"
-$content = $content -replace "<tt.*?>(.*?)</tt>", "<code class=`"bash w3-light-gray`">`$1</code>" 
-$content = $content -replace "<table.*>", "<table class=`"w3-table-all`">"
-$content = $content -replace "<font color=`"\#000000`">" -replace "</font>" -replace "<img.*?>"
-$content = $content -replace " align=`"(.*?)`" valign=`"(.*?)`"", " style=`"text-align:`$1;vertical-align:`$2`""
-$content = $content -replace " align=`"(.*?)`"", " style=`"text-align:`$1`""
-$content = $content -replace "<pre class=.*?>", "<pre class=`"bash w3-panel w3-card w3-leftbar w3-light-gray`">"
-
-Set-Content "C:\github\gre\notes\test.html" $content
 #>
+<#(Get-ChildItem "C:\github\toefl\sample\*.html").ForEach{
+    $file = $_
+    if ($file.Name -match "speaking|writing") {
+        Write-Host $file.Name
+        $html = [xml](Get-Content $_ -Encoding UTF8)
+        Set-Content "C:\github\gre\notes\test.html" $html.OuterXml.Replace("html[]", "html") -Encoding UTF8
+        (Select-Xml "//main/*" $html).Node.ForEach{
+            $node = $_
+            $html = [xml](Get-Content "C:\github\gre\notes\test.html" -Encoding UTF8)
+            $content = ""
+            if ($node.id -match "text") {
+                $id = $node.id.Replace("text", "passage")
+                $headding = ""
+                $headding = "<h3>$($node.h3)</h3>"
+                $content = "<article id=`"$id`" class=`"passage`">$headding$($node.article.InnerXml)</article>"
+                $content = $html.OuterXml.Replace($node.OuterXml, $content)
+                Set-Content "C:\github\gre\notes\test.html" $content.Replace("html[]", "html") -Encoding UTF8
+            } 
+            elseif ($node.id -match "sample-response") {
+                if ($file.Name -match "og" -or $file.FullName -match "\\pt\\") {
+                    $content = $node.ChildNodes[0].OuterXml
+                    $content += "<div id=`"responses`"><article class=`"response`">"+$node.ChildNodes[2].OuterXml
+                    $content += $node.ChildNodes[3].InnerXml+"</article>"
+                    if ($node.ChildNodes.Count -eq 5) { 
+                        $content += "<article class=`"response`">" + $node.ChildNodes[4].InnerXml + "</article>" 
+                    }
+                    $content += "</div>" + $node.ChildNodes[1].OuterXml   
+                }
+                else {
+                    if ($node.ChildNodes[0].OuterXml -match "article") {
+                        
+                        $content = $node.InnerXml.Replace("<article>", "<article class=`"response`">")
+                    }
+                    else {
+                        $content = $node.ChildNodes[0].OuterXml + $node.ChildNodes[1].InnerXml
+                        $content = "<article class=`"response`">$content</article>"
+                    }
+                    $content = "<div id=`"responses`">$content</div>"
+                    
+                }
+                $content = $html.OuterXml.Replace($node.OuterXml, $content)
+                Set-Content "C:\github\gre\notes\test.html" $content.Replace("html[]", "html") -Encoding UTF8
+            }
+        }
+        if (!$content) {$content = $html.OuterXml}
+        #Set-Content $file $content.Replace("html[]", "html") -Encoding UTF8
+    }
+}
+#>
+

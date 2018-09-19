@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title></title>
+  <script src="/index.js"></script>
+</head>
+
+<body>
+
+  <main class="w3-container">
+ 
+    <section>
+      <h3>.Net Object</h3>
+
+      <section>
+        
+
+        <pre><code class="ps my-code">
+          # FolderBrowserDialog https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.folderbrowserdialog
+          #using namespace System.Windows.Forms
+          Add-Type -AssemblyName System.Windows.Forms
+          
+          $folderBrowserDialog = New-Object System.Windows.Forms.FolderBrowserDialog # Create
+          $folderBrowserDialog.SelectedPath = $initialDirectory # Set Folder
+          #$folderBrowserDialog.ShowDialog() | Out-Null # Show Folder
+          $folderBrowserDialog.SelectedPath # Get Selected Folder Path in String
+          
+          # Create new .net object and use method
+          $xml = [xml] [System.Net.WebClient]::new().DownloadString('http://www.microsoft.com/')  
+          
+          # create form with initial value
+          $form = [Form] `
+          @{
+              Text = 'My First Form'
+          }
+          $button = [Button] `
+          @{
+              Text = 'Push Me!'
+              Dock = 'Fill'
+          }
+          $button.add_Click{$form.Close()}
+          
+          $form.Controls.Add($button)
+        </code></pre>
+      </section>
+      
+    </section> 
+
+    
+    <section>
+      <h3>Com Object</h3>
+
+      <section>
+        
+
+        <pre><code class="ps my-code">
+          $word = New-Object -ComObject Word.Application 
+          $file = $word.Documents.Add()
+          $range = $file.Content
+          
+          # WdParagraphAlignment Enumeration
+          $range.ParagraphFormat.Alignment = 1 # Center-Alighed
+          # https://msdn.microsoft.com/en-us/vba/word-vba/articles/wdparagraphalignment-enumeration-word
+          
+          $file.Content = $range.Paragraphs(1).Range.Text
+          #$file.SaveAs2($name)
+          $word.Quit() 
+          [void][Runtime.Interopservices.Marshal]::ReleaseComObject($word)
+        </code></pre>
+      </section>
+      
+    </section>
+
+  </main>
+
+</body>
+
+</html>

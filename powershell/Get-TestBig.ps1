@@ -12,7 +12,7 @@ function Update-Xml()
     $Content = $Content -replace "P>", "p>"
     $cdata = $xml.CreateCDataSection($Content)
     $xml.LastChild.LastChild.AppendChild($cdata) | Out-Null
-    $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[", "").Replace("]]>", "")
+    $xml.InnerXml = $xml.InnerXml.Replace("<![CDATA[").Replace("]]>")
 }
 
 $links = Import-Csv $PSScriptRoot\TestBig\TestBigW.csv
@@ -43,7 +43,7 @@ for($i = 1; $i -le $links.Length; $i++)
             $text = $html.ParsedHtml.body.getElementsByClassName("node__content")
             $text = $text[0].innerText -replace "`r`n","</p><p>"
             
-            Update-Xml $xml ("<article class=`"$($user.href.split("/")[-1])`"><h3>$($user.innerText)</h3><p>$text</p></article>" -replace "<p></p>", "")
+            Update-Xml $xml ("<article class=`"$($user.href.split("/")[-1])`"><h3>$($user.innerText)</h3><p>$text</p></article>" -replace "<p></p>")
             $xml.Save($path)
         }
         if($j -lt $page) {$html = Invoke-WebRequest ("https://www.testbig.com$($response.href)" + "?page=$j")}

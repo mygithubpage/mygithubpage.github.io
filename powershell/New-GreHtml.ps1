@@ -1,5 +1,5 @@
 . $PSScriptRoot\Utility.ps1
-# . C:\github\powershell\Test.ps1
+
 $set = "mp"
 $name = "$set-reading"
 $type = "html"
@@ -15,7 +15,7 @@ function ConvertFrom-MH ($content, $path) {
     $xml = [xml]($content)
     $html = [xml](Get-Content "C:\github\gre\notes\gre\vocabulary.html")
     $questions = (Select-Xml "//div[@id=`"questions`"]" $html).Node
-    $questions.InnerXml = ""
+    #$questions.InnerXml = ""
 
     foreach ($node in (Select-Xml "//p[contains(@class,'ques')]" $xml).Node) {
 
@@ -23,16 +23,16 @@ function ConvertFrom-MH ($content, $path) {
         elseif ($node.NextSibling.InnerXml.Contains("box")) {$type = "checkbox"}
         else {$type = "radio"}
         
-        $question = Add-XmlNode ("div", @{id = "question$($node.ChildNodes[0].InnerText)"; "data-choice-type" = $type}, "") $html $questions
-        Add-XmlNode ("div", @{class = "question"}, $node.InnerText) $html $question | Out-Null
+        $question = Add-XmlNode ("div", @{id = "question$($node.ChildNodes[0].InnerText)"; "data-choice-type" = $type}) $questions
+        Add-XmlNode ("div", @{class = "question"}, $node.InnerText) $question | Out-Null
         
         # choice
         if ($type -ne "select") {
             $choice = $node.NextSibling
             if ($choice.ChildNodes[0].src -match "box.*|round.*") { 
-                $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question 
+                $choices = Add-XmlNode ("div", @{class = "choices"}) $question 
                 while ($choice.ChildNodes[0].src -match "box.*|round.*") {
-                    Add-XmlNode ("p", @{}, ($choice.InnerText -replace "\u00A0", "")) $html $choices | Out-Null
+                    Add-XmlNode ("p", ($choice.InnerText -replace "\u00A0")) $choices | Out-Null
                     $choice = $choice.NextSibling
                 }
             }
@@ -45,24 +45,24 @@ function ConvertFrom-MH ($content, $path) {
                 #$options.ForEach{ if($_ -match "\s") {$_.Split(" ")[1] }}  
                 if ($content -like "*iii*") {
                     for ($i = 0; $i -lt 3; $i++) {
-                        $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                        $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                         for ($j = 0; $j -lt 3; $j++) {
-                            Add-XmlNode ("p", @{}, $options[$i + 1 + $j * 3]) $html $choices | Out-Null
+                            Add-XmlNode ("p", $options[$i + 1 + $j * 3]) $choices | Out-Null
                         }
                     }
                 }
                 elseif ($content -like "*ii*") {
                     for ($i = 0; $i -lt 2; $i++) {
-                        $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                        $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                         for ($j = 0; $j -lt 3; $j++) {
-                            Add-XmlNode ("p", @{}, $options[$i + 1 + $j * 2]) $html $choices | Out-Null
+                            Add-XmlNode ("p", $options[$i + 1 + $j * 2]) $choices | Out-Null
                         }
                     }
                 }
                 else {
-                    $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                    $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                     foreach ($option in $options) {
-                        Add-XmlNode ("p", @{}, $option) $html $choices | Out-Null
+                        Add-XmlNode ("p", $option) $choices | Out-Null
                     }
                 }
 
@@ -76,15 +76,15 @@ function ConvertFrom-MH ($content, $path) {
         $content = $node.ParentNode."#text"
         $regex = if ($type -eq "select") {"\d{1,2}"} else {"[A-F]"}
         $answer = ($content | Select-String $regex -AllMatches -CaseSensitive).Matches.Value -join ""
-        $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}, "") $html $question
-        $explanation = Add-XmlNode ("div", @{class = "explanation"}, "") $html $answer
+        $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}) $question
+        $explanation = Add-XmlNode ("div", @{class = "explanation"}) $answer
         $content = $node.ParentNode.ParentNode.InnerXml -replace $node.ParentNode.ParentNode.ChildNodes[0].OuterXml
         $explanation.InnerXml = $content -replace "strong>", "b>"
     }
     $nodes = (Select-Xml "//p[@class=`"noindenttb`"]" $xml).Node.Where{$_.InnerText -cmatch "Question"}
     for ($i = 1; $i -le $nodes.Count; $i++) {
 
-        $passage = Add-XmlNode ("div", @{id = "passage$i"; class = "passage"}, "") $html $questions
+        $passage = Add-XmlNode ("div", @{id = "passage$i"; class = "passage"}) $questions
         $text = $nodes[$i - 1].NextSibling
         $content = ""
         while ($text.class -match "nums|noindent") {
@@ -123,7 +123,7 @@ function ConvertFrom-Kap ($content, $path) {
     $xml = [xml]($content)
     $html = [xml](Get-Content "C:\github\gre\notes\gre\vocabulary.html")
     $questions = (Select-Xml "//div[@id=`"questions`"]" $html).Node
-    $questions.InnerXml = ""
+    #$questions.InnerXml = ""
 
     # questions
     $nodes = (Select-Xml "//li[@class=`"ktp-question`"]" $xml).Node
@@ -134,23 +134,23 @@ function ConvertFrom-Kap ($content, $path) {
                 # explanation
                 $question = (Select-Xml "//div[@id=`"question$($node.value)`"]" $html).Node
                 if ($question."data-choice-type" -ne "select") { 
-                    $answer = $node.ChildNodes[0].InnerXml.Replace(", ", "") 
+                    $answer = $node.ChildNodes[0].InnerXml.Replace(", ") 
                     $text = $node.ChildNodes[1].InnerXml
                 }
                 else {
                     $answer = $node.ChildNodes[0].ChildNodes[0].InnerText
                     $text = $node.ChildNodes[0].InnerXml
                 }
-                $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}, "") $html $question
-                $explanation = Add-XmlNode ("div", @{class = "explanation"}, "") $html $answer
+                $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}) $question
+                $explanation = Add-XmlNode ("div", @{class = "explanation"}) $answer
                 $explanation.InnerXml = $text -replace "i>", "b>"
             }
             else {
                 # question
                 if ($node.InnerXml.Contains("list-lower-alpha")) { $type = "checkbox" }
                 else {$type = "radio"}
-                $question = Add-XmlNode ("div", @{id = "question$($node.value)"; "data-choice-type" = $type}, "") $html $questions
-                Add-XmlNode ("div", @{class = "question"}, $node.ChildNodes[0].InnerXml) $html $question | Out-Null
+                $question = Add-XmlNode ("div", @{id = "question$($node.value)"; "data-choice-type" = $type}) $questions
+                Add-XmlNode ("div", @{class = "question"}, $node.ChildNodes[0].InnerXml) $question | Out-Null
                 
                 # choice
                 
@@ -183,15 +183,15 @@ function ConvertFrom-Kap ($content, $path) {
         else {$type = "checkbox"}
         if ($node.InnerXml.Contains("list-lower-alpha")) { $type = "checkbox" }
         else {$type = "radio"}
-        $question = Add-XmlNode ("div", @{id="question$($i+1)";"data-choice-type"=$type}, "") $html $questions
-        Add-XmlNode ("div", @{class="question"}, $node.ChildNodes[0].InnerXml) $html $question | Out-Null
+        $question = Add-XmlNode ("div", @{id="question$($i+1)";"data-choice-type"=$type}) $questions
+        Add-XmlNode ("div", @{class="question"}, $node.ChildNodes[0].InnerXml) $question | Out-Null
         if (!$node.value) { $node.SetAttribute("value", $i + 1) }
         # choice
         $choices = (Select-Xml "//li[@value=`"$($node.value)`"]//ol[contains(@class,'ktp-answer-set')]" $xml).Node
         if (!$choices) { 
             $question.'data-choice-type' = "select" 
-            $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=""}, "") $html $question
-            $explanation = Add-XmlNode ("div", @{class="explanation"}, "") $html $answer
+            $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=""}) $question
+            $explanation = Add-XmlNode ("div", @{class="explanation"}) $answer
             $explanation.InnerXml = $node.ParentNode.ParentNode.NextSibling.OuterXml
             if ($i -gt 4) { $explanation.InnerXml = (Select-Xml "//section[@class=`"ktp-feedback`"]" $xml).Node[$i-5].InnerXml}
             continue
@@ -205,15 +205,15 @@ function ConvertFrom-Kap ($content, $path) {
             $question.InnerXml += $choices.OuterXml -replace "li>", "p>" -replace "ol", "div" -replace "ktp-answer-set.*?`"", "choices`""
         }
         
-        $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=""}, "") $html $question
-        $explanation = Add-XmlNode ("div", @{class="explanation"}, "") $html $answer
+        $answer = Add-XmlNode ("div", @{class="answer"; "data-answer"=""}) $question
+        $explanation = Add-XmlNode ("div", @{class="explanation"}) $answer
         $explanation.InnerXml = $node.ParentNode.ParentNode.NextSibling.OuterXml
         if ($i -gt 4) { $explanation.InnerXml = (Select-Xml "//section[@class=`"ktp-feedback`"]" $xml).Node[$i-5].InnerXml}
     }
 
     $nodes = (Select-Xml "//section[@class=`"ktp-passage`"]" $xml).Node
     for ($i = 1; $i -le $nodes.Count; $i++) {
-        $passage = Add-XmlNode ("div", @{id="passage$i";class="passage"}, "") $html $questions
+        $passage = Add-XmlNode ("div", @{id="passage$i";class="passage"}) $questions
         $passage.InnerXml = $nodes[$i-1].InnerXml
         $start = [int]$nodes[$i-1].ParentNode.PreviousSibling.InnerText.Split(" ")[1]
         $end = [int]$nodes[$i-1].ParentNode.PreviousSibling.InnerText.Split(" ")[3]
@@ -234,8 +234,8 @@ function ConvertFrom-Kap ($content, $path) {
     $nodes = (Select-Xml "//li[@class=`"ktp-stimulus`"]" $xml).Node
     for ($i = 1; $i -le $nodes.Count; $i++) {
 
-        $passage = Add-XmlNode ("div", @{id = "passage$i"; class = "passage"}, "") $html $questions
-        $passage.InnerXml = $nodes[$i - 1].InnerXml
+        $passage = Add-XmlNode ("div", @{id = "passage$i"; class = "passage"}, $nodes[$i - 1].InnerXml) $questions
+        #$passage.InnerXml = $nodes[$i - 1].InnerXml
         $range = $nodes[$i - 1].PreviousSibling.InnerText -replace "\u2013", " to "
         $start = [int]$range.Split(" ")[1]
         $end = [int]$range.Split(" ")[3]
@@ -260,7 +260,7 @@ function ConvertFrom-PR ($content, $path) {
     $xml = [xml]($content)
     $html = [xml](Get-Content "C:\github\gre\notes\gre\vocabulary.html")
     $questions = (Select-Xml "//div[@id=`"questions`"]" $html).Node
-    $questions.InnerXml = ""
+    #$questions.InnerXml = ""
 
     # questions
     $nodes = (Select-Xml "//p[contains(@class,'Test_sample')]" $xml).Node.Where{$_.PreviousSibling.class -match "Test_sample2l" -or $_.PreviousSibling.PreviousSibling.class -match "Test_sample2l" -and $_.NextSibling.class -match "block_|square|circle" -or ($_.PreviousSibling.class -match "Test_sample2l" -and $_.InnerText -match "Select the sentence")}
@@ -271,15 +271,15 @@ function ConvertFrom-PR ($content, $path) {
         elseif ($node.NextSibling.InnerXml.Contains("_sq_")) {$type = "checkbox"}
         else {$type = "radio"}
         
-        $question = Add-XmlNode ("div", @{id = "question$($k+1)"; "data-choice-type" = $type}, "") $html $questions
-        Add-XmlNode ("div", @{class = "question"}, ($node.OuterXml -replace "<p.*?`">", "<p>")) $html $question | Out-Null
+        $question = Add-XmlNode ("div", @{id = "question$($k+1)"; "data-choice-type" = $type}) $questions
+        Add-XmlNode ("div", @{class = "question"}, ($node.OuterXml -replace "<p.*?`">", "<p>")) $question | Out-Null
         
         # choice
         if ($type -ne "select") {
             $choice = $node.NextSibling
             if ($choice.ChildNodes[0].InnerXml -match "_sq_|_circle_") { 
-                $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question 
-                $choice.ChildNodes[0].ChildNodes.ForEach{ Add-XmlNode ("p", @{}, $_.InnerText) $html $choices | Out-Null }
+                $choices = Add-XmlNode ("div", @{class = "choices"}) $question 
+                $choice.ChildNodes[0].ChildNodes.ForEach{ Add-XmlNode ("p", $_.InnerText) $choices | Out-Null }
             }
             else {
                 $name = $choice.ChildNodes[0].ChildNodes[0].src -replace "jpg|png", "txt" -replace "images/"
@@ -289,39 +289,39 @@ function ConvertFrom-PR ($content, $path) {
                 $options = ($content | Select-String $regex -AllMatches -CaseSensitive).Matches.Value | Get-Unique
                 if ($options.length -gt 9) {
                     for ($i = 0; $i -lt 3; $i++) {
-                        $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                        $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                         for ($j = 0; $j -lt 3; $j++) {
-                            Add-XmlNode ("p", @{}, $options[$i + 1 + $j * 3]) $html $choices | Out-Null
+                            Add-XmlNode ("p", $options[$i + 1 + $j * 3]) $choices | Out-Null
                         }
                     }
                 }
                 elseif ($options.length -gt 6) {
                     for ($i = 0; $i -lt 2; $i++) {
-                        $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                        $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                         for ($j = 0; $j -lt 3; $j++) {
-                            Add-XmlNode ("p", @{}, $options[$i + 1 + $j * 2]) $html $choices | Out-Null
+                            Add-XmlNode ("p", $options[$i + 1 + $j * 2]) $choices | Out-Null
                         }
                     }
                 }
                 else {
-                    $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                    $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                     foreach ($option in $options) {
-                        Add-XmlNode ("p", @{}, $option) $html $choices | Out-Null
+                        Add-XmlNode ("p", $option) $choices | Out-Null
                     }
                 }
             }
         }
 
         if ($node.class -eq "Test_sample" -or $node.class -eq "Test_samplet") {
-            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = ""}, "") $html $question
+            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = ""}) $question
             $content = ""
             $explanation = $node.NextSibling.NextSibling
             while ($explanation.id -match "p\d{2,3}") {
                 $content += $explanation.OuterXml -replace "<hr.*>" -replace "<span.*</span>" -replace "<p.*`">", "<p>"
                 $explanation = $explanation.NextSibling
             }
-            $explanation = Add-XmlNode ("div", @{class = "explanation"}, "") $html $answer
-            $explanation.InnerXml = $content -replace "<span.*/>"
+            $explanation = Add-XmlNode ("div", @{class = "explanation"}, ($content -replace "<span.*/>")) $answer
+            #$explanation.InnerXml = $content -replace "<span.*/>"
         }
         else {
             if ($node.PreviousSibling.ChildNodes[0].href) {
@@ -339,8 +339,8 @@ function ConvertFrom-PR ($content, $path) {
             $content = $node.ParentNode.ParentNode.InnerText
             $regex = if ($type -eq "select") {"\d{1,2}"} else {"[A-I]"}
             $answer = ($content | Select-String $regex -AllMatches -CaseSensitive).Matches.Value -join ""
-            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}, "") $html $question
-            $explanation = Add-XmlNode ("div", @{class = "explanation"}, "") $html $answer
+            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}) $question
+            $explanation = Add-XmlNode ("div", @{class = "explanation"}) $answer
             
             $content = $node.ParentNode.ParentNode.InnerText -creplace "([A-F])", " `$1 "
             $content = "<strong>$content</strong>. " + $node.ParentNode.ParentNode.NextSibling.InnerXml
@@ -353,7 +353,7 @@ function ConvertFrom-PR ($content, $path) {
     $nodes = (Select-Xml "//p[@class=`"Test_samplen`"]" $xml).Node.Where{$_.InnerText -cmatch "Question"}
     for ($i = 1; $i -le $nodes.Count; $i++) {
 
-        $passage = Add-XmlNode ("div", @{id = "passage$i"; class = "passage"}, "") $html $questions
+        $passage = Add-XmlNode ("div", @{id = "passage$i"; class = "passage"}) $questions
         $text = $nodes[$i - 1].NextSibling
         $content = ""
         while ($text.class -match "Test_samplei") {
@@ -386,7 +386,7 @@ function ConvertFrom-MP ($content, $path) {
     $xml = [xml]($content)
     $html = [xml](Get-Content "C:\github\gre\notes\gre\vocabulary.html")
     $questions = (Select-Xml "//div[@id=`"questions`"]" $html).Node
-    $questions.InnerXml = ""
+    #$questions.InnerXml = ""
 
     # questions
     $nodes = (Select-Xml "//p[contains(@class,'hang')]" $xml).Node.Where{$_.NextSibling.Name -match "table" -or $_.NextSibling.InnerXml -match "sq.jpg" -or $_.InnerXml -match "Select the sentence" -or ($_.class -match "hang-num" -and $_.NextSibling.class -match "alpha-list-h")}
@@ -406,34 +406,34 @@ function ConvertFrom-MP ($content, $path) {
         elseif ($node.NextSibling.InnerXml -match "([abc]|sq).jpg|hang-nss") {$type = "checkbox"}
         else {$type = "radio"}
         
-        $question = Add-XmlNode ("div", @{id = "question$($k+1)"; "data-choice-type" = $type}, "") $html $questions
-        Add-XmlNode ("div", @{class = "question"}, ($node.OuterXml -replace "<p.*?`">", "<p>")) $html $question | Out-Null
+        $question = Add-XmlNode ("div", @{id = "question$($k+1)"; "data-choice-type" = $type}) $questions
+        Add-XmlNode ("div", @{class = "question"}, ($node.OuterXml -replace "<p.*?`">", "<p>")) $question | Out-Null
         
         # choice
         if ($type -eq "radio" -and $path -notmatch "reading") {
             $options = $node.NextSibling.tr
             if ($options.InnerXml -match "Blank") { 
                 for ($i = 0; $i -lt $options[0].td.Count; $i++) {
-                    $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                    $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                     for ($j = 0; $j -lt 3; $j++) {
-                        if ($options[$j + 1].td[$i].InnerText) { Add-XmlNode ("p", @{}, $options[$j + 1].td[$i].InnerText) $html $choices | Out-Null 
+                        if ($options[$j + 1].td[$i].InnerText) { Add-XmlNode ("p", $options[$j + 1].td[$i].InnerText) $choices | Out-Null 
                         }
                     }
                 }
             }
             else {
-                $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question
+                $choices = Add-XmlNode ("div", @{class = "choices"}) $question
                 foreach ($option in $options) {
-                    Add-XmlNode ("p", @{}, $option.td[1].InnerText) $html $choices | Out-Null
+                    Add-XmlNode ("p", $option.td[1].InnerText) $choices | Out-Null
                 }
             }
         }
         elseif ($type -eq "checkbox" -or $path -match "reading") {
             if ($type -ne "select") {
                 $choice = $node.NextSibling
-                $choices = Add-XmlNode ("div", @{class = "choices"}, "") $html $question 
+                $choices = Add-XmlNode ("div", @{class = "choices"}) $question 
                 while ($choice.InnerXml -match "([abc]|sq).jpg" -or $choice.OuterXml -match "alpha-list-h|hang-nss") { 
-                    Add-XmlNode ("p", @{}, ($choice.InnerText -replace "\u00a0")) $html $choices | Out-Null
+                    Add-XmlNode ("p", ($choice.InnerText -replace "\u00a0")) $choices | Out-Null
                     $choice = $choice.NextSibling
                 }
             }
@@ -451,9 +451,9 @@ function ConvertFrom-MP ($content, $path) {
             if ($type -ne "select") {
                 $answer = ($content | Select-String "(?<=<b>\()\w(?=\) CORRECT)" -AllMatches).Matches.Value -join ""
             }
-            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}, "") $html $question
-            $explanation = Add-XmlNode ("div", @{class = "explanation"}, "") $html $answer
-            $explanation.InnerXml = $content -replace "i>", "b>"
+            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $answer}) $question
+            $explanation = Add-XmlNode ("div", @{class = "explanation"}, ($content -replace "i>", "b>")) $answer
+            #$explanation.InnerXml = $content -replace "i>", "b>"
 
             # passages
             if ($node.InnerXml -match "1\." -or $node.InnerXml -notmatch "\d") {
@@ -466,8 +466,8 @@ function ConvertFrom-MP ($content, $path) {
                 }
                 
                 $count++
-                $passage = Add-XmlNode ("div", @{id = "passage$count"; class = "passage"}, "") $html $questions
-                $passage.InnerXml = $text
+                $passage = Add-XmlNode ("div", @{id = "passage$count"; class = "passage"}, $text) $questions
+                #$passage.InnerXml = $text
             }
             $question.SetAttribute("data-passage", "passage$count")
         }
@@ -478,9 +478,9 @@ function ConvertFrom-MP ($content, $path) {
             $choices = ($question.div.Where{ $_.class -eq "choices" }).p
             $answer.ForEach{  $key += [char](65 + $choices.IndexOf(($choices -match $_)[0])) }
             
-            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $key}, "") $html $question
+            $answer = Add-XmlNode ("div", @{class = "answer"; "data-answer" = $key}) $question
 
-            $explanation = Add-XmlNode ("div", @{class = "explanation"}, "") $html $answer
+            $explanation = Add-XmlNode ("div", @{class = "explanation"}) $answer
             $content = $answers[$k].OuterXml
             if ($answers[$k].b -notmatch "\d") { $content += $answers[$k].NextSibling.OuterXml }
             $explanation.InnerXml = $content -replace "i>", "b>" -replace "<a.*?/>"
@@ -634,7 +634,7 @@ function New-GreHtml ($content, $path) {
             $question.Node.AppendChild($passageNode) | Out-Null
             $question.Node.ChildNodes[0].InnerText = $questionText.Substring((Get-AllIndexesOf $questionText ".")[-1] + 2, $questionText.Length - (Get-AllIndexesOf $questionText ".")[-1] - 2)
         }
-        $question.Node.ChildNodes[0].InnerText = [regex]::Replace($questionText, " \(.*?\)", "") # remove extra newline
+        $question.Node.ChildNodes[0].InnerText = [regex]::Replace($questionText, " \(.*?\)") # remove extra newline
     }
     Set-Content "C:\github\gre\notes\test.html" $xml.OuterXml
     $passages = Select-Xml "//div[@id=`"passage`"]" $xml
@@ -658,7 +658,7 @@ function New-GreHtml ($content, $path) {
             }
         }
     }
-    $html = "<!DOCTYPE html><html lang=`"en`"><head><title></title><script src=`"/initialize.js`"></script></head><body><main class=`"w3-container`">" + $xml.OuterXml + "</main></body></html>"
+    $html = "<!DOCTYPE html><html lang=`"en`"><head><title></title><script src=`"/index.js`"></script></head><body><main class=`"w3-container`">" + $xml.OuterXml + "</main></body></html>"
     #New-Item -Path $path -value $html -ErrorAction SilentlyContinue | Out-Null
     
     Set-Content $path $html -Encoding UTF8
@@ -684,7 +684,7 @@ function Get-Answer ($explanation, $path) {
                     #if ($number -eq $choice.Length) {break}
                 }
                 $answers[$count].Node.SetAttribute("data-answer", $answer)
-                $answers[$count].Node.ChildNodes[0].InnerXml = "<p>" + $line.Replace("Explanation ", "") + "</p>"
+                $answers[$count].Node.ChildNodes[0].InnerXml = "<p>" + $line.Replace("Explanation ") + "</p>"
                 $count++
             }
         }

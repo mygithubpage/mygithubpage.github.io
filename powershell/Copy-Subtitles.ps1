@@ -1,29 +1,34 @@
-﻿#. ".\Utility.ps1"
+﻿
 
-$movies = Get-ChildItem "$Home\Downloads" -Directory.Where{ $_.BaseName -match ".*(19|20).*" }
-foreach ($movie in $movies) {
-    $mp4 = $movie.GetFiles("*.mp4")
-    $newName = "$($mp4.BaseName.Substring(0, $mp4.BaseName.Indexof(".1080p"))).mp4"
+$movieFolders = (Get-ChildItem "$Home\Downloads" -Directory).Where{ $_.BaseName -match "\((19|20)\d{2}\)" }
+foreach ($movieFolder in $movieFolders) {
+    $mp4 = $movieFolder.GetFiles("*.mp4")[0]
+    $newName = $mp4.Name -replace ".1080p.*(?=\.mp4)"
     $newName
-    $name = $newName.substring(0,$newName.Length - 10)
-    $uri = $name.ToLower() -replace "\.", "-"
+    
+    $srt = $movieFolder.GetFiles("*.srt")[0]
+    if (!$srt) { 
+        $query = $newName.ToLower().Replace(".", "-") -replace "-mp4"
+        $uri = "https://yts.am/movie/$query"
+        $html = Invoke-Webrequest $uri -OutFile "$Home\Downloads\$newName.html"
+        $link = (Select-String "(?<=imdb/)tt\d+" "$Home\Downloads\$newName.html" ).Matches.Value[0]
+        Remove-Item "$Home\Downloads\$newName.html"
+    
+        $html = ""
+        $html = Invoke-Webrequest "http://www.yifysubtitles.com/movie-imdb/$link"
+        if (!$html) { continue }
 
-    $uri = "https://yts.am/movie/$uri"
-    $html = Invoke-Webrequest $uri -OutFile "$name.html"
-    $link = (Get-Content "$name.html" | Select-String "imdb/tt.*?`""  -AllMatches).Matches[0].Value.Split("/")[1].Trim("`"")
-    Remove-Item "$name.html"
-    $html = ""
-    $html = Invoke-Webrequest "http://www.yifysubtitles.com/movie-imdb/$link"
-    if (!$html) { continue }
-
-    $uri = ($html.links.ForEach{if($_.href -like "*english*") {$_.href} })[0].replace("subtitles", "subtitle")
-    Invoke-WebRequest -Uri "http://www.yifysubtitles.com/$uri.zip" -OutFile "$name.zip"
-
-    Move-Item -LiteralPath $mp4.FullName -Destination "$Home\Downloads\Movies\$newName" | Out-Null
-    Expand-Archive -LiteralPath "$name.zip" -DestinationPath $mp4.FullName
-    Get-ChildItem -LiteralPath $mp4.FullName | Move-Item -Destination ("$Home\Downloads\Movies\" + $newName.Replace(".mp4", ".srt")) | Out-Null
-    Remove-Item "$name.zip"
-    Remove-Item $movie.FullName
+        $uri = ($html.links.ForEach{if($_.href -like "*english*") {$_.href} })[0].replace("subtitles", "subtitle")
+        Invoke-WebRequest "http://www.yifysubtitles.com/$uri.zip" -OutFile "$Home\Downloads\$newName.zip"
+        
+        Expand-Archive "$Home\Downloads\$newName.zip" "$($movieFolder.FullName)\$newName"
+        $srt = Get-ChildItem -LiteralPath "$($movieFolder.FullName)\$newName"
+        Remove-Item "$Home\Downloads\$newName.zip"
+    }
+    
+    Move-Item -LiteralPath $srt.FullName "$Home\Downloads\Movies\$($newName.Replace("mp4","srt"))" | Out-Null
+    Move-Item -LiteralPath $mp4.FullName "$Home\Downloads\Movies\$newName" | Out-Null
+    Remove-Item -LiteralPath $movieFolder.FullName -Force
 }
 
 <#

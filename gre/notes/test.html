@@ -1,0 +1,280 @@
+/**
+ * my initialize javascript
+ * comes before any other script 
+ */
+
+function createNode(element, parent, before) {
+    /** element format
+     * <[><tagName>, {[attributeName : attributeValue[, attributeName : attributeValue]...]}, [innerHTML]<]>
+     */
+
+    if (!parent) {
+        parent = document.head;
+    }
+
+    var node = document.createElement(element[0]);
+
+    if (typeof element[1] == "object") {
+        for (let index = 0; index < Object.keys(element[1]).length; index++) {
+            node.setAttribute(Object.keys(element[1])[index], Object.values(element[1])[index]);
+        }
+        node.innerHTML = element[2] ? element[2] : "";
+    } else if (typeof element[1] == "string") {
+        node.innerHTML = element[1];
+    }
+
+    if (!before) {
+        parent.appendChild(node);
+    } else {
+        parent.insertBefore(node, parent.firstElementChild);
+    }
+    return node;
+}
+
+function createHtmlString(node) {
+    let string = "";
+
+    if (typeof node[1] == "object") {
+        for (let i = 0; i < Object.keys(node[1]).length; i++) {
+            string += `${Object.keys(node[1])[i]}="${Object.values(node[1])[i]}"`
+        }
+        string += `>${node[2] ? node[2] : ""}`
+    } else if (typeof node[1] == "string") {
+        string += `>${node[1]}`;
+    }
+    return `<${node[0]} ${string}</${node[0]}>`
+
+}
+
+function addColor() {
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    let colors = [{
+        "css": "w3",
+        "schemes": [{
+                "scheme": "",
+                "color": ["red", "pink", "purple", "indigo", "blue", "teal", "green", "brown", "deep-orange"]
+            },
+            {
+                "scheme": "flat",
+                "color": ["turquoise", "green-sea", "emerald", "nephritis", "peter-river", "belize-hole", "amethyst", "wisteria", "orange", "carrot", "pumpkin", "alizarin", "pomegranate"]
+            },
+            {
+                "scheme": "metro",
+                "color": ["light-green", "green", "dark-green", "magenta", "light-purple", "purple", "dark-purple", "teal", "blue", "dark-blue", "dark-orange", "red", "dark-red"]
+            }
+        ]
+    }]
+
+    let cssNumber = getRandomInt(colors.length)
+    let css = colors[cssNumber];
+    let schemeNumber = getRandomInt(css.schemes.length)
+    let scheme = css.schemes[schemeNumber]
+    let colorNumber = getRandomInt(scheme.color.length)
+    color = `${css.css}${scheme.scheme == "" ? "": "-"}${scheme.scheme}-` + scheme.color[colorNumber];
+}
+
+// Add <meta> <link> <script> element in head
+function addHead() {
+
+    head.append(createHtmlString(["meta", {
+        charset: "utf-8"
+    }]));
+
+    // Mobile first
+    head.append(createHtmlString(["meta", {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1"
+    }]));
+
+
+    // Website Icon
+    head.append(createHtmlString(["link", {
+        rel: "icon",
+        href: `${icons8}color/50/ffffff/external-link.png`,
+        size: "16x16",
+        type: "image/png"
+    }]));
+
+
+    // CSS 
+    let styles = ["w3", "w3-colors", "style", "hljs"]
+    styles.forEach(css => {
+        head.append(createHtmlString(["link", {
+            rel: "stylesheet",
+            href: folder + `/css/${css}.css`
+        }]));
+    });
+
+    // My javascript
+    let scripts = [{
+        folder: "",
+        scripts: ["vocabulary", "category", "variable", "utility", "style", "filter", "test", "word", "svg", "external"]
+    }, ]
+    scripts.forEach(dir => {
+        dir.scripts.forEach(script => {
+            createNode(["script", {
+                src: folder + `/js/${dir.folder}${script}.js`
+            }]);
+        });
+    });
+
+    if (document.querySelector("pre")) {
+        head.append(createHtmlString(["script", {
+            src: `${prefix}highlight.js/9.12.0/highlight.min.js`
+        }]));
+        languages = ["apache", "bash", "cs", "cpp", "css", "coffeescript", "diff", "xml", "http", "ini", "json", "java", "js", "makefile", "markdown", "nginx", "objectivec", "php", "perl", "python", "ruby", "sql", "shell"]
+        document.querySelectorAll("code").forEach(code => {
+            let language = code.className.split(" ")[0];
+            if (language && !languages.includes(language) && !language.includes("-")) {
+                languages.push(language);
+                if (language == "ps") language = "powershell"
+                head.append(createHtmlString(["script", {
+                    src: `${prefix}highlight.js/9.12.0/languages/${language}.min.js`
+                }]));
+            }
+        });
+    }
+
+    if (uri.includes("quantitative")) {
+        scripts = [
+            "mathjax/2.7.5/MathJax.js",
+            "jsxgraph/1.3.5/jsxgraphcore.js"
+        ]
+        scripts.forEach(script => {
+            head.append(createHtmlString(["script", {
+                src: `${prefix}${script}`
+            }]));
+        });
+    }
+}
+
+function addTopNav(color) {
+    function hideNavItems() {
+      let width = 0;
+      topNav.childNodes.forEach(a => {
+          width += a.offsetWidth + (mobileFlag ? 16 : 32)
+          
+          if (width > window.innerWidth - 10 && a.id != "topNavBtn") 
+              a.classList.add("w3-hide-small");
+      });
+      hideBarItems = document.querySelectorAll(".w3-hide-small");
+  }
+
+    // Set Bar Item
+    if (uri.includes("/toefl/")) {
+        var test = "/toefl/"
+        var barItems = ["TPO", "Essay", "OG", "PT", "EQ", "Barrons", "Cambridge", "Longman", "Notes"];
+    } else if (uri.includes("/gre/")) {
+        var test = "/gre/";
+        var barItems = ["OG", "PQ", "PR", "Kap", "MP", "Barrons", "MH", "Mangoosh", "Grubers", "Notes"];
+    } else {
+        var test = "/"
+        var barItems = ["Notes", "TOEFL", "GRE"];
+    }
+
+
+    var topNav = $($("body").prepend(createHtmlString(["nav", {
+        class: color + " w3-bar w3-card w3-center w3-margin-bottom",
+        id: "topNav"
+    }])));
+
+    let size = mobileFlag ? 16 : 18;
+    let padding = mobileFlag ? "0 8px" : "4px 8px";
+    $(topNav.append(createHtmlString(["a", {
+        href: folder + "/index.html",
+        class: "w3-bar-item w3-button"
+    }, `<img src="${icons8}android/${size}/ffffff/home.png">`]))).css("padding", padding);
+
+    // Add Bar Item
+    for (let i = 0; i < barItems.length; i++) {
+        const element = barItems[i];
+
+        topNav.append(createHtmlString(["a", {
+            href: folder + test + element.toLowerCase() + `/${element.toLowerCase()}.html`,
+            class: "w3-bar-item w3-button my-padding-mobile"
+        }, element]));
+
+    }
+
+    // Add Top Nav Button
+    $(topNav.append(createHtmlString(["button", {
+        id: "topNavBtn",
+        class: "w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium w3-padding-small"
+    }, "\u25BC"]))).click(btn => {
+
+        let topNavBtn = btn.target
+        // toggle top navigation bar item
+        hideBarItems.forEach(topNavBtn => {
+            topNavBtn.classList.toggle("w3-bar-block");
+            topNavBtn.classList.toggle("w3-hide-small");
+        });
+
+        // toggle top navigation shape
+        if (topNavBtn.innerText == "\u25B2") {
+            topNavBtn.innerText = "\u25BC";
+        } else {
+            topNavBtn.innerText = "\u25B2";
+        }
+    });
+
+
+    hideNavItems();
+
+    $(window).scroll(() => {
+        if (window.pageYOffset !== topNav.offsetTop) {
+            topNav.classList.add("my-fixed")
+        } else { // Remove "my-fixed" when you leave the scroll position
+            topNav.classList.remove("my-fixed");
+        }
+    });
+
+}
+
+function addFooter(color) {
+
+    var icons = ["youtube", "twitter", "facebook", "instagram", "linkedin", "pinterest"]
+
+    footer = $($("body").append(createHtmlString(["footer", {
+        class: `${color} w3-container w3-center w3-margin-top`
+    }]))[0].lastChild);
+
+    footer.append(createHtmlString(["p", "This is my social media."]));
+
+    icons.forEach(element => {
+        let a = $(footer.append(createHtmlString(["a", {
+            href: `https://www.${element}.com`
+        }]))[0].lastChild);
+        a.append(createHtmlString(["img", {
+            src: `${icons8}metro/20/ffffff/${element}.png`,
+            class: "my-margin-small"
+        }]));
+    });
+
+    let p = $(footer.append(createHtmlString(["p"]))[0].lastChild);
+    p.append(createHtmlString(["span", "Made by "]));
+    p.append(createHtmlString(["a", {
+        href: "https://mygithubpage.github.io"
+    }, "GitHubPages"]));
+}
+
+
+// Execute script after window load
+uri = document.location.href;
+mobileFlag = screen.width < 600 ? true : false;
+html = uri.split("/").slice(-1)[0];
+folder = uri.includes("file:///") ? "/github" : "";
+icons8 = "https://png.icons8.com/";
+
+window.onload = () => {
+    $(() => {
+        head = $("head");
+        addHead();
+        addColor();
+        //addTopNav(color);
+        addFooter(color);
+    });
+}

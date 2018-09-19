@@ -9,4 +9,17 @@ function Edit-MediaFile () {
     }
     
 }
-Edit-MediaFile
+
+function Rename-Episodes () {
+    param ($Path)
+    (Get-ChildItem $path -Recurse -File).ForEach{
+        $episode = $_
+        if ($episode.Name.Length -lt 7) {
+            $newName = $path.Split("\")[-1] + " " + $episode.Directory.Name + " Episode " + $episode.Name
+            Rename-Item $episode.PSPath $newName
+        }
+    }
+}
+
+# Edit-MediaFile
+Rename-Episodes "D:\The Big Bang Theory"

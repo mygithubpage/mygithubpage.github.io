@@ -18,7 +18,7 @@ function Get-Dota2Items() {
         while ($descriptor.Contains("`r`n`r`n")) {$descriptor = $descriptor -replace "`r`n`r`n", "`r`n"}
         if (!$descriptor.Contains("`r`n`r`n")) { $descriptor = "" }
 
-        $item = New-Object PSObject @{
+        $item = New-Object PSObject -Property @{
             Name         = $name;
             Quality      = $tags[0];
             Rarity       = $tags[1];
