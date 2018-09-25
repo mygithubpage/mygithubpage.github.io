@@ -107,6 +107,13 @@ Move-Item $path $destination  # this cmdlet can change the item's directory and 
 Copy-Item $path $destination -Recurse # this cmdlet can change item's name
 Remove-Item $path -Recurse
 
+# Registry
+$keys = Get-ItemProperty "HKLM:\SOFTWARE\$name"
+$keys.Property = $value
+
+# PnpDeice
+(Get-PnpDevice).Where{ $_.FirendlyName -match $regex} | Disable-PnpDevice -Confirm:$false | Enable-PnpDevice -Confirm:$false
+
 Set-ExecutionPolicy Undefined # to run powershell script
 
 # Dynamically Call different Function

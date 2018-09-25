@@ -1,5 +1,8 @@
 . $PSScriptRoot\Utility.ps1
 $content = Get-Content "C:\github\gre\notes\test.html" -Encoding UTF8
+$content
+Out-Host $content
+Write-Host $content
 $content = $content -replace "<hr.*>" -replace "div.*>", "ol>"
 $content = $content -replace "strong>", "b>" -replace "<span.*?/span>"
 $content = $content -replace "p.*?`">", "li>" -replace "p>", "li>"

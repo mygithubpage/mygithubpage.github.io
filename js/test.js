@@ -1,7 +1,7 @@
-greFlag = (/verbal|quantitative|reading\.|text|sentence|issue|argument/).exec(uri)
-num = parseInt(uri.match(/\d(?=\.html)/));
-setFlag = uri.match(/ing\d\.html/);
-sections = [{
+var greFlag = (/verbal|quantitative|reading\.|text|sentence|issue|argument/).exec(uri)
+var setFlag = uri.match(/ing\d\.html/);
+var num = +uri.match(/\d(?=\.html)/);
+var sections = [{
     "type": "Reading",
     "length": 3
 }, {
@@ -24,74 +24,79 @@ function setArticleHeight(height) {
         height = screen.height / 3 + "px";
     }
     if (typeof article == "undefined") return
-    article.style.height = height;
-    article.style.overflow = "scroll";
-    article.classList.add("w3-section");
+    article.addClass("w3-section").css({
+        height: height,
+        overflow: "scroll"
+    });
 }
 
 // Reading Question
 function showSpecialQuestion(article, section) {
-    question = section.querySelector(".question")
-    article.querySelectorAll("span").forEach(elem => {
+    question = $(".question", section)
+    /**
+     * $("span", article).each(function () {
         if (elem.className.includes("question")) {
             removeHighlight(elem);
         }
     });
+     */
 
-    let inputs = section.querySelectorAll(".my-label input");
-    if (/aragraph \d/.exec(question.innerText)) {
-        let para = /aragraph \d/.exec(question.innerText)[0].slice(-1);
-        let paragraph = article.querySelectorAll("p")[para - 1];
-        paragraph.scrollIntoView();
-        //article.scrollTop -= 1;
+
+    if (/paragraph \d/.exec(question.text())) {
+        let para = /paragraph \d/.exec(question.text())[0].slice(-1);
+        let paragraph = $("p", article).eq(para - 1);
+        paragraph[0].scrollIntoView();
     }
 
     // insert Text
-    insertArea = article.querySelectorAll(".insert-area");
-    insertArea.forEach(area => area.innerText = "");
-    if (!section.querySelector(".choices > table") && section.querySelector(".choices > p").innerText.length < 3) {
+    insertArea = $(".insert-area", article);
+    insertArea.each(function () {
+        $(this).text("")
+    });
+    if (!$(".choices > table") && $(".choices > p", section).text().length < 3) {
         addHighlight(question);
 
         // Add A B C D in inserted area
-        insertArea.forEach(area => {
-            if (area.getAttribute("data-answer") == "A") {
-                area.scrollIntoView();
+        insertArea.each(function () {
+            if ($(this).attr("data-answer") == "A") {
+                this.scrollIntoView();
             }
             article.scrollTop -= 10
-            area.innerText = `[${area.getAttribute("data-answer")}] `
-            addHighlight(area);
+            this.text(`[${$(this).attr("data-answer")}] `)
+            addHighlight($(this));
         });
 
         // Add text in inserted area
-        for (let i = 0; i < inputs.length; i++) {
-            inputs[i].onclick = () => {
-                section.querySelectorAll(".my-label input");
-                insertArea.forEach(area => {
-                    area.innerText = `[${area.getAttribute("data-answer")}] `
-                    addHighlight(area);
+        let inputs = $(".my-label input", section);
+        inputs.each(function () {
+            this.click(function () {
+                insertArea.each(function () {
+                    this.text(`[${$(this).attr("data-answer")}] `);
+                    addHighlight($(this));
                 });
-                insertArea[i].innerText = question.innerText.replace(/\d{1,2}\./g, "")
-            }
-        }
+                this.text(question.text().replace(/\d{1,2}\./g, ""))
+            });
+        });
     }
 
 
     // highlight
-    let highlight = article.querySelector("." + id);
-    if (highlight) {
-        for (let i = 0; i < highlight.children.length; i++) {
-            const element = highlight.children[i];
-            element.style.color = bgColor;
-        }
+    let highlight = $(`.${id}`);
+    if (highlight.length) {
+        highlight.children().each(function () {
+            this.css("color", bgColor);
+        });
         addHighlight(highlight);
         highlight.scrollIntoView();
-        article.scrollTop = article.scrollTop - (screen.height - section.offsetHeight) / 2 + 64
-        index = parseInt(section.children[0].innerText.split(".")[0]) - 1;
-        if (question.innerText.includes("best expresses the essential")) {
-            highlight.querySelectorAll(".my-highlight").forEach(elem => addHighlight(elem));
-            question.innerText = "";
-            setArticleHeight(Math.max(highlight.offsetHeight, screen.height - section.offsetHeight) + "px")
-            highlight.scrollIntoView();
+        article.scrollTop(article.scrollTop() - (screen.height - section[0].offsetHeight) / 2 + 64)
+        //index = parseInt(section.children[0].text().split(".")[0]) - 1;
+        if (question.text().includes("best expresses the essential")) {
+            $(".my-highlight", highlight).each(function () {
+                addHighlight($(this))
+            });
+            question.text("");
+            setArticleHeight(Math.max(highlight[0].offsetHeight, screen.height - section[0].offsetHeight) + "px")
+            highlight[0].scrollIntoView();
         }
     }
 }
@@ -105,27 +110,27 @@ function addTextarea(parent) {
         }
         return indexes;
     }
-    wordCountDiv = createNode(["div", {
+    wordCountDiv = $("<div>", {
         class: "w3-padding w3-section"
-    }], parent);
-    wordCount = createNode(["span", {
-        class: "w3-large my-highlight"
-    }, "Word Count: 0"], wordCountDiv);
+    }).appendTo(parent);
+    wordCount = $("<span>", {
+        class: "w3-large my-highlight",
+        html: "Word Count: 0"
+    }).appendTo(wordCountDiv);
 
-    createNode(["span", {
+    $("<span>", {
         id: "time",
         class: "w3-large w3-right my-highlight"
-    }], wordCountDiv);
+    }).appendTo(wordCountDiv);
 
-    textarea = createNode(["textarea", {
+    if (typeof article != "undefined") article.toggleClass("w3-padding-small");
+    if (typeof section != "undefined") section.toggleClass("w3-padding-small");
+
+    return $("<textarea>", {
         class: "my-border w3-padding w3-block"
-    }], parent);
-    textarea.oninput = e => wordCount.innerHTML = `Word Count: ${getAllIndexes(e.target.value, " ").length + 1}`;
-    if (typeof article != "undefined") article.classList.toggle("w3-padding-small");
-    if (typeof section != "undefined") section.classList.toggle("w3-padding-small");
-    textarea.style.height = `${window.innerHeight}px`;
-
-    return textarea;
+    }).appendTo(parent).css("height", `${window.innerHeight}px`).on("input", function () {
+        wordCount.html(`Word Count: ${getAllIndexes(this.value, " ").length + 1}`)
+    });
 }
 
 function startTest() {
@@ -135,23 +140,18 @@ function startTest() {
         ["15", "30", "20"]
     ];
 
-    let reading = document.querySelector("article.passage");
+    let reading = $("article.passage");
 
     let audio;
-    let testDiv = createNode(["div", {
+    let testDiv = $("<div>", {
         id: "testDiv",
         class: "w3-container"
-    }], document.body);
+    }).appendTo($("body"));
     let myAnswer = new Array(questions.length);
 
 
     function setTimer(second) {
-        var time = document.querySelector("#time");
-        var timer = second,
-            min = 0,
-            sec = 0;
-
-        function startTimer(params) {
+        function startTimer() {
             min = parseInt(timer / 60);
             sec = parseInt(timer % 60);
 
@@ -159,10 +159,14 @@ function startTest() {
                 return
             }
             let secStr = sec < 10 ? "0" + sec.toString() : sec.toString();
-            time.innerHTML = min.toString() + ":" + secStr;
+            if (time.length) time.html(min.toString() + ":" + secStr);
             timer--;
             setTimeout(() => startTimer(), 1000);
         }
+        var time = $("#time");
+        var timer = second,
+            min = 0,
+            sec = 0;
         startTimer();
     }
 
@@ -173,99 +177,100 @@ function startTest() {
         //testDiv.appendChild(audio);
         let promise = audio.play();
 
-        if (promise !== undefined) {
-            promise.catch(error => {
+        if (promise != undefined) {
+            promise.catch(() => {
                 // Auto-play was prevented
                 // Show a UI element to let the user manually start playback
-                article.classList.toggle("w3-hide");
-                let button = testDiv.querySelector("#playAudio");
+                article.toggle();
+                let button = $("#playAudio", testDiv);
                 if (!button) {
-                    button = createNode(["button", {
+                    button = $("<button>", {
                         class: `${color} w3-btn w3-block w3-section w3-hide`,
-                        id: "playAudio"
-                    }, "Play Audio"], testDiv, true);
+                        id: "playAudio",
+                        html: "Play Audio"
+                    }).prependTo(testDiv);
                 }
-                button.classList.toggle("w3-hide");
-                button.onclick = () => {
+                button.toggle();
+                button.click(() => {
                     audio.play();
-                    article.classList.toggle("w3-hide");
-                    button.classList.toggle("w3-hide");
+                    article.toggle();
+                    button.toggle();
                     audio.onended = () => onEnd();
-                };
-            }).then(() => audio.onended = () => onEnd());
+                });
+            }).then(() => audio.onended = () => onEnd);
         }
     }
 
     function waitTime(second, onTimeout) {
         setTimer(second);
-        setTimeout(() => onTimeout(), second * 1000);
+        setTimeout(() => onTimeout, second * 1000);
     }
 
     function endTest() {
-        document.body.removeChild(document.body.lastChild);
+        $("#testDiv").remove();
         toggleElement();
     }
 
     function recordAudio() {
-        let constraints = {
-            audio: true
-        };
+
         let data = [];
 
         let onFulfilled = stream => {
             mediaRecorder = new MediaRecorder(stream);
 
-            mediaRecorder.onstop = e => {
-                var audio = document.createElement('audio');
-                audio.setAttribute('controls', 'controls');
-                testDiv.appendChild(audio);
-
+            mediaRecorder.on("stop", () => {
                 var blob = new Blob(data, {
                     'type': 'audio/mp3'
                 });
                 audioURL = window.URL.createObjectURL(blob);
-                audio.src = audioURL;
-            }
-            mediaRecorder.ondataavailable = event => data.push(event.data);
+
+                $("<a>", {
+                    controls: 'controls',
+                    src: audioURL
+                }).appendTo(testDiv);
+            });
+            mediaRecorder.on("dataavailable", event => data.push(event.data));
             return mediaRecorder;
         }
-        navigator.mediaDevices.getUserMedia(constraints).then(onFulfilled);
+        navigator.mediaDevices.getUserMedia({
+            audio: true
+        }).then(onFulfilled);
 
     }
 
-    function navigateQuestion(button) {
-        let number = /\d+/.exec(id);
-        index = Math.abs(button.innerText == "Next" ? parseInt(number) : parseInt(number - 2));
-        setAnswer(number);
+    function navigateQuestion(button, question) {
+        let id = /\d+/.exec(question[0].id)[0];
+        index = Math.abs(button.text() == "Next" ? +id + 1: +id - 1);
+        setAnswer(question);
 
-        if (index == questions.length) {
+        if (id == questions.length) {
             showModal(uri);
         } else {
             showQuestion(index);
         }
     }
 
-    function setAnswer(id) {
-
-        answer = testDiv.querySelector(".explanation").getAttribute("data-answer");
+    function setAnswer(question) {
+        let index = /\d+/.exec(question[0].id)[0] - 1;
+        let answer = $(".explanation", question).attr("data-answer");
         let flag;
 
         //if (!myAnswer[id - 1] || !myAnswer[id - 1].split("->")[0]) {}
-        myAnswer[id - 1] = "";
-        if (questions[id - 1].querySelector("table")) {
-            let table = testDiv.querySelector("table");
+        myAnswer[index] = "";
+        if ($("table", question).length) {
+            let table = $("table", questions[id - 1]);
             for (let i = 1; i < table.rows.length; i++) {
                 const element = table.rows[i];
-                let inputs = element.querySelectorAll("input");
+                let inputs = $("input", element);
                 flag = false;
-                for (let j = 0; j < inputs.length; j++) {
+                inputs.each(function () {
                     const element = inputs[j];
                     if (element.checked) {
                         myAnswer[id - 1] += String.fromCharCode(65 + j);
                         break
                     }
                     flag = true;
-                }
+                });
                 if (!flag) {
                     if (!myAnswer[id - 1]) {
                         myAnswer[id - 1] = ""
@@ -277,33 +282,30 @@ function startTest() {
                 let category = answer.split("@");
                 let keys = new Array(answer.length + 1);
                 answer = ""
-                for (let i = 0; i < category[0].length; i++) {
+                category[0].each(function () {
                     keys[category[0].charCodeAt(i) - 65] = "A"
-                }
-                for (let i = 0; i < category[1].length; i++) {
+                });
+                category[1].each(function () {
                     keys[category[1].charCodeAt(i) - 65] = "B"
-                }
-                for (let i = 0; i < keys.length; i++) {
+                });
+                keys.each(function () {
                     if (keys[i] !== "A" && keys[i] !== "B") {
                         keys[i] = "N";
                     }
                     answer += keys[i];
-                }
+                });
             }
-        } else if (questions[id - 1].getAttribute("data-choice-type") == "select") {
-            for (let i = 0; i < article.querySelectorAll(".sentence").length; i++) {
-                const element = article.querySelectorAll(".sentence")[i];
-                if (element.style.fontWeight !== "bold") {
-                    myAnswer[id - 1] = `${i + 1}`;
-                    break
+        } else if (question.attr("data-choice-type") == "select") {
+            $(".sentence", $(`#passage`)).each(function (i) {
+                if ($(this).css("fontWeight") == "700") {
+                    myAnswer[index] = `${i + 1}`;
                 }
-            }
+            });
         } else {
-            for (let i = 0; i < inputs.length; i++) {
-                if (inputs[i].checked) {
-                    myAnswer[id - 1] += String.fromCharCode(65 + i);
-                }
-            }
+            let questionDiv = $(`#question`)
+            $("input:checked", questionDiv).each(function () {
+                myAnswer[index] += String.fromCharCode(65 + $("input").index($(this)));
+            });
         }
     }
 
@@ -312,17 +314,17 @@ function startTest() {
         function saveExit() {
 
             function downloadResponse(url, fileName) {
-                let download = document.createElement('a');
-                download.href = url;
-                download.download = fileName;
-                testDiv.appendChild(download);
-                download.click();
+
+                $("<a>", {
+                    href: url,
+                    download: fileName
+                }).appendTo(testDiv)[0].click();
             }
 
             if (uri.includes("speaking")) {
                 downloadResponse(audioURL, html.replace(".html", "-recording.mp3"));
             } else if (uri.includes("writing")) {
-                let text = testDiv.querySelector("textarea").value.replace("\n", "</p><p>");
+                let text = $("textarea").value.replace("\n", "</p><p>", testDiv);
                 text = `<p>${text}</p>`
 
                 let blob = new Blob([text], {
@@ -330,7 +332,7 @@ function startTest() {
                 });
                 downloadResponse(window.URL.createObjectURL(blob), html);
             } else {
-                let text = testDiv.querySelector("table").outerHTML;
+                let text = $("table", testDiv).outerHTML;
 
                 let blob = new Blob([text], {
                     type: 'text/plain'
@@ -340,117 +342,103 @@ function startTest() {
         }
 
         if ((/-speaking|-writing/).exec(uri)) {
-            modal = createNode(["div", {
-                class: "w3-modal"
-            }], testDiv);
-            modalContent = createNode(["div", {
-                class: "w3-modal-content"
-            }], modal);
-            createNode(["div", {
-                class: `${color} w3-container`
-            }], modalContent);
-            p = createNode(["p"], modalContent);
+            modal = createModal();
+            p = $("<p>").appendTo(modal);
         } else {
             modal = reviewQuestions();
-
-            modalContent = modal.children[0]
-
-            let p = createNode(["p", {
-                class: "w3-padding w3-section"
-            }], modalContent, true);
-            createNode(["div", {
-                class: `${color} w3-padding`
-            }, "Review Test"], modalContent, true);
-
             // answering and correct rate
-            var error = modalContent.querySelectorAll("i").length
 
-            p.innerHTML = `<b>${myAnswer.length - error} of ${myAnswer.length}</b> answered questions are correct.`;
+            var error = $("i", modal).length
+            $("<p>", {
+                class: "w3-padding w3-section"
+            }).prependTo(modal).html(`<b>${myAnswer.length - error} of ${myAnswer.length}</b> answered questions are correct.`);
 
+            $("<div>", {
+                class: `${color} w3-padding`,
+                html: "Review Test"
+            }).prependTo(modal);
         }
-        let buttonBar = testDiv.querySelector("#buttonBar");
-        if (!buttonBar) {
-            let buttonBar = createNode(["div", {
-                class: "w3-bar",
-                id: "buttonBar"
-            }], modalContent);
-            exitBtn = createNode(["button", {
-                class: `${color} w3-btn w3-margin w3-left`
-            }, "Save and Exit"], buttonBar);
-            cancelBtn = createNode(["button", {
-                class: `${color} w3-btn w3-margin w3-right`
-            }, "Cancel"], buttonBar);
-        }
-        if (uri.includes("speaking")) {
-            p.innerHTML = testDiv.querySelector("audio").outerHTML
-        }
-        exitBtn.onclick = () => {
+
+        let buttonBar = $("<div>", {
+            class: "w3-bar",
+            id: "buttonBar"
+        }).appendTo(modal);
+
+        exitBtn = $("<button>", {
+            class: `${color} w3-btn w3-margin w3-left`,
+            html: "Save and Exit"
+        }).appendTo(buttonBar).click(() => {
             saveExit();
             endTest();
+        });
+        cancelBtn = $("<button>", {
+            class: `${color} w3-btn w3-margin w3-right`,
+            html: "Cancel"
+        }).appendTo(buttonBar).click(() => {
+            modal.parent().remove();
+        });
+
+        if (uri.includes("speaking")) {
+            p.html($("audio", testDiv).outerHTML)
         }
-        cancelBtn.onclick = () => modal.style.display = "none";
-        modal.style.display = "block";
+        modal.parent().show();
         setStyle();
     }
 
-    function reviewQuestions(id) {
+    function reviewQuestions(question) {
         function checkAnswer(i) {
-            let answer = questions[i].querySelector(".explanation").getAttribute("data-answer")
-            let text = `<b>${answer}<b>`
-            let report = myAnswer[i] == answer ? text : `<i>${myAnswer[i]}</i> -> ${text}`
-            return id ? myAnswer[i] : report;
+            let answer = $(".explanation", $(questions[i])).attr("data-answer");
+            let text = `<b>${answer}<b>`;
+            let report = myAnswer[i] == answer ? text : `<i>${myAnswer[i]}</i> -> ${text}`;
+            return report;
         }
 
-        if (id) {
-            setAnswer(id);
+        if (question) {
+            setAnswer(question);
         }
-        let modal = testDiv.querySelector(".w3-modal");
-        if (!modal) {
-            modal = createNode(["div", {
-                class: "w3-modal"
-            }], testDiv);
-            modalContent = createNode(["div", {
-                class: "w3-modal-content"
-            }], modal);
-            let table = createNode(["table", {
-                class: "w3-table-all w3-padding-small"
-            }], modalContent);
-            let thead = createNode(["thead"], table);
-            let tr = createNode(["tr", {
-                class: color
-            }], thead);
-            createNode(["td", "Question"], tr);
-            createNode(["td", "Option"], tr);
 
-            let tbody = createNode(["tbody"], table);
-            for (let i = 0; i < questions.length; i++) {
+        modal = createModal();
+        let table = $("<table>", {
+            class: "w3-table-all w3-padding-small"
+        }).appendTo(modal);
+        let tr = $("<tr>", {
+            class: color
+        }).appendTo($("<thead>").appendTo(table));
+        $("<td>", {
+            html: "Question"
+        }).appendTo(tr);
+        $("<td>", {
+            html: "Option"
+        }).appendTo(tr);
 
-                let tr = createNode(["tr"], tbody);
+        let tbody = $("<tbody>").appendTo(table);
+        questions.each(function (i) {
 
-                let td = createNode(["td", questions[i].querySelector(".question").innerText], tr);
-                td.style.maxWidth = "240px";
-                td.style.overflow = "hidden";
-                td.style.textOverflow = "ellipsis";
-                td.style.whiteSpace = "nowrap";
-
-                if (myAnswer[i] == undefined) {
-                    myAnswer[i] = ""
-                }
-                createNode(["td", checkAnswer(i)], tr);
-                tr.onclick = () => {
-                    showQuestion(i);
-                    modal.style.display = "none";
-                };
+            if (myAnswer[i] == undefined) {
+                myAnswer[i] = ""
             }
-        }
-        modal.style.paddingTop = "10px";
-        let tr = modal.querySelectorAll("tbody tr");
-        for (let i = 0; i < tr.length; i++) {
-            tr[i].children[1].innerHTML = checkAnswer(i);
-        }
 
-        if (id) {
-            modal.style.display = "block";
+            tr = $("<tr>").appendTo(tbody).click(() => {
+                modal.parent().remove();
+                showQuestion(i+1);
+            });
+
+            $("<td>", {
+                html: $(".question", $(this)).text()
+            }).appendTo(tr).css({
+                maxWidth: "200px",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis"
+            });
+
+            $("<td>", {
+                html: question ? myAnswer[i] : checkAnswer(i) 
+            }).appendTo(tr);
+        });
+
+        if (question) {
+            modal.parent().show();
         } else {
             return modal
         }
@@ -458,170 +446,142 @@ function startTest() {
 
     function showQuestion(index) {
 
-        id = questions[index].id;
+        let question = $(`#question${index}`);
 
-        section.innerHTML = questions[index].innerHTML;
-        section.querySelector(".question").classList.add("w3-section");
-        if (greFlag) {
-            if (questions[index].getAttribute("data-passage")) {
-                section.querySelector(".passage").classList.add("w3-hide");
-                article.innerHTML = questions[index].querySelector(".passage").innerHTML;
-            }
-        } else {
-            article.innerHTML = document.querySelector(".passage").innerHTML;
-            article.querySelectorAll(".my-highlight").forEach(element => {
-                element.classList.remove("my-highlight");
-                removeHighlight(element);
-            });
-        }
+        createQuestion(question);
 
-        inputs = testDiv.querySelectorAll(".my-label input");
-
+        inputs = $(".my-label input", testDiv);
 
         // Previous and Next Button
-        let div = createNode(["div", {
-            class: "w3-bar my-margin-top-small w3-display-container w3-section "
-        }], section);
-        createNode(["button", {
-            class: `${color} w3-btn w3-left`
-        }, "Previous"], div);
+        let div = $("<div>", {
+            class: "w3-bar w3-display-container w3-section "
+        }).appendTo(questionDiv);
+        $("<button>", {
+            class: `${color} w3-btn w3-left`,
+            html: "Previous"
+        }).appendTo(div);
 
         // Time Ticking 
-        if (mobileFlag) {
-            time.classList.add("w3-hide");
-            timer = createNode(["span", {
-                class: "w3-display-middle w3-xxlarge"
-            }], div);
+        time.hide();
+        timer = $("<span>", {
+            class: "w3-display-middle w3-xxlarge"
+        }).appendTo(div);
 
-            // Callback function to execute when mutations are observed
-            var callback = () => {
-                timer.innerHTML = `<b>${time.innerText}</b>`;
-                setStyle();
-            };
+        // Callback function to execute when mutations are observed
+        var callback = () => {
+            timer.html(`<b>${time.text()}</b>`);
+            setStyle();
+        };
 
-            // Create an observer instance linked to the callback function
-            var observer = new MutationObserver(callback);
-            // Options for the observer (which mutations to observe)
-            var options = {
-                childList: true
-            };
-            // Start observing the target node for configured mutations
-            observer.observe(time, options);
-        }
+        // Create an observer instance linked to the callback function
+        // Start observing the target node for configured mutations
+        new MutationObserver(callback).observe(time[0], {
+            childList: true // Options for the observer (which mutations to observe)
+        }); 
 
-        createNode(["button", {
-            class: `${color} w3-btn w3-right`
-        }, "Next"], div);
+        $("<button>", {
+            class: `${color} w3-btn w3-right`,
+            html: "Next"
+        }).appendTo(div);
 
         // show current number of all number
-        let numberDiv = createNode(["div", {
+        let numberDiv = $("<div>", {
             class: "w3-section"
-        }], section);
-        let numberP = createNode(["p", {
+        }).appendTo(questionDiv);
+        let numberP = $("<p>", {
             class: "w3-xlarge w3-center my-margin-small"
-        }], numberDiv);
-        numberP.innerHTML = `<b>Questions ${index + 1} of ${questions.length}</b>`;
+        }).appendTo(numberDiv);
+        numberP.html(`<b>Questions ${index} of ${questions.length}</b>`);
 
         // Review Button
-        let reviewBtn = testDiv.querySelector("#review");
-        if (!reviewBtn) {
-            reviewBtn = createNode(["button", {
+        $("<button>", {
                 class: `${color} w3-btn w3-block`,
-                id: "review"
-            }, "Review Questions"], section);
-        }
-        reviewBtn.onclick = () => reviewQuestions(id.split("n")[1]);
-        div.querySelectorAll("button").forEach(elem => {
-            elem.onclick = e => navigateQuestion(e.target);
+                id: "review",
+                html: "Review Questions"
+            }).appendTo(questionDiv).click(function () {
+            reviewQuestions(question);
+        });
+        $("button", div).each(function () {
+            this.onclick = () => navigateQuestion($(this), question);
         });
 
-        if (!questions[index].getAttribute("data-passage") && greFlag) { // Not Reading Comprehension
+        if (!question.attr("data-passage") && greFlag) { // Not Reading Comprehension
             if (!mobileFlag) {
-                section.classList.remove("w3-half");
-                article.classList.remove("w3-half");
+                questionDiv.removeClass("w3-half");
+                passageDiv.removeClass("w3-half");
             }
         } else { // Reading Comprehension
 
             if (mobileFlag) {
-                section.style.borderTop = `3px solid ${bgColor}`;
-                setArticleHeight(screen.height - section.offsetHeight + 40 + "px");
+                questionDiv.css("borderTop", `3px solid ${bgColor}`);
+                setArticleHeight(screen.height - questionDiv[0].offsetHeight + 40 + "px");
 
             } else {
                 setArticleHeight("680px");
-                section.classList.add("w3-padding");
-                section.classList.add("w3-half");
-                article.classList.add("w3-half");
+                questionDiv.addClass("w3-padding");
+                questionDiv.addClass("w3-half");
+                passageDiv.addClass("w3-half");
             }
         }
 
-        if (!greFlag) showSpecialQuestion(article, section);
+        if (!greFlag) showSpecialQuestion(passageDiv, questionDiv);
 
 
         // select sentence question
-        if (questions[index].getAttribute("data-choice-type") == "select") {
+        if (question.attr("data-choice-type") == "select") {
 
             // split sentence with span
-            let passage = article.innerHTML.replace(". . . ", "&#8230; ")
-            passage = passage.replace(/\s{2,}</g, "<")
-            passage = passage.replace(/((\w{2,}|>?)[?!\.])\s{1}/g, "$1</span><span class=\"sentence\"> ")
-            passage = passage.replace(/<p>/g, "<p><span class=\"sentence\"> ")
-            passage = passage.replace(/<\/p>/g, "</span></p>")
-            article.innerHTML = passage
+            addSentence(passageDiv);
 
             // Add sentence click event
             addFilterClick("article .sentence", ["my-highlight"]);
         }
 
         // click Options
-        if (myAnswer[index] && myAnswer[index].split("->")[0]) {
-            options = myAnswer[index].split("->")[0];
-            if (myAnswer[index].includes(".")) {
-                options = options.split(". ")[1]
-            }
-            if (!options) {
-                return
-            }
-
-            for (let i = 0; i < options.split("").length; i++) {
-                const element = options.split("")[i];
+        if (myAnswer[index - 1]) {
+            options = myAnswer[index - 1];
+            
+            $(options.split("")).each(function () {
                 if (options.length > 4) {
-                    option = element.charCodeAt(0) - 65;
+                    option = this.charCodeAt(0) - 65;
                     if (option !== 13) {
                         let elem = inputs[i * 2 + option].parentNode;
-                        elem.querySelector(".my-checkbox").style.bgColor = bgColor;
+                        $(".my-checkbox", elem).css("backgroundColor", bgColor);
                         elem.children[0].checked = true;
                     }
                 } else {
-                    if (questions[index].getAttribute("data-choice-type") == "select") {
-                        article.querySelectorAll(".sentence")[element - 1].click()
+                    if (question.attr("data-choice-type") == "select") {
+                        $(".sentence", passageDiv)[+this - 1].click()
                     } else {
-                        inputs[element.charCodeAt(0) - 65].click();
-                        if (!greFlag && section.children[1].innerText.length < 3) {
-                            insertArea[element.charCodeAt(0) - 65].innerText = section.children[0].innerText.split(".")[1] + ". "
+                        $("input")[this.charCodeAt(0) - 65].click();
+                        if (!greFlag && section.children[1].text().length < 3) {
+                            insertArea[this.charCodeAt(0) - 65].text() = section.children[0].text().split(".")[1] + ". "
                         }
                     }
                 }
-            }
+            });
         }
         setStyle();
     }
-
+    $("#practice").remove();
     toggleElement();
-    article = createNode(["article", {
-        class: "show-article w3-half w3-section"
-    }], testDiv);
-    section = createNode(["section", {
-        class: "show-question w3-half"
-    }], testDiv);
-    time = createNode(["p", {
+    passageDiv = $("<article>", {
+        class: "w3-half w3-section",
+        id : "passage"
+    }).appendTo(testDiv);
+    questionDiv = $("<section>", {
+        class: "w3-half",
+        id : "question"
+    }).appendTo(testDiv);
+    time = $("<p>", {
         id: "time",
         class: "w3-xxlarge w3-center my-margin-small my-highlight"
-    }], testDiv);
+    }).appendTo(testDiv);
     if (greFlag) {
 
         if ((/issue|argument/).exec(uri)) {
-            article.innerHTML = document.querySelector("#question").innerHTML
-            addTextarea(section);
+            passageDiv.html($("#question").html());
+            addTextarea(questionDiv);
             waitTime(1800, showModal);
         } else {
             var countdown;
@@ -629,31 +589,32 @@ function startTest() {
             else if (questions.length > 15) countdown = 1800
             else countdown = 1500
             waitTime(countdown, showModal);
-            showQuestion(0);
+            showQuestion(1);
         }
     } else if (uri.includes("reading")) {
 
         waitTime(1200, showModal);
-        showQuestion(0);
+        showQuestion(1);
 
     } else if (uri.includes("listening")) {
-        article.classList.toggle("w3-half");
-        let button = createNode(["button", {
-            class: `${color} w3-btn w3-block w3-section w3-hide`
-        }, "Next"], testDiv);
-        button.onclick = e => navigateQuestion(e.target);
+        article.toggleClass("w3-half");
+        let button = $("<button>", {
+            class: `${color} w3-btn w3-block w3-section w3-hide`,
+            html: "Next"
+        }).appendTo(testDiv);
+        button.onclick = () => navigateQuestion(this);
 
         function showQuestion(index) {
             id = questions[index].id
 
             function playListening() {
                 article.id = element.id;
-                article.innerHTML = element.querySelector(".question").innerHTML
-                button.classList.add("w3-hide");
-                time.classList.add("w3-hide");
+                article.html() = $(".question", element).html()
+                button.hide();
+                time.hide();
                 playAudio(html.replace(".html", `-${element.id}.mp3`), () => {
-                    article.innerHTML = element.innerHTML;
-                    inputs = testDiv.querySelectorAll("input");
+                    article.html(element.html());
+                    inputs = $("input", testDiv);
                     button.classList.remove("w3-hide");
                     time.classList.remove("w3-hide");
                     setStyle();
@@ -662,9 +623,9 @@ function startTest() {
 
             const element = questions[index];
             if (element.className.includes("replay")) {
-                article.innerHTML = "<p>Listen again to part of the lecture. Then answer the question.</p>"
-                button.classList.add("w3-hide");
-                time.classList.add("w3-hide");
+                article.html() = "<p>Listen again to part of the lecture. Then answer the question.</p>"
+                button.hide();
+                time.hide();
                 playAudio(html.replace(".html", `-${element.id}-replay.mp3`), () => playListening());
             } else {
                 playListening();
@@ -674,7 +635,7 @@ function startTest() {
 
         playAudio(html.replace(".html", ".mp3"), () => {
             setTimer(240);
-            showQuestion(0);
+            showQuestion(1);
         })
 
     } else if (uri.includes("speaking")) {
@@ -682,16 +643,16 @@ function startTest() {
             mediaRecorder = recordAudio();
         }
 
-        article.classList.toggle("w3-half");
-        article.classList.toggle("w3-section");
+        article.toggleClass("w3-half");
+        article.toggleClass("w3-section");
 
         playListening = () => {
-            article.classList.toggle("w3-hide");
-            time.classList.toggle("w3-hide");
+            article.toggle();
+            time.toggle();
             playAudio(html.replace(".html", ".mp3"), playQuestion);
         }
         playQuestion = () => {
-            article.innerHTML = main.querySelector("#question").innerHTML;
+            article.html($("#question", main).html());
             article.classList.remove("w3-hide");
             playAudio(html.replace(".html", "-question.mp3"), startPreparation);
         }
@@ -732,14 +693,14 @@ function startTest() {
             playListening();
         } else {
             playAudio(html.replace(".html", "-reading.mp3"), () => {
-                article.innerHTML = reading.innerHTML
+                article.html() = reading.html()
                 waitTime(45, playListening);
             });
         }
     } else if (uri.includes("writing")) {
         addTextarea(section);
         if (num == 1) {
-            article.innerHTML = reading.innerHTML
+            article.html() = reading.html()
             waitTime(180, endReading);
 
             function playListening() {
@@ -747,19 +708,19 @@ function startTest() {
             }
 
             function endReading() {
-                wordCountDiv.classList.toggle("w3-hide");
-                article.classList.toggle("w3-hide");
+                wordCountDiv.toggle();
+                article.toggle();
                 playListening();
             }
 
             function waitWriting() {
-                article.classList.toggle("w3-hide");
-                wordCountDiv.classList.toggle("w3-hide");
+                article.toggle();
+                wordCountDiv.toggle();
                 waitTime(1200, showModal);
             }
 
         } else {
-            article.innerHTML = main.querySelector("#question").innerHTML;
+            article.html($("#question", main).html());
             waitTime(1800, showModal);
         }
     }
@@ -768,15 +729,16 @@ function startTest() {
 
 function addDropDown(element, length, parent) {
     if (mobileFlag) {
-        let dropdown = createNode(["div", {
+        let dropdown = $("<div>", {
             class: "w3-dropdown-click"
-        }], parent);
-        createNode(["button", {
-            class: "w3-bar-item w3-button w3-padding-small my-color"
-        }, element], dropdown);
-        dropdownContent = createNode(["div", {
+        }).appendTo(parent);
+        $("<button>", {
+            class: "w3-bar-item w3-button w3-padding-small my-color",
+            html: element
+        }).appendTo(dropdown);
+        dropdownContent = $("<div>", {
             class: "w3-dropdown-content w3-bar-block w3-card"
-        }], dropdown);
+        }).appendTo(dropdown);
     }
     for (let i = 1; i <= length; i++) {
         let href;
@@ -793,12 +755,13 @@ function addDropDown(element, length, parent) {
         }
 
         if (mobileFlag) {
-            dropdownContent.style.marginTop = "32px"
+            dropdownContent.css("marginTop", "32px");
             innerHTML = uri.includes("essay") ? `<b>Essay ${i}</b>` : element + " " + i;
-            createNode(["a", {
+            $("<a>", {
                 class: "w3-bar-item w3-btn",
-                href: href
-            }, innerHTML], dropdownContent);
+                href: href,
+                html: innerHTML
+            }).appendTo(dropdownContent);
         } else {
 
             if (uri.includes("essay")) {
@@ -807,19 +770,22 @@ function addDropDown(element, length, parent) {
                 type = element.replace("ing", "").replace("Writ", "Write");
                 innerHTML = type + " " + i
             }
-            let a = createNode(["a", {
+            let a = $("<a>", {
                 class: `${color} w3-padding-small w3-button`,
-                href: href
-            }, innerHTML], parent);
-            if (uri.includes("essay")) a.classList.add("my-margin-small")
+                href: href,
+                html: innerHTML
+            }).appendTo(parent);
+            if (uri.includes("essay")) a.addClass("my-margin-small")
         }
     }
 
-    document.querySelectorAll(".w3-dropdown-click button").forEach(button => {
-        button.onclick = e => {
-            document.querySelectorAll(".w3-dropdown-content").forEach(element => element.classList.remove("w3-show"));
-            e.target.nextElementSibling.classList.toggle("w3-show");
-        };
+    $(".w3-dropdown-click button").each(function () {
+        button.click(function () {
+            $(".w3-dropdown-content").each(function () {
+                $(this).hide()
+            });
+            this.nextElementSibling.toggle();
+        });
     });
 
 }
@@ -831,9 +797,9 @@ function addCategoryFilter() {
     if (setFlag) {
         length = 1;
     } else {
-        let number = document.querySelector("#number");
+        let number = $("#number");
         if (number) {
-            length = parseInt(number.innerText);
+            length = +number.text();
         } else {
             length = 4;
         }
@@ -841,31 +807,32 @@ function addCategoryFilter() {
     var sets = html.split(".")[0];
 
     //let before = html.includes("og") ? true : false;
-    setsDiv = createNode(["div", {
+    setsDiv = $("<div>", {
         class: "",
         id: "setsDiv"
-    }], main, true);
+    }).appendTo(main, true);
 
     // add sets
     for (let i = 1; i <= length; i++) {
         let number = (i < 10 && !html.includes("og") ? "0" + i : i);
         set = setFlag ? sets : sets + number;
-        div = createNode(["div", {
+        div = $("<div>", {
             class: "w3-bar w3-section"
-        }], setsDiv);
+        }).appendTo(setsDiv);
         if (!setFlag) {
-            div.style.fontSize = "13px";
+            div.css("fontSize", "13px");
         }
         if (!mobileFlag) {
-            div.style.fontSize = "14px";
+            div.css("fontSize", "14px");
         }
         if (!setFlag) {
-            createNode(["span", {
-                class: "w3-bar-item w3-btn w3-padding-small my-color"
-            }, set.toUpperCase()], div);
+            $("<span>", {
+                class: "w3-bar-item w3-btn w3-padding-small my-color",
+                html: set.toUpperCase()
+            }).appendTo(div);
         }
 
-        sections.forEach(element => {
+        sections.each(function () {
             addDropDown(element.type, element.length, div);
         });
     }
@@ -873,262 +840,265 @@ function addCategoryFilter() {
 
 
     if (setFlag) { // Add category Button
-        categories[html.match(/\w+(?=\d\.html)/)[0]].forEach(category => {
-            category.hrefs.forEach(href => {
+        categories[html.match(/\w+(?=\d\.html)/)[0]].each(function () {
+            category.hrefs.each(function () {
                 if (html.match(href)) {
                     tag = category.category;
                 }
             });
         });
         href = `../${uri.split("/").slice(-3)[0]}.html`
-        categoryBtn = createNode(["a", {
+        categoryBtn = $("<a>", {
             class: `${color} w3-btn w3-section w3-left`,
-            href: href
-        }, `See ${tag} Questions`], div);
+            href: href,
+            html: `See ${tag} Questions`
+        }).appendTo(div);
 
-        if (testFlag) testBtn = createNode(["button", {
+        if (testFlag) testBtn = $("<button>", {
             class: `${color} w3-btn w3-section w3-right`,
-            id: "test"
-        }, "Test"], div);
+            id: "test",
+            html: "Test"
+        }).appendTo(div);
 
 
-        categoryBtn.onclick = () => {
+        categoryBtn.click(function () {
             tag = {
                 "tag": tag,
                 "href": html
             }
             sessionStorage.setItem("tag", JSON.stringify(tag));
-        }
+        });
 
     } else { // Add Category tags
         function filterSet(category) {
 
             // hide sets
-            document.querySelectorAll("#setsDiv > div").forEach(element => element.classList.add("w3-hide"));
+            $("#setsDiv > div").each(function () {
+                $(this).hide()
+            });
 
-            let setDiv = document.querySelector("#setDiv");
+            let setDiv = $("#setDiv");
             if (!setDiv) {
-                setDiv = createNode(["div", {
+                setDiv = $("<div>", {
                     class: "w3-section",
                     id: "setDiv"
-                }], document.querySelector("#setsDiv"), true);
+                }).appendTo($("#setsDiv"), true);
             }
 
             setDiv.classList.remove("w3-hide");
-            setDiv.innerHTML = "";
+            setDiv.html("");
 
-            document.querySelectorAll("#setsDiv a").forEach(a => {
+            $("#setsDiv a").each(function () {
                 if (category.hrefs.includes(a.href.split("/").splice(-1)[0])) {
-                    innerText = a.href.split("/").slice(-2)[0].toUpperCase() + " " + a.innerText;
-                    createNode(["a", {
+                    innerText = a.href.split("/").slice(-2)[0].toUpperCase() + " " + a.text();
+                    $("<a>", {
                         class: `${color} w3-left w3-button w3-padding-small my-margin-small`,
-                        href: a.href
-                    }, innerText], setDiv);
+                        href: a.href,
+                        html: innerText
+                    }).appendTo(setDiv);
                 }
             })
         }
 
-        categoryDiv = createNode(["div"], main, true);
+        categoryDiv = $("<div>").appendTo(main, true);
 
-        div = createNode(["div", {
+        div = $("<div>", {
             class: "w3-bar w3-card my-color"
-        }], categoryDiv);
+        }).appendTo(categoryDiv);
         if (mobileFlag) {
-            categoryDiv.style.fontSize = "13px";
+            categoryDiv.css("fontSize", "13px");
         }
 
         // sections category
-        for (let i = 0; i < sections.length; i++) {
-            button = createNode(["button", {
-                class: "w3-bar-item w3-button w3-col l2 my-color w3-hide w3-show"
-            }, sections[i].type], div);
+        sections.each(function () {
+            button = $("<button>", {
+                class: "w3-bar-item w3-button w3-col l2 my-color w3-hide w3-show",
+                html: sections[i].type
+            }).appendTo(div);
             if (mobileFlag) {
                 button.className = button.className.replace("l2", "w3-padding-small");
             }
-            button.onclick = (btn) => {
-                categoryDiv.innerHTML = "";
-                categories[btn.target.innerText.toLowerCase()].forEach(category => {
+            button.click(function () {
+                categoryDiv.html("");
+                categories[$(this).text().toLowerCase()].each(function () {
                     createTag(category.category, categoryDiv, () => {
                         filterSet(category)
                     });
                 });
                 addFilterClick("#tagsDiv button", ["my-highlight", "w3-text-white", color], tagsDiv);
-            };
-        }
+            });
+        });
 
-        let searchBtn = main.querySelector("#searchBtn");
+        let searchBtn = $("#searchBtn", main);
         if (!searchBtn) searchBtn = createSearchBtn(div, "w3-bar-item w3-button w3-right w3-padding-small", filterNodes);
 
-        categoryDiv = createNode(["div", {
+        categoryDiv = $("<div>", {
             id: "tagsDiv",
             class: "w3-padding-small w3-card w3-white"
-        }], categoryDiv);
+        }).appendTo(categoryDiv);
 
         var tag = sessionStorage.tag;
 
         if (tag) {
             tag = JSON.parse(sessionStorage.tag);
-            for (let i = 0; i < sections.length; i++) {
-                const button = document.querySelectorAll("div .w3-bar-item.w3-button")[i];
-                if (tag.href.includes(button.innerText.toLowerCase())) {
+            sections.each(function () {
+                const button = $("div .w3-bar-item.w3-button")[i];
+                if (tag.href.includes(button.text().toLowerCase())) {
                     button.click();
-                    for (let i = 0; i < categoryDiv.children.length; i++) {
+                    categoryDiv.children.each(function () {
                         const tagBtn = categoryDiv.children[i];
-                        if (tag.tag === tagBtn.innerText) {
+                        if (tag.tag === tagBtn.text()) {
                             tagBtn.click();
                             sessionStorage.removeItem("tag");
                             break
                         }
-                    }
+                    });
                 }
                 if (!sessionStorage.tag) {
                     break
                 }
-            }
+            });
         }
     }
 
 }
 
+function createQuestion(question) {
+    var questionDiv = $(`#question`).html("");
+    var passageDiv = $(`#passage`).html("");
+
+    // Show Reading Comprehension question related passage if exist
+    if (greFlag) {
+        passageDiv.html($(`#${question.attr("data-passage")}`).html());
+    }
+    else {
+        passageDiv.html($(".passage").html());
+    }
+
+    $("<div>", {
+        html: $(".question", question).html()
+    }).appendTo(questionDiv);
+
+
+    // Decide choice type based on question type
+    let choiceType = question.attr("data-choice-type");
+    let choicesDiv = $("<div>").appendTo(questionDiv);
+
+    let choices = $(".choices", question) // Choices in one question
+    // Update choices
+    choices.each(function (i) {
+        //choice = $(this)
+        // $(this).hide();
+        choiceDiv = $("<div>", {
+            class: "w3-padding-small w3-left"
+        }).appendTo(choicesDiv);
+        //if (question.className.includes("text")) choiceDiv.className += " w3-left"
+
+        $(this).children().each(function () {
+            createChoiceInput(choiceDiv, choiceType, $(this).text(), choiceType + i)
+        });
+    });
+}
+function addSentence(article) {
+    let passage = article.html().replace(". . . ", "&#8230; ")
+    passage = passage.replace(/\s{2,}</g, "<")
+    passage = passage.replace(/(\w{2,}[?!\.])\s{1}/g, "$1</span><span class=\"sentence\"> ")
+    passage = passage.replace(/<p>/g, "<p><span class=\"sentence\"> ")
+    passage = passage.replace(/<\/p>/g, "</span></p>")
+    article.html(passage);
+    return article;
+}
+
 function updateQuestionUI() {
 
     function showQuestion(article) {
-        document.querySelectorAll("#questions > div").forEach(element => {
-            if (!element.className.includes("passage")) element.classList.add("w3-hide")
-        });
-        questionDiv = createNode(["div", {
+
+        let div = $("<div>", {
             class: "w3-section",
-            id: "question"
-        }], main);
-        if (article) {
-            setArticleHeight(article);
-            setArticleHeight(questionDiv);
-        }
-        pageBar = createNode(["div", {
+            id:"practice"
+        }).appendTo(main);
+        var pageBar = $("<div>", {
             class: "w3-bar"
-        }], questionDiv);
-        questionDiv = createNode(["div", {
-            class: "w3-display-container"
-        }], questionDiv);
-        for (let i = 0; i < questions.length; i++) {
-            let button = createNode(["button", {
-                class: `${color} w3-bar-item w3-button`
-            }, i + 1], pageBar);
-            if (mobileFlag) {
-                button.style.padding = "5px";
-            }
-            button.onclick = btn => {
-                id = "question" + btn.target.innerText
-                questionDiv.innerHTML = questions[parseInt(btn.target.innerText) - 1].innerHTML
+        }).appendTo(div);
+        $("<div>", {
+            class: "my-passage",
+            id: "passage",
+        }).appendTo(div);
+        var questionDiv = $("<div>", {
+            id: "question"
+        }).appendTo(div);
 
+        questions.each(function (i) {
+            $("<button>", {
+                class: `${color} w3-bar-item w3-button my-page`,
+                html: i + 1
+            }).appendTo(pageBar).click(function () {
+                let id = "question" + $(this).text();
+                let question = $(`#${id}`);
 
-                let div = createNode(["div", {
+                createQuestion(question);
+
+                let div = $("<div>", {
                     class: "w3-bar"
-                }], questionDiv) // this div is for button to display in block
-                var answerBtn = createNode(["button", {
-                    class: `${color} w3-btn`
-                }, "Toggle Answer"], div);
+                }).appendTo(questionDiv) // this div is for button to display in block
 
-                // toggle answer
-                answerBtn.onclick = btn => {
-                    let question = btn.target.parentElement.parentElement
-                    let answer = question.querySelector("#answer")
-                    if (!answer) answer = createNode(["div", {
-                        class: "answer w3-hide",
-                        id: "answer"
-                    }], question);
-                    answer.innerHTML = `<p>${question.querySelector(".explanation").getAttribute("data-answer")}</p>` + question.querySelector(".explanation").innerHTML;
-                    toggleHighlight(answer.childNodes[0]);
-                    answer.querySelectorAll("em").forEach(em => toggleHighlight(em));
+                $("<button>", {
+                    class: `${color} w3-btn`,
+                    html: "Show Answer"
+                }).appendTo(div).click(function () {
+                    let explanation = $(".explanation", question);
+                    var answers = explanation.attr("data-answer");
+                    $("<div>", {
+                        class: "",
+                        id: "answer",
+                        html: `<p><b>${answers}</b></p>` + explanation.html()
+                    }).appendTo($(`#question`));
+
+
+                    $("em", explanation).each(() => {
+                        addHighlight(em)
+                    });
 
                     // Click Choices
-                    var answers = answer.childNodes[0].innerText;
-                    if (/\d+/.exec(answers)) {
-                        article = document.querySelector("#question .passage")
-                        let passage = article.innerHTML.replace(". . . ", "&#8230; ")
-                        passage = passage.replace(/\s{2,}</g, "<")
-                        passage = passage.replace(/(\w{2,}[?!\.])\s{1}/g, "$1</span><span class=\"sentence\"> ")
-                        passage = passage.replace(/<p>/g, "<p><span class=\"sentence\"> ")
-                        passage = passage.replace(/<\/p>/g, "</span></p>")
-                        article.innerHTML = passage
-                        toggleHighlight(article.querySelectorAll(".sentence")[parseInt(answers) - 1]);
-                    } else {
-                        for (let i = 0; i < answers.split("").length; i++) {
-                            const element = answers.split("")[i];
-                            inputs = document.querySelectorAll("#question input");
-                            inputs[element.charCodeAt(0) - 65].click();
-                        }
-                    }
 
-                    answer.classList.toggle("w3-hide");
+                    if (/\d+/.exec(answers)) {
+                        article = addSentence($("#passage"));
+                        addHighlight($(".sentence", article)[+answers - 1]);
+                    } else {
+                        $(answers.split("")).each(function () {
+                            $("#question input").eq(this.charCodeAt(0) - 65)[0].click();
+                        });
+                    }
                     setStyle();
 
-                }
+                });
                 if (!greFlag) {
-                    article.querySelectorAll(".my-highlight").forEach(element => toggleHighlight(element)); // remove highlight
                     showSpecialQuestion(article, questionDiv);
                 }
                 addWord();
                 setStyle();
 
-            }
-        }
+            });
+        });
     }
 
-    questions = main.querySelectorAll("#questions [id^='question']");
-    if (main.querySelector("#questions")) { // Update Verbal Reasoning UI
-        // Hide passage and choices
-        if (uri.includes("verbal")) main.querySelectorAll(".passage").forEach(e => e.classList.add("w3-hide"));
-
-        questions.forEach(question => {
-            let choices = question.querySelectorAll(".choices") // Choices in one question
-            if (choices[0] && choices[0].innerHTML.match(/table>/)) {
-                return
-            }
-            let choiceType; // Radio Checkbox Select(reading comprehension select sentence)
-            choicesDiv = createNode(["div"], question);
-
-            // Decide choice type based on question type
-            choiceType = question.getAttribute("data-choice-type");
-
-            // Show reading comprehension question related passage
-            if (question.getAttribute("data-passage")) {
-                passageDiv = createNode(["div", {
-                    class: "passage"
-                }], question, true);
-                passageDiv.innerHTML = document.querySelector("#" + question.getAttribute("data-passage")).innerHTML;
-            }
-
-            // Update choices
-            for (let i = 0; i < choices.length; i++) {
-                choice = choices[i]
-                choice.classList.add("w3-hide");
-                choiceDiv = createNode(["div", {
-                    class: "w3-padding-small w3-left"
-                }], choicesDiv);
-                if (question.className.includes("text")) choiceDiv.className += " w3-left"
-
-                for (let j = 0; j < choice.children.length; j++) {
-                    createChoiceInput(choiceDiv, choiceType, choice.children[j].innerText, choiceType + i)
-                }
-            }
-            if (!question.className.includes("passage")) question.querySelector(".explanation").classList.toggle("w3-hide");
-
-        });
-
+    questions = $("#questions [id^='question']");
+    if ($("#questions")) { // Update Verbal Reasoning UI
         // audio lyrics
-        let audio = main.querySelector("audio");
+        let audio = $("audio", main);
         if (audio && uri.includes("listening")) {
-            var timeSpan = main.querySelectorAll(".time");
-            timeSpan.forEach(element => element.classList.add("w3-hide"));
+            var timeSpan = $(".time", main);
+            timeSpan.each(function () {
+                $(this).hide()
+            });
             n = 0;
-            let listening = main.querySelector("article.passage");
+            let listening = $("article.passage", main);
             setArticleHeight(listening, screen.height - audio.offsetTop - 160 + "px")
 
             if (timeSpan) {
                 audio.ontimeupdate = e => {
                     let duration = parseFloat(timeSpan[n].getAttribute("data-times")) + parseFloat(timeSpan[n].getAttribute("data-time"));
-                    if (parseFloat(e.target.currentTime.toFixed(2)) <= duration) {
+                    if (parseFloat(this.currentTime.toFixed(2)) <= duration) {
                         listening.scrollTop = timeSpan[n].parentNode.offsetTop - 320;
                         addHighlight(timeSpan[n].parentNode);
                     } else {
@@ -1139,51 +1109,54 @@ function updateQuestionUI() {
             }
         }
 
-        showQuestion(main.querySelector("article.passage"));
+        $(`#questions`).hide();
+        showQuestion($("article.passage", main));
 
 
     } else { // Update Speaking and Writing
-        let responses = main.querySelectorAll(".response")
+        let responses = $(".response", main)
         if (responses.length > 1) {
-            //document.querySelector("#question").classList.toggle("w3-hide")
-            div = createNode(["div"], main);
-            pageBar = createNode(["div", {
+            //$("#question").toggle()
+            div = $("<div>").appendTo(main);
+            pageBar = $("<div>", {
                 class: "w3-bar"
-            }], div);
-            responseDiv = createNode(["div", {
+            }).appendTo(div);
+            responseDiv = $("<div>", {
                 id: "responseDiv"
-            }], div);
+            }).appendTo(div);
             //setArticleHeight(div);
-            for (let i = 0; i < responses.length; i++) {
-                createNode(["button", {
-                        class: `${color} w3-bar-item w3-button`
-                    }, `${i+1}`], pageBar).onclick = () =>
-                    responseDiv.innerHTML = responses[i].innerHTML;
-            }
+            responses.each(function () {
+                $("<button>", {
+                    class: `${color} w3-bar-item w3-button`,
+                    html: `${i+1}`
+                }).appendTo(pageBar).click(function () {
+                    responseDiv.html(responses[i].html())
+                });
+            });
         }
 
         /**
-         * response = document.querySelector("#response");
-        question = document.querySelector("#question");
+         * response = $("#response");
+        question = $("#question");
         setArticleHeight(response);
 
         if (response) {
-            question.classList.toggle("w3-hide");
-            questionDiv = createNode(["div"], response, true);
-            questionDiv.innerHTML = question.innerHTML;
+            question.toggle();
+            questionDiv = $("<div>").appendTo(response, true);
+            questionDiv.html(question.html());
         }
 
-        listening = document.querySelector("#listening-text");
+        listening = $("#listening-text");
         if (listening) {
-            audio = document.querySelector("audio");
-            newAudio = createNode(["audio", {
+            audio = $("audio");
+            newAudio = $("<audio>",{
                 controls: true
-            }], listening, true);
+            }).appendTo(listening, true);
             newAudio.outerHTML = audio.outerHTML;
-            audio.classList.toggle("w3-hide");
+            audio.toggle();
         }
         setArticleHeight(listening);
-        setArticleHeight(document.querySelector("#reading-text"));
+        setArticleHeight($("#reading-text"));
          */
     }
 }

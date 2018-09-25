@@ -3,35 +3,23 @@
  * comes before any other script 
  */
 
-function createNode(element, parent, before) {
+function createNode(tag, attributes) {
     /** element format
-     * <[><tagName>, {[attributeName : attributeValue[, attributeName : attributeValue]...]}, [innerHTML]<]>
+     * <tagName>, {[attributeName : attributeValue[, attributeName : attributeValue]...]}
      */
+    
+    var node = document.createElement(tag.match(/\w+/)[0]);
 
-    if (!parent) {
-        parent = document.head;
+    for (let i = 0; i < Object.keys(attributes).length; i++) {
+        node.setAttribute(Object.keys(attributes)[i], Object.values(attributes)[i]);
     }
 
-    var node = document.createElement(element[0]);
-
-    if (typeof element[1] == "object") {
-        for (let index = 0; index < Object.keys(element[1]).length; index++) {
-            node.setAttribute(Object.keys(element[1])[index], Object.values(element[1])[index]);
-        }
-        node.innerHTML = element[2] ? element[2] : "";
-    } else if (typeof element[1] == "string") {
-        node.innerHTML = element[1];
-    }
-
-    if (!before) {
-        parent.appendChild(node);
-    } else {
-        parent.insertBefore(node, parent.firstElementChild);
-    }
+    document.head.appendChild(node);
     return node;
 }
 
-function createHtmlString(node) {
+/**
+ * function createHtmlString(node) {
     let string = "";
 
     if (typeof node[1] == "object") {
@@ -45,12 +33,32 @@ function createHtmlString(node) {
     return `<${node[0]} ${string}</${node[0]}>`
 
 }
+ */
+
+function getUri(uri) {
+    let folders = uri.split("/")
+    return {
+        scheme: uri.match(/^.*(?=:\/\/)/)[0],
+        //host: uri.match(/(?<=:\/\/).*?(?=[:\/])/)[0],
+        //port: uri.match(/(?<=:)\d+/) != null ? uri.match(/(?<=:)\d+/)[0] : "",
+        file: folders.slice(-1)[0].match(/.+\.?\w+(?=\??)/)[0],
+        folders: folders.slice(3, folders.length - 1),
+        query: uri.match(/\?.*#?/) != null ? uri.match(/\?.*(?=#?)/)[0] : "",
+        fragment: uri.match(/#.*$/) != null ? uri.match(/#.*?$/)[0] : ""
+    }
+}
+
+function waitLoad(selector, func) {
+    document.querySelector(selector).onload = () => {
+        func();
+    };
+}
+
+function getRandom(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
 function addColor() {
-
-    function getRandomInt(max) {
-        return Math.floor(Math.random() * Math.floor(max));
-    }
 
     let colors = [{
         "css": "w3",
@@ -69,87 +77,44 @@ function addColor() {
         ]
     }]
 
-    let cssNumber = getRandomInt(colors.length)
+    let cssNumber = getRandom(colors.length)
     let css = colors[cssNumber];
-    let schemeNumber = getRandomInt(css.schemes.length)
+    let schemeNumber = getRandom(css.schemes.length)
     let scheme = css.schemes[schemeNumber]
-    let colorNumber = getRandomInt(scheme.color.length)
+    let colorNumber = getRandom(scheme.color.length)
     color = `${css.css}${scheme.scheme == "" ? "": "-"}${scheme.scheme}-` + scheme.color[colorNumber];
+
 }
 
 // Add <meta> <link> <script> element in head
 function addHead() {
 
-    if (uri.includes("quantitative")) {
-        scripts = [
-            "mathjax/2.7.5/MathJax.js",
-            "jsxgraph/1.3.5/jsxgraphcore.js"
-        ]
-        scripts.forEach(script => {
-            $(createHtmlString(["script", {
-                src: `${prefix}${script}`
-            }])).appendTo(head);
-        });
-    }
-
-    $(createHtmlString(["meta", {
+    $("<meta>", {
         charset: "utf-8"
-    }])).appendTo(head);
+    }).appendTo(head);
 
     // Mobile first
-    $(createHtmlString(["meta", {
+    $("<meta>", {
         name: "viewport",
         content: "width=device-width, initial-scale=1"
-    }])).appendTo(head);
+    }).appendTo(head);
 
+    // CSS 
+    let styles = ["w3", "w3-colors", "style", "hljs"]
+    $(styles).each(function () {
+        $("<link>", {
+            rel: "stylesheet",
+            href: `${folder}/css/${this}.css`
+        }).appendTo(head);
+    });
 
     // Website Icon
-    $(createHtmlString(["link", {
+    $("<link>", {
         rel: "icon",
         href: `${icons8}color/50/ffffff/external-link.png`,
         size: "16x16",
         type: "image/png"
-    }])).appendTo(head);
-
-    // CSS 
-    let styles = ["w3", "w3-colors", "style", "hljs"]
-    styles.forEach(css => {
-        $(createHtmlString(["link", {
-            rel: "stylesheet",
-            href:  `${folder}/css/${css}.css`
-        }])).appendTo(head);
-    });
-
-    // My javascript
-    scripts = [{
-        folder: "",
-        scripts: ["vocabulary", "category", "variable", "utility", "style", "filter", "test", "word", "svg", "external"]
-    }, ]
-    scripts.forEach(dir => {
-        dir.scripts.forEach(script => {
-            createNode(["script", {
-                id: `${script}`,
-                src:  `${folder}/js/${dir.folder}${script}.js`
-            }]);
-        });
-    });
-
-    if (document.querySelector("pre")) {
-        $(createHtmlString(["script", {
-            src: `${prefix}highlight.js/9.12.0/highlight.min.js`
-        }])).appendTo(head);
-        languages = ["apache", "bash", "cs", "cpp", "css", "coffeescript", "diff", "xml", "http", "ini", "json", "java", "js", "makefile", "markdown", "nginx", "objectivec", "php", "perl", "python", "ruby", "sql", "shell"]
-        document.querySelectorAll("code").forEach(code => {
-            let language = code.className.split(" ")[0];
-            if (language && !languages.includes(language) && !language.includes("-")) {
-                languages.push(language);
-                if (language == "ps") language = "powershell"
-                $(createHtmlString(["script", {
-                    src: `${prefix}highlight.js/9.12.0/languages/${language}.min.js`
-                }])).appendTo(head);
-            }
-        });
-    }
+    }).appendTo(head);
 
 }
 
@@ -168,35 +133,35 @@ function addTopNav(color) {
     }
 
 
-    topNav = $(createHtmlString(["nav", {
-        class:  `${color} w3-bar w3-card w3-center w3-margin-bottom`,
+    topNav = $("<nav>", {
+        class: `${color} w3-bar w3-card w3-center w3-margin-bottom`,
         id: "topNav"
-    }])).prependTo($("body"));
+    }).prependTo($("body"));
 
     let size = mobileFlag ? 16 : 18;
     let padding = mobileFlag ? "0 8px" : "4px 8px";
-    $(createHtmlString(["a", {
-        href:  `${folder}/index.html`,
-        class: "w3-bar-item w3-button"
-    }, `<img src="${icons8}android/${size}/ffffff/home.png">`])).appendTo(topNav).css("padding", padding);
+    $("<a>", {
+        href: `${folder}/index.html`,
+        class: "w3-bar-item w3-button",
+        html: `<img src="${icons8}android/${size}/ffffff/home.png">`
+    }).appendTo(topNav).css("padding", padding);
+
     // Add Bar Item
-    for (let i = 0; i < barItems.length; i++) {
-        const element = barItems[i];
-
-        $(createHtmlString(["a", {
-            href: folder + test + element.toLowerCase() + `/${element.toLowerCase()}.html`,
-            class: "w3-bar-item w3-button my-padding-mobile"
-        }, element])).appendTo(topNav);
-
-    }
+    $(barItems).each(function () {
+        $("<a>", {
+            href: folder + test + this.toLowerCase() + `/${this.toLowerCase()}.html`,
+            class: "w3-bar-item w3-button my-padding",
+            html: this
+        }).appendTo(topNav);
+    });
 
     // Add Top Nav Button
-    $(createHtmlString(["button", {
+    $("<button>", {
         id: "topNavBtn",
-        class: "w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium w3-padding-small"
-    }, "\u25BC"])).appendTo(topNav).click(btn => {
+        class: "w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium w3-padding-small",
+        html: "\u25BC"
+    }).appendTo(topNav).click(function () {
 
-        let topNavBtn = $(btn.target)
         // toggle top navigation bar item
         hiddenNavItems.each(function () {
             $(this).toggleClass("w3-bar-block");
@@ -204,14 +169,14 @@ function addTopNav(color) {
         });
 
         // toggle top navigation shape
-        if (topNavBtn.text() == "\u25B2") {
-            topNavBtn.text("\u25BC");
+        if ($(this).html() == "\u25B2") {
+            $(this).html("\u25BC");
         } else {
-            topNavBtn.text("\u25B2");
+            $(this).html("\u25B2");
         }
     });
 
-    
+
     $(window).scroll(() => {
         if (window.pageYOffset != $(topNav).offset().Top) {
             $(topNav).addClass("my-fixed")
@@ -224,39 +189,64 @@ function addFooter(color) {
 
     var icons = ["youtube", "twitter", "facebook", "instagram", "linkedin", "pinterest"]
 
-    footer = $(createHtmlString(["footer", {
+    footer = $("<footer>", {
         class: `${color} w3-container w3-center w3-margin-top`
-    }])).appendTo($("body"));
+    }).appendTo($("body"));
 
-    $(createHtmlString(["p", "This is my social media."])).appendTo(footer);
+    $("<p>", {
+        html: "This is my social media."
+    }).appendTo(footer);
 
-    icons.forEach(element => {
-        let a = $(createHtmlString(["a", {
-            href: `https://www.${element}.com`
-        }])).appendTo(footer);
-        $(createHtmlString(["img", {
-            src: `${icons8}metro/20/ffffff/${element}.png`,
+    $(icons).each(function () {
+        $("<img>", {
+            src: `${icons8}metro/20/ffffff/${this}.png`,
             class: "my-margin-small"
-        }])).appendTo(a);
+        }).appendTo($("<a>", {
+            href: `https://www.${this}.com`
+        }).appendTo(footer));
     });
-    let p = $(createHtmlString(["p"])).appendTo(footer);
 
-    $(createHtmlString(["span", "Made by "])).appendTo(p);
-    $(createHtmlString(["a", {
-        href: "https://mygithubpage.github.io"
-    }, "GitHubPages"])).appendTo(p);
+    $("<p>", {
+        html: `Made by <a href="https://mygithubpage.github.io">GitHubPages</a>`
+    }).appendTo(footer);
 }
 
+function addScripts() {
+
+
+    // My javascript
+    /**
+     * var scripts = [{
+        folder: "",
+        scripts: ["vocabulary", "category", "variable", "utility", "style", "filter", "test", "word", "svg", "external"]
+    }, ]
+     */
+    let scripts = ["vocabulary", "category", "variable", "utility", "style", "filter", "test", "word", "svg", "external"]
+    $(scripts).each(function () {
+        createNode("<script>", {
+            id: `${this}`,
+            src: `${folder}/js/${this}.js`
+        }).async = false;
+    });
+}
 // Execute script after window load
 
 mobileFlag = screen.width < 600 ? true : false;
-html = uri.split("/").slice(-1)[0];
+html = getUri(uri).file;
 icons8 = "https://png.icons8.com/";
-
+bgColor = "";
 
 window.addEventListener("load", () => {
     $(() => {
         head = $("head");
+        main = $("main");
+        sidebar = $("#sidebar");
+
+        if ($("#questions").length) questions = $("#questions [id^='question']");
+        else questions = $("#question > div");
+        testFlag = questions.length || $("#question").length;
+
+        addScripts();
         addHead();
         addColor();
         addTopNav(color);

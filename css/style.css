@@ -112,9 +112,6 @@
 }
 
 /* My Margin Small */
-.my-margin-top-small {
-  margin-top: 8px;
-}
 
 .my-margin-small {
   margin: 4px;
@@ -131,21 +128,16 @@
   z-index: 1;
 }
 
-/* My Color */
-.my-crimson {
-  color: white !important;
-  background-color: crimson !important;
-}
-
-.my-dark-blue {
-  color: white !important;
-  background-color: darkblue !important;
+.my-padding {
+  padding: 8px 16px !important;
+  /* w3-padding-small */
 }
 
 .my-button,
 .my-tag-mobile {
   cursor: pointer;
-  margin: 4px;
+  margin: 4px !important;
+  padding: 4px 8px !important;
   /* my-margin-small */
 }
 
@@ -177,7 +169,7 @@
     width: 100%;
   }
 
-  .my-padding-mobile {
+  .my-padding {
     padding: 4px 8px !important;
     /* w3-padding-small */
     font-size: 15px !important;
@@ -188,12 +180,15 @@
   .my-button,
   .my-tag-mobile {
     cursor: pointer;
-    margin: 4px;
+    margin: 4px !important;
     /* my-margin-small */
-    padding: 4px 8px;
+    padding: 4px 8px !important;
     /* w3-padding-small */
   }
 
+  .my-page {
+    padding: 5px !important;
+  }
 }
 
 textarea {

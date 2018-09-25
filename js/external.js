@@ -1,9 +1,9 @@
 function initialize() {
 
-    main = document.querySelector("main");
-    bgColor = window.getComputedStyle(document.querySelector("footer")).backgroundColor;
+    bgColor = window.getComputedStyle(footer[0]).backgroundColor;
+
     updateCharacter();
-    
+
     if (uri.match(/toefl(\/(tpo|og)){2}\.html/)) {
         addCategoryFilter();
     }
@@ -15,62 +15,66 @@ function initialize() {
         if (uri.match(/ing\d\.html/)) {
             addCategoryFilter();
         } else {
-            testBtn = createNode(["button", {
+            if (greFlag) {
+                var parent = $("<div>", {
+                    class: `w3-bar`,
+                }).prependTo(main)
+            }
+            else {
+                var parent = main
+            }
+            $("<button>", {
+                id: "test",
                 class: `${color} w3-button w3-right w3-section my-bar-small`,
-                id: "test"
-            }, "Test"], main, true);
+                html: "Test"
+            }).prependTo(parent).click(startTest);
         }
 
-        testBtn.onclick = () => startTest();
     }
 
-    if (document.querySelector("#tags")) {
+    if ($("#tags").length) {
         addTags();
     }
 
     // Create Recite Button for vocabulary
     if (uri.includes("vocabulary")) {
-        waitLoad(`#vocabulary`, createWordSets);
+        waitLoad("#vocabulary", createWordSets);
     }
 
-    if (sidebar) {
+    if (sidebar.length) {
         addTOC();
     }
 
     // essay folder
     if (uri.includes("topic")) {
-        question = document.querySelector("section");
-        article = document.querySelector("article");
-        article.classList.toggle("w3-section");
-        question.classList.toggle("w3-hide");
-        createNode(["div", question.innerHTML], article, true);
-        var textarea = addTextarea(main);
-        textarea.classList.add("w3-section");
-        textarea.classList.add("w3-block");
-        textarea.classList.remove("w3-half");
+        //question = $("section").hide();
+        article = $("article").toggleClass("w3-section");
+            
+        //createNode(["div", question.html()], article, true);
+        var textarea = addTextarea(main).addClass("w3-section w3-block").removeClass("w3-half");
         if (mobileFlag) {
-            textarea.style.height = screen.height / 4 - 16 + "px";
-            article.style.height = screen.height / 2 - 96 + "px";
-            article.style.overflowY = "scroll";
+            textarea.css({height: screen.height / 4 - 16 + "px"});
+            article.css({height: screen.height / 2 - 96 + "px", overflow : "scroll"});
         }
     }
 
     if (uri.includes("essay.html")) {
         topics.forEach(topic => {
-            let div = createNode(["div", {
+            let div = $("<div>", {
                 class: "w3-section"
-            }], main);
+            }).appendTo(main);
             if (!mobileFlag) {
-                createNode(["span", {
-                    class: "w3-padding my-color my-margin-small"
-                }, `${topic.name}`], div);
+                $("<span>", {
+                    class: "w3-padding my-color my-margin-small",
+                    html: `${topic.name}`
+                }).appendTo(div);
             }
             addDropDown(topic.name, topic.count, div);
         })
 
-        let div = createNode(["div", {
+        let div = $("<div>", {
             class: "w3-bar"
-        }], main, true);
+        }).appendTo(main, true);
         createSearchBtn(div, `${color} my-search`, filterNodes, main.querySelectorAll(".w3-section"));
     }
 
@@ -91,31 +95,31 @@ function initialize() {
                 }
             }
 
-            description.innerHTML = table.rows[row].cells[col].textContent;
+            description.html(table.rows[row].cells[col].textContent);
         }
 
         if (mobileFlag) {
             main.querySelectorAll(".my-table").forEach(table => {
-                table.classList.add("w3-hide");
+                table.addClass("w3-hide");
 
                 // create row select and col select radio input
-                let mobileTable = createNode(["table", {
+                let mobileTable = $("<table>", {
                     class: "table"
-                }], table.parentNode);
-                let tr = createNode(["tr"], mobileTable);
+                }).appendTo(table.parentNode);
+                let tr = $("<tr>").appendTo(mobileTable);
                 for (let i = 1; i < table.querySelectorAll("th").length; i++) {
-                    const element = table.querySelectorAll("th")[i].innerText;
-                    createChoiceInput(tr, "radio", element, "header").classList.add("my-margin-small");
+                    const element = table.querySelectorAll("th")[i].text();
+                    createChoiceInput(tr, "radio", element, "header").addClass("my-margin-small");
                 }
-                tr = createNode(["tr"], mobileTable);
+                tr = $("<tr>").appendTo(mobileTable);
                 for (let i = 1; i < table.rows.length; i++) {
-                    createChoiceInput(tr, "radio", table.rows[i].cells[0].innerText, table.rows[0].cells[0].innerText).classList.add("my-margin-small");
+                    createChoiceInput(tr, "radio", table.rows[i].cells[0].text(), table.rows[0].cells[0].text()).addClass("my-margin-small");
                 }
 
-                tr = createNode(["tr"], mobileTable);
-                let description = createNode(["div", {
+                tr = $("<tr>").appendTo(mobileTable);
+                let description = $("<div>", {
                     class: "w3-section description"
-                }], tr);
+                }).appendTo(tr);
 
                 let inputs = mobileTable.querySelectorAll("input");
                 inputs.forEach(element => {
@@ -133,16 +137,22 @@ function initialize() {
 
     // index page
     if (uri.includes("index.html")) {
-        function createIconText(element, parent, tag, before) {
-            tag = tag ? tag : "p";
-            let node = createNode([tag], parent, before);
-            let size = tag == "p" ? 24 : (8 - parseInt(tag[1])) * 6
+        function createIconText(element, parent) {
+            tag = "p" //tag ? tag : "p";
+
+            let node = $(`<p>`).appendTo(parent);
+            let size = 24 //tag == "p" ? 24 : (8 - parseInt(tag[1])) * 6
             let style = element.style ? element.style : "ios"
-            createNode(["img", {
+
+            $("<img>", {
                 src: `${icons8}/${style}/${size}/${rgb2hex(bgColor)}/${element.link}-filled.png`,
                 class: "w3-padding-small"
-            }], node);
-            createNode(["span", `<b>${element.text}</b>`], node);
+            }).appendTo(node);
+
+            $("<span>", {
+                html: `<b>${element.text}</b>`
+            }).appendTo(node);
+
         }
 
         let info = [{
@@ -162,8 +172,8 @@ function initialize() {
                 "text": "1800800800"
             },
         ]
-        info.forEach(element => {
-            createIconText(element, main.querySelector("#info"));
+        $(info).each(function () {
+            createIconText(this, $("#info"));
         })
 
         let skills = [{
@@ -183,41 +193,55 @@ function initialize() {
             "text": "Python",
             "percent": "30%"
         }, ]
-        let parent = main.querySelector("#skills");
+        let parent = $("#skills");
 
-        skills.forEach(element => {
+        $(skills).each(function () {
 
-            createIconText(element, parent);
-            let div = createNode(["div", {
+            createIconText(this, parent);
+            $("<div>", {
+                class: "w3-center w3-round-xlarge w3-text-white my-color",
+                html: this.percent
+            }).appendTo($("<div>", {
                 class: "w3-light-gray w3-round-xlarge w3-small"
-            }], parent);
-            createNode(["div", {
-                class: "w3-center w3-round-xlarge w3-text-white my-color"
-            }, element.percent], div).style.width = element.percent;
+            }).appendTo(parent)).width(this.percent);
 
         });
-        let element = {
-            "link": "web",
-            "text": "My Sites"
-        }
-        createIconText(element, main.querySelector("#sites"), "h3", true);
     }
 
-    if (document.querySelector("pre")) {
-        hljs.initHighlighting();
+    if ($("pre").length) {
         removeLeadingWhiteSpace();
+        $.getScript(`${prefix}highlight.js/9.12.0/highlight.min.js`, () => {
+            flag = true;
+            languages = ["apache", "bash", "cs", "cpp", "css", "coffeescript", "diff", "xml", "http", "ini", "json", "java", "js", "makefile", "markdown", "nginx", "objectivec", "php", "perl", "python", "ruby", "sql", "shell"]
+            $("code").each(function () {
+                let language = this.className.split(" ")[0];
+                if (language && !languages.includes(language) && !language.includes("-")) {
+                    flag = false;
+                    languages.push(language);
+                    if (language == "ps") language = "powershell"
+
+                    $.getScript(`${prefix}highlight.js/9.12.0/languages/${language}.min.js`, () => {
+                        hljs.initHighlighting();
+                    });
+                }
+            });
+            if (flag) hljs.initHighlighting();
+        });
     }
 
     if (uri.includes("quantitative")) {
-        createSVG();
+        let scripts = [
+            "jsxgraph/1.3.5/jsxgraphcore.js",
+            "mathjax/2.7.5/MathJax.js"
+        ]
+        $(scripts).each(function () {
+            $.getScript(`${prefix}${this}`, () => {
+                createSVG();
+            });
+        });
     }
 
-    
     setStyle();
 }
 
-sidebar = document.querySelector("#sidebar");
-if (document.querySelector("#questions")) questions = document.querySelectorAll("#questions [id^='question']");
-else questions = document.querySelectorAll("#question > div");
-testFlag = questions.length > 0 || document.querySelector("#question");
 initialize();

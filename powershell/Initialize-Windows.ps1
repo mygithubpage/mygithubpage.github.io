@@ -50,7 +50,7 @@ function Install-VSCode {
 
     if (!(Test-Path $setting)) { 
         New-Item $setting
-        Set-Content $setting-Value `
+        Set-Content $setting `
         '{
             "editor.minimap.enabled": false,
             "editor.wordWrap": "on",

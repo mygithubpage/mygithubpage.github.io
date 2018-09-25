@@ -1,303 +1,285 @@
 function addSound(link, parent) {
-    var audio = createNode(["audio", {
+    var audio = $("<audio>", {
         src: link
-    }], parent)
-    let imgLink = `${icons8}metro/20/${rgb2hex(bgColor)}/speaker.png`;
-    createNode(["img", {
-        src: imgLink,
+    }).appendTo(parent)
+
+    $("<img>", {
+        src: `${icons8}metro/20/${rgb2hex(bgColor)}/speaker.png`,
         class: "w3-padding-small my-button"
-    }], parent).onclick = () => audio.play();
+    }).appendTo(parent).click(function () {
+        audio[0].play()
+    });
 }
 
 function addWordModal(word, parent) {
 
-    var wordDiv = createNode(["div", {
+    let wordDiv = $("<div>", {
         class: "w3-left w3-col l2"
-    }], parent);
+    }).appendTo(parent);
 
-    createNode(["div", {
-        class: "w3-card-4 my-margin w3-padding-small w3-center w3-border w3-large my-button"
-    }, `<b>${word.word}</b>`], wordDiv).onclick = () => {
+    $("<div>", {
+        class: "w3-card w3-center w3-border w3-large my-button",
+        html: `<b>${word.word}</b>`
+    }).appendTo(wordDiv).click(function () {
         showWordModal(word)
-    };
+    });
     setStyle();
 }
 
 function showWordModal(word) {
 
     var details = Object.keys(word)
-    let parent = typeof testDiv != "undefined" ? testDiv : main;
-    let modal = document.querySelector(`#${word.word}`)
-    if (modal) {
-        modal.style.display = "block";
-        return;
-    }
-    modal = createNode(["div", {
-        id: word.word,
-        class: "w3-modal"
-    }], parent);
-    let modalContent = createNode(["div", {
-        class: "w3-modal-content"
-    }], modal);
+    var modal = createModal();
 
     // title bar
-    let bar = createNode(["div", {
-        class: `${color} w3-bar w3-padding`
-    }], modalContent);
-    createNode(["span", {
-        class: " "
-    }, "Word Details"], bar);
-    createNode(["span", {
-        class: "w3-right my-button"
-    }, "X"], bar).onclick = () => {
-        closeModal(modal)
-    };
+    let bar = $("<div>", {
+        class: `${color} w3-bar`
+    }).appendTo(modal);
+    $("<span>", {
+        class: "w3-left my-button my-padding",
+        html: "Word Details"
+    }).appendTo(bar).css("cursor", "initial");
+    $("<span>", {
+        class: "w3-right my-button my-padding",
+        html: "X"
+    }).appendTo(bar).click(function () {
+        modal.parent().remove();
+    });
 
     // word content div
-    let div = createNode(["div", {
+    let div = $("<div>", {
         class: "my-margin"
-    }], modalContent);
-    var termDiv = createNode(["div", {
-        class: "w3-xlarge w3-center"
-    }, `<b>${word.word}</b>`], div);
+    }).appendTo(modal);
+    var termDiv = $("<div>", {
+        class: "w3-xlarge w3-center",
+        html: `<b>${word.word}</b>`
+    }).appendTo(div);
 
     addSound(word.sounds, termDiv);
 
     // details
-    for (let i = 0; i < details.length; i++) {
+    $(details).filter(function () {
+        return !(/word|sound/).exec(this)
+    }).each(function () {
 
-        if ((/word|sound/).exec(details[i])) {
-            continue
-        }
-
-        createNode(["button", {
+        $("<button>", {
             class: `${color} w3-btn my-margin-small w3-padding-small`,
-            id: details[i]
-        }, details[i]], div).onclick = (e) => {
+            id: this,
+            html: this
+        }).appendTo(div).click(function () {
 
-            detailDiv.classList.add("w3-padding-small");
-            detailDiv.innerHTML = word[e.target.innerText];
+            detailDiv.addClass("w3-padding-small");
+            detailDiv.html(word[$(this).text()])
 
             // highlight word in example
-            if (e.target.innerText == "examples") {
-                detailDiv.querySelectorAll("p").forEach(sentence => {
+            if ($(this).text() == "examples") {
+                $("p", detailDiv).each(function () {
+                    var sentence = $(this)
+                    $(sentence.text().split(" ")).each(function () {
 
-                    sentence.innerText.split(" ").forEach(element => {
-
-                        if (word.family.includes(`<li>${element}<`)) {
-                            element = element.replace(/[,.]/, "")
-                            sentence.innerHTML = sentence.innerHTML.replace(element, `<b>${element}</b>`)
+                        if (word.family.includes(`<li>${this}<`)) {
+                            element = this.replace(/[,.]/, "")
+                            sentence.html(sentence.html().replace(element, `<b>${element}</b>`))
                         }
                     });
                 });
-            } else if (e.target.innerText == "definition") {
+            } else if ($(this).text() == "synonyms") {
 
-            } else if (e.target.innerText == "synonyms") {
-
-                detailDiv.querySelectorAll("div").forEach(div => {
-                    div.classList.add("w3-section");
-                    let link = div.className.match(/exs/) ? "https://en.oxforddictionaries.com/definition/us/" :
+                $("div", detailDiv).each(function () {
+                    $(this).addClass("w3-section");
+                    let link = this.className.match(/exs/) ? "https://en.oxforddictionaries.com/definition/us/" :
                         "https://www.thefreedictionary.com/"
-                    div.innerHTML = div.innerHTML.replace(/(\w{3,})/g, `<a class="my-link" href="${link}$1">$1</a>`);
+                    $(this).html($(this).html().replace(/(\w{3,})/g, `<a class="my-link" href="${link}$1">$1</a>`))
                 });
-            } else if (e.target.innerText == "family") {
+            } else if ($(this).text() == "family") {
 
-                detailDiv.querySelectorAll("li").forEach(node => {
-                    createNode(["a", {
+                $("li", detailDiv).each(function () {
+                    $("<a>", {
                         class: "my-link",
-                        href: ("https://en.oxforddictionaries.com/definition/us/" + node.childNodes[0].textContent)
-                    }, node.childNodes[0].textContent], node, true);
-                    node.childNodes[0].textContent = ""
-                });
-            } else if (e.target.innerText == "etymology") {
-                detailDiv.querySelectorAll("a").forEach(a => {
-                    let index = a.href.indexOf("/wiki/")
-                    let string = a.href.substring(index, a.href.length)
-                    a.href = "https://en.wiktionary.org" + string;
+                        href: ("https://en.oxforddictionaries.com/definition/us/" + this.childNodes[0].textContent),
+                        text: this.childNodes[0].textContent
+                    }).prependTo($(this));
+                    this.childNodes[1].textContent = ""
                 });
             }
+            /**
+                       else if ($(this).text() == "etymology") {
+                           $("a", detailDiv).each(function () {
+                               let index = this.href.indexOf("/wiki/")
+                               let string = this.href.substring(index, this.href.length)
+                               this.href = "https://en.wiktionary.org" + string;
+                           });
+                       } */
             setStyle();
-        };
+        });
 
-    }
+    });
 
-    let detailDiv = createNode(["div", {
+    let detailDiv = $("<div>", {
         class: "my-margin-small w3-padding-small"
-    }], div);
-    div.querySelector("#synonyms").click();
+    }).appendTo(div);
+    $("#synonyms").click();
 
-    createNode(["button", {
-        class: `${color} w3-btn w3-bar w3-padding-small w3-section`
-    }, "close"], div).onclick = () => {
-        closeModal(modal)
-    };
+    $("<button>", {
+        class: `${color} w3-btn w3-bar w3-padding-small w3-section`,
+        html: "close"
+    }).appendTo(div).click(function () {
+        modal.parent().remove();
+    });
     setStyle();
 
-    modal.style.display = "block";
+    modal.parent().show();
 }
 
 function filterWord(value) {
-    document.querySelector("#words").innerHTML = "";
+    $("#words").html("");
     if (!value) return;
-    sets.forEach(set => {
-        set.words.forEach(word => {
-            if (word.word.includes(value)) addWordModal(word, main.querySelector("#words"));
+    $(sets).each(function () {
+        $(this.words).each(function () {
+            let flag = false
+            $($.parseHTML(this.synonyms)).each(function () {
+                flag = $(this).text() && $(this).text().split(",").indexOf(value) > 0
+                if (flag) return;
+            })
+            if (this.word.includes(value) || flag) addWordModal(this, $("#words"));
         });
     });
 }
 
 function createWordSets() {
-    let div = createNode(["div", {
-        class: "w3-bar"
-    }], main);
-    createNode(["button", {
-        class: `${color} w3-btn w3-section w3-large my-padding-mobile w3-left `
-    }, "Recite"], div).onclick = createWordTest;
+    let div = $("<div>", {
+        class: "w3-bar",
+    }).appendTo(main);
 
-    createSearchBtn(div, `${color} my-search`, filterWord).addEventListener("click", () => {
-        setsDiv.querySelectorAll("button").forEach(element => element.classList.toggle("w3-hide"));
+    $("<button>", {
+        class: `${color} w3-btn w3-section w3-large w3-padding w3-left `,
+        html: `Recite`
+    }).appendTo(div).click(createWordTest);
+
+
+    createSearchBtn(div, `${color} my-search w3-padding`, filterWord).click(() => {
+        $("button", setsDiv).toggle();
     });
 
-    setsDiv = createNode(["div", {
+    setsDiv = $("<div>", {
         class: "w3-section w3-bar w3-row",
         id: "sets"
-    }], main);
+    }).appendTo(main);
 
-    sets.forEach(set => {
+    $(sets).each(function () {
 
-        var words = set.words;
+        var words = this.words;
 
-        // put new word in the beginning
-        var newWords;
-        let newWord = document.querySelector("#" + set.name.replace(/ /g, "-").toLowerCase())
-        if (newWord) { // if current vocabulary set has new words div
-            newWords = newWord.innerText.split(" ");
-
-            for (let i = 0; i < words.length; i++) {
-                index = newWords.indexOf(words[i].word)
-                if (index != -1) {
-                    [words[i], words[index]] = [words[index], words[i]]
-                }
-            }
-        }
-
-        createNode(["button", {
-            class: `${color} w3-btn my-margin-small`
-        }, set.name], setsDiv).onclick = () => {
-            wordsDiv.innerHTML = "";
-            words.forEach(word => {
-                addWordModal(word, wordsDiv);
+        $("<button>", {
+            class: `${color} w3-btn my-margin-small`,
+            html: this.name
+        }).appendTo(setsDiv).click(() => {
+            wordsDiv.html("");
+            $(words).each(function () {
+                addWordModal(this, wordsDiv);
             });
-        }
-
+        });
     });
 
-    wordsDiv = createNode(["div", {
+    wordsDiv = $("<div>", {
         class: "w3-section w3-bar w3-row",
         id: "words"
-    }], main);
+    }).appendTo(main);
     setStyle();
 }
 
 function createWordTest() {
 
     function showModal() {
-        let modal = createNode(["div", {
-            class: "w3-modal"
-        }], testDiv);
-        let modalContent = createNode(["div", {
-            class: "w3-modal-content"
-        }], modal);
-        createNode(["div", {
-            class: `${color} w3-padding`
-        }, "Vocabulary Set"], modalContent);
-        let p = createNode(["div"], modalContent);
-        sets.forEach(set => {
+        var modal = createModal();
+        $("<div>", {
+            class: `${color} w3-padding`,
+            html: "Vocabulary Set"
+        }).appendTo(modal);
+        let p = $("<div>", {
+            class: `w3-padding-small`
+        }).appendTo(modal);
+        $(sets).each(function (i, element) {
 
-            createNode(["button", {
-                class: `${color} w3-btn my-margin`
-            }, set.name], p).onclick = (e) => {
-                modal.style.display = "none";
-                testDiv.removeChild(testDiv.lastChild);
-                showQuestion(sets.find(element => element.name == e.target.innerText));
-            }
+            $("<button>", {
+                class: `${color} w3-btn my-margin-small`,
+                html: this.name
+            }).appendTo(p).click(function () {
+                modal.parent().remove();
+                showQuestion(element);
+            });
 
         });
         toggleElement();
-        modal.style.display = "block";
+        modal.parent().show();
     }
 
     // Confirm Action like "Exit"
     function showConfirmModal(type) {
-        let modal = createNode(["div", {
-            class: "w3-modal"
-        }], testDiv);
-        let modalContent = createNode(["div", {
-            class: "w3-modal-content"
-        }], modal);
-        createNode(["div", {
-            class: `${color} w3-padding`
-        }, "Confirm " + type], modalContent);
-        let p = createNode(["p", {
+        var modal = createModal();
+        $("<div>", {
+            class: `${color} w3-padding`,
+            html: "Confirm " + type
+        }).appendTo(modal);
+        let p = $("<p>", {
             class: "w3-padding w3-section"
-        }], modalContent);
+        }).appendTo(modal);
 
         // answering and correct rate
-        p.innerHTML = `Do you really want to ${type}?`
+        p.html(`Do you really want to ${type}?`)
 
-        let buttonBar = createNode(["div", {
+        let buttonBar = $("<div>", {
             class: "w3-bar",
             id: "buttonBar"
-        }], modalContent);
-        yesBtn = createNode(["button", {
-            class: `${color} w3-btn w3-margin w3-left`
-        }, "Yes"], buttonBar);
-        noBtn = createNode(["button", {
-            class: `${color} w3-btn w3-margin w3-right`
-        }, "No"], buttonBar)
-        yesBtn.onclick = () => {
+        }).appendTo(modal);
+        yesBtn = $("<button>", {
+            class: `${color} w3-btn w3-margin w3-left`,
+            html: "Yes"
+        }).appendTo(buttonBar);
+        noBtn = $("<button>", {
+            class: `${color} w3-btn w3-margin w3-right`,
+            html: "No"
+        }).appendTo(buttonBar)
+        yesBtn.click(function () {
             showReviewModal();
-        }
-        noBtn.onclick = () => {
-            modal.style.display = "none";
-        }
+        });
+        noBtn.click(function () {
+            modal.parent().remove();
+        });
 
-        modal.style.display = "block";
+        modal.parent().show();
     }
 
     function showReviewModal() {
-        let modal = createNode(["div", {
-            class: "w3-modal"
-        }], testDiv);
-        let modalContent = createNode(["div", {
-            class: "w3-modal-content"
-        }], modal);
-        createNode(["div", {
-            class: `${color} w3-padding`
-        }, "Review Test"], modalContent);
-        let p = createNode(["p", {
+        var modal = createModal();
+        $("<div>", {
+            class: `${color} w3-padding`,
+            html: "Review Test"
+        }).appendTo(modal);
+        let p = $("<p>", {
             class: "w3-padding w3-section"
-        }], modalContent);
-        let div = createNode(["div", {
+        }).appendTo(modal);
+        let div = $("<div>", {
             class: "w3-padding-small"
-        }], modalContent);
+        }).appendTo(modal);
 
         // answering and correct rate
-        p.innerHTML = `You have <b>answered ${wordCount * 2 - indexes.length}</b> of ${wordCount * 2} questions, <b>${wordCount * 2 - indexes.length - error} of ${wordCount * 2 - indexes.length}</b> answered questions are correct.`
+        p.html(`You have <b>answered ${wordCount * 2 - indexes.length}</b> of ${wordCount * 2} questions, <b>${wordCount * 2 - indexes.length - error} of ${wordCount * 2 - indexes.length}</b> answered questions are correct.`)
 
         // forgotten words
-        forgottenWords.forEach(word => {
-            addWordModal(word, div);
+        $(forgottenWords).each(function () {
+            addWordModal(this, div);
         });
 
-
-        modal.style.display = "block";
-        createNode(["button", {
-            class: `${color} w3-btn w3-padding w3-margin-top w3-bar`
-        }, "Exit"], modalContent).onclick = () => {
-            document.body.removeChild(document.body.lastChild);
+        modal.parent().show();
+        $("<button>", {
+            class: `${color} w3-btn w3-padding w3-margin-top w3-bar`,
+            html: "Exit"
+        }).appendTo(modal).click(function () {
+            modal.parent().remove();
             toggleElement();
-        };
+            $("#testDiv").remove();
+        });
         setStyle();
     }
 
@@ -310,10 +292,6 @@ function createWordTest() {
          * show current number of all number  
          */
 
-        function getRandom(length) {
-            return Math.floor(Math.random() * length);
-        }
-
         function popRandom(array) {
             // randomly sway a element with the last one which will be pop soon.
             var random = getRandom(array.length);
@@ -322,21 +300,18 @@ function createWordTest() {
         }
 
         // create question index array "0,0","0,1", ... , "0, n-1", "1,0", ... , "1, n-1"
-        document.body.scrollTop = 0;
+        $("body").scrollTop(0);
         var words = set.words;
         wordCount = words.length;
         if (!indexes) {
             indexes = new Array(wordCount * 2);
-            for (let i = 0; i < wordCount; i++) {
-                indexes[i] = {
-                    word: words[i].word,
-                    detail: "definitions"
-                };
-                indexes[i + wordCount] = {
-                    word: words[i].word,
-                    detail: "synonyms"
-                };
-            }
+            indexes = $(indexes).map((i) => {
+                detail = i < wordCount ? "definitions" : "synonyms";
+                return {
+                    word: words[i % wordCount].word,
+                    detail: detail
+                }
+            }).get();
         }
 
         // randomly pop item from array
@@ -351,13 +326,11 @@ function createWordTest() {
 
 
         // show current number of all number
-        numberP.innerHTML = `<b>Questions ${(wordCount * 2) - indexes.length} of ${wordCount * 2}</b>`;
+        numberP.html(`<b>Questions ${(wordCount * 2) - indexes.length} of ${wordCount * 2}</b>`)
 
         // show detail
-        detailDiv.innerHTML = `<b>${word.word}</b>`; // questions is word
+        detailDiv.html(`<b>${word.word}</b>`) // questions is word)
         addSound(word.sounds, detailDiv);
-
-
 
         var optionsLength = 4;
         var paragraphs = [];
@@ -365,95 +338,97 @@ function createWordTest() {
         answers = new Array(optionsLength);
 
 
-        optionDiv.innerHTML = word[detail];
-        optionDiv.querySelectorAll("p").forEach(p => paragraphs.push(p));
-        var optionsCount = getRandom(optionsLength) + 1;
+        optionDiv.html(word[detail])
+        optionDiv.children().each(function () {
+            paragraphs.push(this)
+        });
 
         // add random options from details
-        for (let i = 0; i < optionsCount && paragraphs.length > 0; i++) {
-            do {
-                random = getRandom(options.length);
-            } while (options[random])
-            options[random] = paragraphs.pop();
-            answers[random] = random;
-        }
-
-        // add rest options from other words
-        let length = optionsLength - options.filter(o => o != "").length
-        for (let i = 0; i < length; i++) {
-            do {
-                random = getRandom(words.length);
-            } while (words[random].word == word.word)
-            optionDiv.innerHTML = words[random][detail];
-            let paras = optionDiv.querySelectorAll("p");
-            do {
-                random = getRandom(options.length);
-            } while (options[random])
-            options[random] = paras[getRandom(paras.length)];
-        }
+        $(options).each( () => {
+            if (paragraphs.length) {
+                do {
+                    random = getRandom(options.length);
+                } while (options[random])
+                options[random] = paragraphs.pop();
+                answers[random] = random;
+            } else {
+                do {
+                    random = getRandom(words.length);
+                } while (words[random].word == word.word)
+                let choices = $.parseHTML(words[random][detail]);
+                do {
+                    random = getRandom(choices.length);
+                } while (options.includes(choices[random]))
+                options[options.findIndex(e => { return typeof e == "undefined"})] = choices[random];
+            }
+        })
 
         // show options
-        optionDiv.innerHTML = "";
-        options.forEach(option => {
-            createChoiceInput(optionDiv, "checkbox", option.innerHTML);
+        optionDiv.html("")
+        $(options).each(function () {
+            createChoiceInput(optionDiv, "checkbox", $(this).html());
         });
 
         // add check-next button
-        createNode(["button", {
-            class: `${color} w3-btn w3-padding w3-section w3-bar`
-        }, "Check"], optionDiv).onclick = (event) => {
-
-            if (event.target.innerText == "Next") showQuestion(set);
-            var labels = optionDiv.querySelectorAll(".my-label");
-            for (let i = 0; i < labels.length; i++) {
-                let label = labels[i];
-                let input = label.querySelector("input");
+        $("<button>", {
+            class: `${color} w3-btn w3-padding w3-section w3-bar`,
+            html: "Check"
+        }).appendTo(optionDiv).click(function () {
+            let btn = $(this)
+            if ($(this).text() == "Next") showQuestion(set);
+            var labels = $(".my-label", optionDiv);
+            labels.each(function (i) {
+                let input = $("input:checked", $(this));
 
                 // add word and sound
-                if (event.target.innerText == "Check" && answers[i] == null) {
-                    let word = words.find(element => element[detail].includes(options[i].innerHTML))
-                    createNode(["b", `  ${word.word}`], label)
-                    addSound(word.sounds, label);
+                if (btn.text() == "Check" && answers[i] == null) {
+                    let word = words.find(element => element[detail].includes($(options[i]).html()))
+                    $("<b>", {
+                        html: ` [${word.word}]`
+                    }).appendTo($(this)).click(function () {
+                        showWordModal(word)
+                    });
                 }
 
-                if (input.checked && answers[i] == null || !input.checked && answers[i] != null) {
+                if (input.length && answers[i] == null || !input.length && answers[i] != null) {
                     // add forgotten word to array
                     if (!forgottenWords.includes(word)) {
                         forgottenWords.push(word);
                     }
                     flag = true;
                 }
-            }
-            if (event.target.innerText == "Check" && flag) error++;
-            event.target.innerText = "Next";
+            });
+            if ($(this).text() == "Check" && flag) error++;
+            $(this).text("Next");
             setStyle();
-        };
+        });
 
-        createNode(["button", {
-            class: `${color} w3-button w3-padding w3-bar`
-        }, "Exit"], optionDiv).onclick = () => {
+        $("<button>", {
+            class: `${color} w3-button w3-padding w3-bar`,
+            html: "Exit"
+        }).appendTo(optionDiv).click(function () {
             showConfirmModal("Exit");
-        }
+        });
 
         setStyle();
     }
 
-    var testDiv = createNode(["div", {
+    var testDiv = $("<div>", {
         id: "testDiv",
         class: "w3-container"
-    }], document.body);
-    var numberDiv = createNode(["div", {
+    }).appendTo($("body"));
+    var numberDiv = $("<div>", {
         class: "w3-section"
-    }], testDiv);
-    var numberP = createNode(["p", {
+    }).appendTo(testDiv);
+    var numberP = $("<p>", {
         class: "w3-large w3-center my-margin-small"
-    }], numberDiv);
-    var detailDiv = createNode(["div", {
+    }).appendTo(numberDiv);
+    var detailDiv = $("<div>", {
         class: "show-article w3-section"
-    }], testDiv);
-    var optionDiv = createNode(["div", {
+    }).appendTo(testDiv);
+    var optionDiv = $("<div>", {
         class: " w3-section"
-    }], testDiv);
+    }).appendTo(testDiv);
     var indexes; // vocabulary set indexes for random selection (n-1,0)
     var wordCount; // word count in specific vocabulary set
     var error = 0; // error count
@@ -469,26 +444,25 @@ function addWord() {
     words = sets.find(set => set.name.match(regexp));
     if (!words) return;
     else words = words.words
-    main.querySelectorAll(".my-label span, .passage").forEach(content => {
-        if (content.innerHTML) {
-            content.innerHTML.match(/\w{3,}/g).forEach(regexp => {
-                let word = words.find(word => {
-                    if (word.family.includes(`<li>${regexp}<`)) {
-                        return word.word
-                    }
-                });
-                if (word) content.innerHTML = content.innerHTML.replace(regexp, `<b class="word">${regexp}</b>`)
-            });
-        }
-    })
-
-    main.querySelectorAll(".word").forEach(word => {
-        word.onclick = (b) => {
-            showWordModal(words.find(word => {
-                if (word.family.includes(`<li>${b.target.innerText}<`)) {
+    $(".my-label span, .passage", main).each(function () {
+        let content = $(this);
+        $(content.html().match(/\w{3,}/g)).each(function () {
+            let word = words.find(word => {
+                if (word.family.includes(`<li>${this}<`)) {
                     return word.word
                 }
-            }))
-        }
+            });
+            if (word) content.html(content.html().replace(this, `<b class="word">${this}</b>`))
+        });
     })
+
+    $(".word", main).each(function () {
+        $(this).click(function () {
+            showWordModal(words.find(word => {
+                if (word.family.includes(`<li>${$(this).text()}<`)) {
+                    return word.word
+                }
+            }));
+        });
+    });
 }

@@ -5,52 +5,51 @@ selectedTags = []; // Add element when a tag is selected in tag div. otherwise r
 function addFilterClick(selector, classes, parent) {
 
     parent = parent ? parent : document;
-    document.querySelectorAll(selector).forEach(element => {
-        element.addEventListener("click", () => {
-            document.querySelectorAll(selector).forEach(element => {
-                classes.forEach(c => {
-                    element.classList.remove(c)
-                    if (c == "my-highlight" && !selector.includes("#tagsDiv")) removeHighlight(element);
-                });
+    
+    $(selector).each(function () {
+        $(this).on("click", () => {
+            $(selector).each(function () {
+                $(this).removeClass(classes.join(" "));
+                if (classes.includes("my-highlight") && !selector.includes("#tagsDiv")) removeHighlight($(this));
             });
-            classes.forEach(c => {
-                element.classList.add(c)
-            });
+
+            $(this).addClass(classes.join(" "));
+            setStyle();
         });
     });
 }
 
 function createSearchBtn(parent, className, func, nodes) {
-    let searchBtn = createNode(["button", {
+    return $("<button>", {
         id: "searchBtn",
-        class: className
-    }, "Search"], parent);
-    searchBtn.onclick = e => {
+        class: className,
+        html: "Search"
+    }).appendTo(parent).click(function () {
         // Unselected Tag
-        filterSearch(e.target, func, nodes);
-    }
-    return searchBtn;
+        filterSearch($(this), func, nodes);
+    });
 }
 
 function createTag(innerHTML, parent, func) {
-    createNode(["button", {
-        class: "my-tag"
-    }, innerHTML], parent).onclick = e => {
+    $("<button>", {
+        class: "my-tag",
+        html: innerHTML
+    }).appendTo(parent).click(function () {
         // Unselected Tag
-        func(e.target);
-        e.target.classList.toggle("my-highlight");
-        e.target.classList.toggle(color);
-        e.target.classList.toggle("w3-text-white");
-    }
+        func(this);
+        this.toggleClass("my-highlight");
+        this.toggleClass(color);
+        this.toggleClass("w3-text-white");
+    });
     setStyle();
 }
 
 function toggleFilter(tagBtn) {
     // Add selected tag to array
     if (tagBtn.className.includes("my-highlight")) {
-        selectedTags.push(tagBtn.innerText);
+        selectedTags.push(tagBtn.text());
     } else {
-        selectedTags.splice(selectedTags.indexOf(tagBtn.innerText), 1); // pop element by content
+        selectedTags.splice(selectedTags.indexOf(tagBtn.text()), 1); // pop element by content
     }
 
     let entriesTagsArray = [];
@@ -65,17 +64,17 @@ function toggleFilter(tagBtn) {
 
         // join the entry tag in one string
         entryTags.forEach(entryTag => {
-            entryTagsArray.push(entryTag.innerText);
-            if (entryTag.innerText === tagBtn.innerText) {
-                entryTag.classList.toggle(color);
-                entryTag.classList.toggle("w3-text-white");
+            entryTagsArray.push(entryTag.text());
+            if (entryTag.text() === tagBtn.text()) {
+                entryTag.toggleClass(color);
+                entryTag.toggleClass("w3-text-white");
             }
         });
 
         // if one selected tag is not in the entryTagsArray, the entry is hidden
         selectedTags.forEach(tag => {
             if (entryTagsArray.indexOf(tag) === -1) {
-                entry.classList.add("w3-hide");
+                entry.addClass("w3-hide");
             }
         }); // End of selectedTags foreach  
 
@@ -84,8 +83,8 @@ function toggleFilter(tagBtn) {
             entryTagsArray.forEach(element => entriesTagsArray.push(element));
             tagBtns.forEach(tagBtn => {
                 tagBtn.classList.remove("w3-hide");
-                if (entriesTagsArray.indexOf(tagBtn.innerText) === -1) {
-                    tagBtn.classList.add("w3-hide");
+                if (entriesTagsArray.indexOf(tagBtn.text()) === -1) {
+                    tagBtn.addClass("w3-hide");
                 }
             }); // End of tag Buttons forEach
 
@@ -95,73 +94,75 @@ function toggleFilter(tagBtn) {
 }
 
 function filterNodes(value, nodes) {
-    nodes = nodes ? nodes : tagsDiv.querySelectorAll(".my-tag");
-    nodes.forEach(node => {
-        if (!node.innerText.includes(value)) {
-            node.classList.add("w3-hide");
+    nodes = nodes ? nodes : $(".my-tag", tagsDiv);
+    nodes.each(function () {
+        if ($(this).html().includes(value)) {
+            $(this).show();
         } else {
-            node.classList.remove("w3-hide");
+            $(this).hide();
         }
     });
 }
 
 // Filter Tag enter by Search Input
 function filterSearch(searchBtn, func, nodes) {
-    let parent = searchBtn.parentNode;
-    let tagsDiv = parent.nextElementSibling;
-    let input = document.querySelector("#search");
+    let parent = searchBtn.parent();
+    let tagsDiv = parent.next();
+    let input = $("#search");
 
     // Create Search Input
-    if (!input) {
-        let regexp = new RegExp(`${color}|w3-(button|btn)`, "g");
-        let className = searchBtn.className.replace(regexp, "");
-        input = createNode(["input", {
-            class: className + " w3-hide w3-white w3-bar-item my-border",
+    if (!input.length) {
+        let className = searchBtn.attr("class").replace(new RegExp(`${color}|w3-(button|btn)`, "g"), "");
+        input = $("<input>", {
+            class: `${className} w3-white w3-bar-item my-border`,
             id: "search",
             autofocus: true
-        }], parent);
+        }).appendTo(parent).hide();
     }
-    input.classList.toggle("w3-hide");
-    searchBtn.classList.toggle("my-border");
-    document.querySelectorAll(".w3-bar-item").forEach(elem => elem.classList.toggle("w3-show"));
 
-    if (input.className.includes("w3-hide")) {
-        searchBtn.innerText = "Search"
-        searchBtn.style.border = "none";
-        input.value = "";
-        tagsDiv.querySelectorAll(".my-tag").forEach(tag => tag.classList.remove("w3-hide"));
-        if (main.querySelector("#words")) main.querySelector("#words").innerHTML = "";
+    if (searchBtn.is(".my-border")) {
+        searchBtn.html("Search").css("border", "none")
+        input.val("");
+        $(".my-tag", tagsDiv).show();
+        if ($("#words").length) $("#words").html("");
     } else {
-        searchBtn.innerText = "X"
+        searchBtn.html("X");
+        input.css("border", `2px solid ${bgColor}`);
     }
+
+    input.toggle();
+    searchBtn.toggleClass("my-border");
+    //$(".w3-bar-item", main).toggle();
 
     setStyle();
     // Filter tags while inputting 
-    input.oninput = () => {
-        func(input.value, nodes);
-    }
+    input.on("input", () => {
+        func(input.val(), nodes);
+    });
 }
 
 function addTags() {
 
     // Create Entry
     function createEntry(entry) {
-        let div = createNode(["div", {
+        let div = $("<div>", {
             class: "w3-card-4 w3-padding w3-left my-margin my-entry"
-        }], document.querySelector("#entries"));
-        let titleDiv = createNode(["div", {
+        }).appendTo(document.querySelector("#entries"));
+        let titleDiv = $("<div>", {
             class: "w3-section"
-        }], div);
+        }).appendTo(div);
 
-        createNode(["a", {
+        $("<a>", {
             class: "my-highlight w3-large my-link",
-            href: entry.href
-        }, entry.tags[0]], titleDiv).style.padding = 0;
+            href: entry.href,
+            html: entry.tags[0]
+        }).appendTo(titleDiv).style.padding = 0;
 
-        let tagDiv = createNode(["div"], div);
-        createNode(["span", {
-            class: "my-highlight"
-        }, "Tags:"], tagDiv);
+        let tagDiv = $("<div>").appendTo(div);
+        $("<span>", {
+            class: "my-highlight",
+            html: "Tags:"
+        }).appendTo(tagDiv);
 
         entry.tags.forEach(tag => {
             createTag(tag, tagDiv, toggleFilter);
@@ -173,7 +174,7 @@ function addTags() {
         var tag = sessionStorage.getItem("tag");
         if (tag) {
             tagBtns.forEach(tagBtn => {
-                if (tagBtn.innerText === tag) {
+                if (tagBtn.text() === tag) {
                     tagBtn.click();
                     sessionStorage.removeItem("tag");
                 }
@@ -184,19 +185,19 @@ function addTags() {
     // If Article Tag or Top Bar Item is clicked, store the content of clicked tag in sessionStorage
     function addTagClick(tags) {
         for (let i = 0; i < tags.length; i++) {
-            tags[i].onclick = () => sessionStorage.setItem("tag", tags[i].innerText);
+            tags[i].onclick = () => sessionStorage.setItem("tag", tags[i].text());
         }
     }
 
     // create tagsDiv
     let div = document.querySelector("#tags");
-    createNode(["div", {
+    $("<div>", {
         class: "w3-bar w3-padding-small w3-card w3-large my-color"
-    }], div).innerHTML = `<span class="w3-bar-item my-padding-mobile">Tags</span>`;
-    var tagsDiv = createNode(["div", {
+    }).appendTo(div).html(`<span class="w3-bar-item my-padding">Tags</span>`);
+    var tagsDiv = $("<div>", {
         class: "w3-padding w3-card",
         id: "tagsDiv"
-    }], div);
+    }).appendTo(div);
 
     var regexp = new RegExp("\\w+(?=\.html)");
     entries = entries[uri.match(regexp)]; // Get Entries Object from variable.js
@@ -209,18 +210,18 @@ function addTags() {
     var tagsArray = []; // All tags need to be show in tag div on load.
 
     // Create Search Button to Filter Tag
-    createSearchBtn(tagsDiv.previousElementSibling, "w3-bar-item w3-button w3-right my-padding-mobile", filterNodes)
+    createSearchBtn(tagsDiv.previousElementSibling, "w3-bar-item w3-button w3-right my-padding", filterNodes)
 
     // Create tags based on entries Tags
     tags.forEach(tag => {
-        if (tagsArray.indexOf(tag.innerText) === -1) {
-            tagsArray.push(tag.innerText);
-            createTag(tag.innerText, tagsDiv, toggleFilter);
+        if (tagsArray.indexOf(tag.text()) === -1) {
+            tagsArray.push(tag.text());
+            createTag(tag.text(), tagsDiv, toggleFilter);
         }
     });
 
     // Add article tag in note.html
-    tags.forEach(element => element.onclick = () => clickTag(element.innerText));
+    tags.forEach(element => element.onclick = () => clickTag(element.text()));
 
     // Add filter Event for tags in tag div. 
     tagBtns = tagsDiv.querySelectorAll("my-tag");
