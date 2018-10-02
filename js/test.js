@@ -257,7 +257,7 @@ function startTest() {
 
         //if (!myAnswer[id - 1] || !myAnswer[id - 1].split("->")[0]) {}
         myAnswer[index] = "";
-        if ($("table", question).length) {
+        if ($(".choice table", question).length) {
             let table = $("table", questions[id - 1]);
             for (let i = 1; i < table.rows.length; i++) {
                 const element = table.rows[i];
@@ -267,7 +267,7 @@ function startTest() {
                     const element = inputs[j];
                     if (element.checked) {
                         myAnswer[id - 1] += String.fromCharCode(65 + j);
-                        break
+                        
                     }
                     flag = true;
                 });
@@ -518,8 +518,7 @@ function startTest() {
 
             } else {
                 setArticleHeight("680px");
-                questionDiv.addClass("w3-padding");
-                questionDiv.addClass("w3-half");
+                questionDiv.addClass("w3-padding w3-half");
                 passageDiv.addClass("w3-half");
             }
         }
@@ -584,11 +583,15 @@ function startTest() {
             addTextarea(questionDiv);
             waitTime(1800, showModal);
         } else {
-            var countdown;
-            if (questions.length > 20) countdown = 2100
-            else if (questions.length > 15) countdown = 1800
-            else countdown = 1500
-            waitTime(countdown, showModal);
+            function getCountDown() {
+                if (questions.length == 25) countdown = 2100
+                else if (questions.length == 20) countdown = 1800
+                else {
+                    ((1 + 1.5 + 2) * 2) + (1.25 * 4) + 10 + (1 + 1.5 + 2 + 2.5)
+                    
+                }
+            }
+            waitTime(getCountdown(), showModal);
             showQuestion(1);
         }
     } else if (uri.includes("reading")) {
@@ -643,8 +646,7 @@ function startTest() {
             mediaRecorder = recordAudio();
         }
 
-        article.toggleClass("w3-half");
-        article.toggleClass("w3-section");
+        article.toggleClass("w3-half w3-section");
 
         playListening = () => {
             article.toggle();
@@ -947,15 +949,15 @@ function addCategoryFilter() {
                     button.click();
                     categoryDiv.children.each(function () {
                         const tagBtn = categoryDiv.children[i];
-                        if (tag.tag === tagBtn.text()) {
+                        if (tag.tag == tagBtn.text()) {
                             tagBtn.click();
                             sessionStorage.removeItem("tag");
-                            break
+                        
                         }
                     });
                 }
                 if (!sessionStorage.tag) {
-                    break
+                    
                 }
             });
         }
@@ -1056,7 +1058,7 @@ function updateQuestionUI() {
 
 
                     $("em", explanation).each(() => {
-                        addHighlight(em)
+                        addHighlight($(this))
                     });
 
                     // Click Choices
@@ -1071,7 +1073,7 @@ function updateQuestionUI() {
                     }
                     setStyle();
 
-                });
+                })//[0].click();
                 if (!greFlag) {
                     showSpecialQuestion(article, questionDiv);
                 }

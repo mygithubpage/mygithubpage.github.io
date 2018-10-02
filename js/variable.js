@@ -834,5 +834,13 @@ entries = {
         },
 
         // Wikipedia
+        {
+            href: "https://en.wikipedia.org/wiki/Comparison_of_BitTorrent_sites",
+            tags: ["BitTorrent", "Wikipedia"]
+        },
+        {
+            href: "https://en.wikipedia.org/wiki/Rankings_of_universities_in_the_United_States",
+            tags: ["University", "Ranking", "Wikipedia"]
+        },
     ]
 }

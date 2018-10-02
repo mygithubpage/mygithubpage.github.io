@@ -3,7 +3,7 @@ function addHighlight(element) {
         color: bgColor,
         fontWeight: "bold"
     });
-    if (element[0].tagName === "u") 
+    if (element[0].tagName == "u") 
     element.css({
         textDecoration: `underline ${bgColor} solid`
     });

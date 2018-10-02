@@ -1,5 +1,13 @@
 function initialize() {
-
+    function updateCharacter() {
+        main.html(main.html().replace(/\u00E2\u20AC\u201D/g, "\u2013"))
+        main.html(main.html().replace(/\u00E2\u20AC\u201C/g, "\u2014"))
+        main.html(main.html().replace(/\u00E2\u20Ac\u2122/g, "\u2019"))
+        main.html(main.html().replace(/\u00E2\u20AC\u0153/g, "\u201C"))
+        main.html(main.html().replace(/\u00E2\u20AC\u009D/g, "\u201D"))
+        main.html(main.html().replace(/\u00E2\u20AC\u00A6/g, "\u2026"))
+    }
+    
     bgColor = window.getComputedStyle(footer[0]).backgroundColor;
 
     updateCharacter();

@@ -164,8 +164,7 @@ function addTopNav(color) {
 
         // toggle top navigation bar item
         hiddenNavItems.each(function () {
-            $(this).toggleClass("w3-bar-block");
-            $(this).toggleClass("w3-hide-small");
+            $(this).toggleClass("w3-bar-block w3-hide-small");
         });
 
         // toggle top navigation shape

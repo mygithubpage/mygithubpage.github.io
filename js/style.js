@@ -1,11 +1,3 @@
-function updateCharacter() {
-    main.html(main.html().replace(/\u00E2\u20AC\u201D/g, "\u2013"))
-    main.html(main.html().replace(/\u00E2\u20AC\u201C/g, "\u2014"))
-    main.html(main.html().replace(/\u00E2\u20Ac\u2122/g, "\u2019"))
-    main.html(main.html().replace(/\u00E2\u20AC\u0153/g, "\u201C"))
-    main.html(main.html().replace(/\u00E2\u20AC\u009D/g, "\u201D"))
-    main.html(main.html().replace(/\u00E2\u20AC\u00A6/g, "\u2026"))
-}
 
 function addInputColor() {
 
@@ -22,12 +14,14 @@ function renameTitle() {
     title = html.split(".")[0].replace(/-/g, ' ');
     title = title.replace(/\bog\b/, "Official Guide");
     title = title.replace(/\bpq\b/, "Practice Questions");
+    title = title.replace(/\bpd\b/, "Practice Drill");
     title = title.replace(/\bmh\b/, "McGraw-Hill");
     title = title.replace(/\bkap\b/, "Kaplan");
     title = title.replace(/\bpr\b/, "Princeton Review");
     title = title.replace(/\bmp\b/, "Manhattan Prep");
     title = title.replace(/\bes\b/, "Exercise Set");
     title = title.replace(/\bps\b/, "Practice Set");
+    title = title.replace(/(\w)(\d)/, "$1 $2");
     if (!document.title) document.title = toTitleCase(title);
     document.title = document.title.replace("Mcgraw-hill", "McGraw-Hill");
 
@@ -69,7 +63,7 @@ function setStyle() {
     $(".my-tag").addClass("w3-btn w3-padding-small my-margin-small my-highlight my-border");
     $(".my-border, hr").css("border", `2px solid ${bgColor}`);
     $(".my-code").addClass("w3-code w3-panel w3-card w3-light-gray").css("borderLeft", `2px solid ${bgColor}`)
-    $(".my-highlight, h1, h2, h3, h4, h5, h6, b, u, em").each(function () {
+    $(".my-highlight, h1, h2, h3, h4, h5, h6, b, u, em, strong").each(function () {
         addHighlight($(this))
     });
 

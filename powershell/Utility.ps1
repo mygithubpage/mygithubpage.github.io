@@ -149,8 +149,8 @@ function Add-XmlNode {
     $element
 }
 
-function Format-Xml { 
-    Param([xml]$Xml, $Indent=4)
+function Format-Html { 
+    Param([xml]$Xml, $Indent=2)
     $StringWriter = New-Object System.IO.StringWriter 
     $XmlWriter = New-Object System.XMl.XmlTextWriter $StringWriter 
     $xmlWriter.Formatting = "indented"
@@ -158,7 +158,8 @@ function Format-Xml {
     $xml.WriteContentTo($XmlWriter) 
     $XmlWriter.Flush() 
     $StringWriter.Flush() 
-    $StringWriter.ToString()
+    $String = $StringWriter.ToString()
+    $String -replace "(?<=<p>)`r`n\s+"
 }
 
 function Update-Entity {
@@ -193,26 +194,6 @@ function Update-Entity {
 }
 
 function Get-Html {
-    <#
-    .SYNOPSIS
-    Short description
-    
-    .DESCRIPTION
-    Long description
-    
-    .PARAMETER Name
-    Parameter description
-    
-    .PARAMETER Uri
-    Parameter description
-    
-    .EXAMPLE
-    An example
-    
-    .NOTES
-    General notes
-
-    #>
     Param($Uri, $Name="test")  
     
     if (!(Test-Path -Path $PSScriptRoot\$Name.html))

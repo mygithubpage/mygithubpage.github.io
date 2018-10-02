@@ -36,7 +36,4 @@ function Update-Android {
 
 
 #Update-Android
-Update-Git
-# w3.css
-# highlight.js v9.12.0
-# JSXGraph 0.99.7
+#Update-Git

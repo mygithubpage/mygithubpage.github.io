@@ -146,6 +146,9 @@ Get-ChildItem -Path $env:windir\*.log |
 # First Letter Uppercase
 (Get-Culture).TextInfo.ToTitleCase($category)
 
+# Get MD5 Checksum
+$fileHash = Get-FileHash $iso -Algorithm MD5
+$fileHash.Hash
 #endregion
 
 
