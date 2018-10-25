@@ -1,4 +1,4 @@
-var greFlag = (/verbal|quantitative|reading\.|text|sentence|issue|argument/).exec(uri)
+var greFlag = (/verbal|quantitative|issue|argument|test/).exec(uri)
 var setFlag = uri.match(/ing\d\.html/);
 var num = +uri.match(/\d(?=\.html)/);
 var sections = [{
@@ -58,11 +58,11 @@ function showSpecialQuestion(article, section) {
 
         // Add A B C D in inserted area
         insertArea.each(function () {
-            if ($(this).attr("data-answer") == "A") {
+            if ($(this).data("answer") == "A") {
                 this.scrollIntoView();
             }
             article.scrollTop -= 10
-            this.text(`[${$(this).attr("data-answer")}] `)
+            this.text(`[${$(this).data("answer")}] `)
             addHighlight($(this));
         });
 
@@ -71,7 +71,7 @@ function showSpecialQuestion(article, section) {
         inputs.each(function () {
             this.click(function () {
                 insertArea.each(function () {
-                    this.text(`[${$(this).attr("data-answer")}] `);
+                    this.text(`[${$(this).data("answer")}] `);
                     addHighlight($(this));
                 });
                 this.text(question.text().replace(/\d{1,2}\./g, ""))
@@ -252,7 +252,7 @@ function startTest() {
 
     function setAnswer(question) {
         let index = /\d+/.exec(question[0].id)[0] - 1;
-        let answer = $(".explanation", question).attr("data-answer");
+        let answer = $(".explanation", question).data("answer");
         let flag;
 
         //if (!myAnswer[id - 1] || !myAnswer[id - 1].split("->")[0]) {}
@@ -295,7 +295,7 @@ function startTest() {
                     answer += keys[i];
                 });
             }
-        } else if (question.attr("data-choice-type") == "select") {
+        } else if (question.data("choiceType") == "select") {
             $(".sentence", $(`#passage`)).each(function (i) {
                 if ($(this).css("fontWeight") == "700") {
                     myAnswer[index] = `${i + 1}`;
@@ -387,7 +387,7 @@ function startTest() {
 
     function reviewQuestions(question) {
         function checkAnswer(i) {
-            let answer = $(".explanation", $(questions[i])).attr("data-answer");
+            let answer = $(".explanation", $(questions[i])).data("answer");
             let text = `<b>${answer}<b>`;
             let report = myAnswer[i] == answer ? text : `<i>${myAnswer[i]}</i> -> ${text}`;
             return report;
@@ -505,7 +505,7 @@ function startTest() {
             this.onclick = () => navigateQuestion($(this), question);
         });
 
-        if (!question.attr("data-passage") && greFlag) { // Not Reading Comprehension
+        if (!question.data("passage") && greFlag) { // Not Reading Comprehension
             if (!mobileFlag) {
                 questionDiv.removeClass("w3-half");
                 passageDiv.removeClass("w3-half");
@@ -523,11 +523,11 @@ function startTest() {
             }
         }
 
-        if (!greFlag) showSpecialQuestion(passageDiv, questionDiv);
+        if (!greFlag && !uri.includes("test.html")) showSpecialQuestion(passageDiv, questionDiv);
 
 
         // select sentence question
-        if (question.attr("data-choice-type") == "select") {
+        if (question.data("choiceType") == "select") {
 
             // split sentence with span
             addSentence(passageDiv);
@@ -549,7 +549,7 @@ function startTest() {
                         elem.children[0].checked = true;
                     }
                 } else {
-                    if (question.attr("data-choice-type") == "select") {
+                    if (question.data("choiceType") == "select") {
                         $(".sentence", passageDiv)[+this - 1].click()
                     } else {
                         $("input")[this.charCodeAt(0) - 65].click();
@@ -562,6 +562,7 @@ function startTest() {
         }
         setStyle();
     }
+
     $("#practice").remove();
     toggleElement();
     passageDiv = $("<article>", {
@@ -834,8 +835,8 @@ function addCategoryFilter() {
             }).appendTo(div);
         }
 
-        sections.each(function () {
-            addDropDown(element.type, element.length, div);
+        $(sections).each(function (i) {
+            addDropDown(sections[i].type, sections[i].length, div);
         });
     }
 
@@ -912,13 +913,13 @@ function addCategoryFilter() {
         }
 
         // sections category
-        sections.each(function () {
+        $(sections).each(function (i) {
             button = $("<button>", {
                 class: "w3-bar-item w3-button w3-col l2 my-color w3-hide w3-show",
                 html: sections[i].type
             }).appendTo(div);
             if (mobileFlag) {
-                button.className = button.className.replace("l2", "w3-padding-small");
+                button.removeClass("l2").addClass("w3-padding-small");
             }
             button.click(function () {
                 categoryDiv.html("");
@@ -943,7 +944,7 @@ function addCategoryFilter() {
 
         if (tag) {
             tag = JSON.parse(sessionStorage.tag);
-            sections.each(function () {
+            sections.each(function (i) {
                 const button = $("div .w3-bar-item.w3-button")[i];
                 if (tag.href.includes(button.text().toLowerCase())) {
                     button.click();
@@ -971,7 +972,10 @@ function createQuestion(question) {
 
     // Show Reading Comprehension question related passage if exist
     if (greFlag) {
-        passageDiv.html($(`#${question.attr("data-passage")}`).html());
+        passageDiv.html($(`#${question.data("passage")}`).html());
+        if ($(`span[data-question="${question.attr("id")}"]`).length > 0) 
+        addHighlight($(`span[data-question="${question.attr("id")}"]`));
+        
     }
     else {
         passageDiv.html($(".passage").html());
@@ -983,7 +987,7 @@ function createQuestion(question) {
 
 
     // Decide choice type based on question type
-    let choiceType = question.attr("data-choice-type");
+    let choiceType = question.data("choiceType");
     let choicesDiv = $("<div>").appendTo(questionDiv);
 
     let choices = $(".choices", question) // Choices in one question
@@ -1001,6 +1005,7 @@ function createQuestion(question) {
         });
     });
 }
+
 function addSentence(article) {
     let passage = article.html().replace(". . . ", "&#8230; ")
     passage = passage.replace(/\s{2,}</g, "<")
@@ -1049,23 +1054,31 @@ function updateQuestionUI() {
                     html: "Show Answer"
                 }).appendTo(div).click(function () {
                     let explanation = $(".explanation", question);
-                    var answers = explanation.attr("data-answer");
-                    $("<div>", {
+                    var answers = explanation.data("answer");
+                    explanation = $("<div>", {
                         class: "",
                         id: "answer",
                         html: `<p><b>${answers}</b></p>` + explanation.html()
                     }).appendTo($(`#question`));
 
 
-                    $("em", explanation).each(() => {
+                    $("em, i", explanation).each(function () {
                         addHighlight($(this))
                     });
 
                     // Click Choices
 
-                    if (/\d+/.exec(answers)) {
+                    if (answers.length > 9) {
                         article = addSentence($("#passage"));
-                        addHighlight($(".sentence", article)[+answers - 1]);
+                        var index;
+                        $(".sentence", article).each( function (i) {
+                            if (this.innerText.includes(answers)) { 
+                                index = i;
+                                return;
+                            } 
+                        });
+
+                        addHighlight($($(".sentence", article)[index]));
                     } else {
                         $(answers.split("")).each(function () {
                             $("#question input").eq(this.charCodeAt(0) - 65)[0].click();
@@ -1073,10 +1086,8 @@ function updateQuestionUI() {
                     }
                     setStyle();
 
-                })//[0].click();
-                if (!greFlag) {
-                    showSpecialQuestion(article, questionDiv);
-                }
+                })[0].click();
+                if (!greFlag && !uri.includes("test.html")) showSpecialQuestion(article, questionDiv);
                 addWord();
                 setStyle();
 

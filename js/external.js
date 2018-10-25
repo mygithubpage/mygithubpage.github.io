@@ -1,4 +1,5 @@
 function initialize() {
+    
     function updateCharacter() {
         main.html(main.html().replace(/\u00E2\u20AC\u201D/g, "\u2013"))
         main.html(main.html().replace(/\u00E2\u20AC\u201C/g, "\u2014"))
@@ -8,8 +9,6 @@ function initialize() {
         main.html(main.html().replace(/\u00E2\u20AC\u00A6/g, "\u2026"))
     }
     
-    bgColor = window.getComputedStyle(footer[0]).backgroundColor;
-
     updateCharacter();
 
     if (uri.match(/toefl(\/(tpo|og)){2}\.html/)) {
@@ -17,7 +16,6 @@ function initialize() {
     }
 
     if (testFlag) {
-
         updateQuestionUI(questions);
 
         if (uri.match(/ing\d\.html/)) {
@@ -239,17 +237,21 @@ function initialize() {
 
     if (uri.includes("quantitative")) {
         let scripts = [
+            "mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML",
             "jsxgraph/1.3.5/jsxgraphcore.js",
-            "mathjax/2.7.5/MathJax.js"
         ]
         $(scripts).each(function () {
-            $.getScript(`${prefix}${this}`, () => {
-                createSVG();
+            $.getScript(`${prefix}${this}`, function() {
+                if(this.url.match(/jsxgraph/)) {
+                    createSVG();
+                }
             });
         });
     }
 
-    setStyle();
+    waitLoad("#style", () => {
+        setStyle();
+    });
 }
 
 initialize();

@@ -1,9 +1,4 @@
 
-function addInputColor() {
-
-    $(".my-label")
-}
-
 function renameTitle() {
     function toTitleCase(str) {
         return str.replace(/(?:^|\s|-)\w/g, function (match) {
@@ -12,15 +7,15 @@ function renameTitle() {
     }
 
     title = html.split(".")[0].replace(/-/g, ' ');
-    title = title.replace(/\bog\b/, "Official Guide");
-    title = title.replace(/\bpq\b/, "Practice Questions");
-    title = title.replace(/\bpd\b/, "Practice Drill");
-    title = title.replace(/\bmh\b/, "McGraw-Hill");
-    title = title.replace(/\bkap\b/, "Kaplan");
-    title = title.replace(/\bpr\b/, "Princeton Review");
-    title = title.replace(/\bmp\b/, "Manhattan Prep");
-    title = title.replace(/\bes\b/, "Exercise Set");
-    title = title.replace(/\bps\b/, "Practice Set");
+    title = title.replace(/\bog/, "Official Guide");
+    title = title.replace(/\bmh/, "McGraw-Hill");
+    title = title.replace(/\bkap/, "Kaplan");
+    title = title.replace(/\bpr/, "Princeton Review");
+    title = title.replace(/\bmp/, "Manhattan Prep");
+    title = title.replace(/\bpd(\d+)?/, "Practice Drill $1");
+    title = title.replace(/\bpq(\d+)?/, "Practice Questions $1");
+    title = title.replace(/\bes(\d+)?/, "Exercise Set $1");
+    title = title.replace(/\bps(\d+)?/, "Practice Set $1");
     title = title.replace(/(\w)(\d)/, "$1 $2");
     if (!document.title) document.title = toTitleCase(title);
     document.title = document.title.replace("Mcgraw-hill", "McGraw-Hill");
@@ -62,13 +57,13 @@ function setStyle() {
     $(".my-search").addClass("w3-btn w3-section w3-large w3-right");
     $(".my-tag").addClass("w3-btn w3-padding-small my-margin-small my-highlight my-border");
     $(".my-border, hr").css("border", `2px solid ${bgColor}`);
+    $(".my-math").addClass("my-highlight").css("font-size", "16px");
     $(".my-code").addClass("w3-code w3-panel w3-card w3-light-gray").css("borderLeft", `2px solid ${bgColor}`)
     $(".my-highlight, h1, h2, h3, h4, h5, h6, b, u, em, strong").each(function () {
         addHighlight($(this))
     });
 
     renameTitle();
-    addInputColor();
     setListStyle();
     hideNavItems();
 

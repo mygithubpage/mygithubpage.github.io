@@ -143,9 +143,17 @@ function toggleFilter(tagBtn) {
 }
 
 function addTags() {
-
+    
     // Create Entry
     function createEntry(entry) {
+
+        function getTitle() {
+            let title;
+            if (!entry.href.match("wikipedia")) title = entry.tags[0];
+            else title = entry.href.split("/").splice(-1)[0].replace(/_/g," ").replace(/.* of /,"");
+            return title;
+        }
+
         let div = $("<div>", {
             class: "w3-card-4 w3-padding w3-left my-margin my-entry"
         }).appendTo($("#entries"));
@@ -156,7 +164,7 @@ function addTags() {
         $("<a>", {
             class: "my-highlight w3-large my-link",
             href: entry.href,
-            html: entry.tags[0]
+            html: getTitle()
         }).appendTo(titleDiv).css("padding",0);
 
         let tagDiv = $("<div>").appendTo(div);
@@ -170,19 +178,6 @@ function addTags() {
         });
     }
 
-    function clickTag(tag) {
-
-        var tag = tag ? tag : sessionStorage.getItem("tag");
-        if (tag) {
-            tagBtns.each(function () {
-                if ($(this).text() == tag) {
-                    this.click();
-                    sessionStorage.removeItem("tag");
-                }
-            });
-        }
-    }
-
     // create tagsDiv
     let div = $("#tags");
     $("<div>", {
@@ -193,33 +188,34 @@ function addTags() {
         id: "tagsDiv"
     }).appendTo(div);
 
+    // Get Entries Object
     var regexp = new RegExp("\\w+(?=\.html)");
-    entries = entries[uri.match(regexp)]; // Get Entries Object from variable.js
+    if (uri.match(regexp) == "bookmarks") { entries = bookmarks}
+    else if (uri.match(regexp) == "notes") { entries = notes}
+
     if (entries) {
         $(entries).each(function () { createEntry(this) }); // Create Entry Div
         entries = $(".my-entry"); // Get Created Entry
     }
 
-    var tags = $("#entries .my-tag"); // All tags in all entries.
+
     var tagsArray = []; // All tags need to be show in tag div on load.
 
     // Create Search Button to Filter Tag
     createSearchBtn(tagsDiv.prev(), "w3-bar-item w3-button w3-right my-padding", filterNodes)
 
     // Create tags based on entries Tags
-    tags.each(function () {
-        if (tagsArray.indexOf($(this).text()) == -1) {
+    $("#entries .my-tag").each(function () {
+        let tag = this.innerHTML;
+        let length = $("#entries .my-tag").filter( function () {
+            return $(this).text() == tag
+        }).length
+        if (tagsArray.indexOf($(this).text()) == -1 && length > 1) {
             tagsArray.push($(this).text());
             createTag($(this).text(), tagsDiv, toggleFilter);
         }
     });
 
-    // Add article tag in note.html
-    //tags.each(function () { $(this).click(function () { clickTag($(this).text()) }) });
-
-    // Add filter Event for tags in tag div. 
-    // Filter Tag
-    var tagBtns = $("my-tag", tagsDiv);
     // article tag
     $("a.my-tag").each(function () { this.onclick = () => sessionStorage.setItem("tag", this.text()) })
 }

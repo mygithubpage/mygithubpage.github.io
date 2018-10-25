@@ -15,4 +15,9 @@ function Expand-Epub {
         Write-Host $dir
         Expand-Epub $_.FullName "$folder\$dir"
     }
+    else {
+        $xml = [xml](Get-Content "$folder\$dir\META-INF\container.xml")
+        $opf = $xml.container.rootfiles.rootfile.'full-path'
+        $xml = [xml](Get-Content "$folder\$dir\$opf")
+    }
 }

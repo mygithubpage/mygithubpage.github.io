@@ -149,6 +149,7 @@ Get-ChildItem -Path $env:windir\*.log |
 # Get MD5 Checksum
 $fileHash = Get-FileHash $iso -Algorithm MD5
 $fileHash.Hash
+[regex]::Unescape("\u2013")
 #endregion
 
 

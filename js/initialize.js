@@ -7,7 +7,7 @@ function createNode(tag, attributes) {
     /** element format
      * <tagName>, {[attributeName : attributeValue[, attributeName : attributeValue]...]}
      */
-    
+
     var node = document.createElement(tag.match(/\w+/)[0]);
 
     for (let i = 0; i < Object.keys(attributes).length; i++) {
@@ -60,23 +60,6 @@ function getRandom(max) {
 
 function addColor() {
 
-    let colors = [{
-        "css": "w3",
-        "schemes": [{
-                "scheme": "",
-                "color": ["red", "pink", "purple", "indigo", "blue", "teal", "green", "brown", "deep-orange"]
-            },
-            {
-                "scheme": "flat",
-                "color": ["turquoise", "green-sea", "emerald", "nephritis", "peter-river", "belize-hole", "amethyst", "wisteria", "orange", "carrot", "pumpkin", "alizarin", "pomegranate"]
-            },
-            {
-                "scheme": "metro",
-                "color": ["light-green", "green", "dark-green", "magenta", "light-purple", "purple", "dark-purple", "teal", "blue", "dark-blue", "dark-orange", "red", "dark-red"]
-            }
-        ]
-    }]
-
     let cssNumber = getRandom(colors.length)
     let css = colors[cssNumber];
     let schemeNumber = getRandom(css.schemes.length)
@@ -123,10 +106,10 @@ function addTopNav(color) {
     // Set Bar Item
     if (uri.includes("/toefl/")) {
         var test = "/toefl/"
-        var barItems = ["TPO", "Essay", "OG", "PT", "EQ", "Barrons", "Cambridge", "Longman", "Notes"];
+        var barItems = ["TPO", "Essay", "OG", "PT", "EQ", "BE", "Cambridge", "Longman", "Notes"];
     } else if (uri.includes("/gre/")) {
         var test = "/gre/";
-        var barItems = ["OG", "PQ", "PR", "Kap", "MP", "Barrons", "MH", "Mangoosh", "Grubers", "Notes"];
+        var barItems = ["OG", "PQ", "PR", "Kap", "MP", "BE", "MH", "Grubers", "Notes"];
     } else {
         var test = "/"
         var barItems = ["Notes", "TOEFL", "GRE"];
@@ -211,21 +194,22 @@ function addFooter(color) {
 }
 
 function addScripts() {
-
-
-    // My javascript
-    /**
-     * var scripts = [{
-        folder: "",
-        scripts: ["vocabulary", "category", "variable", "utility", "style", "filter", "test", "word", "svg", "external"]
+    var scripts = [{
+        dir: "literals/",
+        names: ["colors", "vocabulary", "notes", "bookmarks", "categories", "topics"]
+    }, {
+        dir: "",
+        names: ["utility", "style", "filter", "test", "word", "svg", "external"]
     }, ]
-     */
-    let scripts = ["vocabulary", "category", "variable", "utility", "style", "filter", "test", "word", "svg", "external"]
+
     $(scripts).each(function () {
-        createNode("<script>", {
-            id: `${this}`,
-            src: `${folder}/js/${this}.js`
-        }).async = false;
+        let dir = this.dir
+        $(this.names).each(function () {
+            createNode("<script>", {
+                id: `${this}`,
+                src: `${folder}/js/${dir}${this}.js`
+            }).async = false;
+        })
     });
 }
 // Execute script after window load
@@ -244,11 +228,15 @@ window.addEventListener("load", () => {
         if ($("#questions").length) questions = $("#questions [id^='question']");
         else questions = $("#question > div");
         testFlag = questions.length || $("#question").length;
-
         addScripts();
         addHead();
-        addColor();
-        addTopNav(color);
-        addFooter(color);
+        
+        waitLoad("#colors", ()=> {
+            addColor();
+            addTopNav(color);
+            addFooter(color);
+            bgColor = window.getComputedStyle(footer[0]).backgroundColor;
+        });
+        
     });
 })

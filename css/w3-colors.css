@@ -1,185 +1,666 @@
 .w3-flat-turquoise {
     color: #fff;
-    background-color: #1abc9c!important;
+    background-color: #1abc9c !important;
 }
 
 .w3-flat-emerald {
     color: #fff;
-    background-color: #2ecc71!important;
+    background-color: #2ecc71 !important;
 }
 
 .w3-flat-peter-river {
     color: #fff;
-    background-color: #3498db!important;
+    background-color: #3498db !important;
 }
 
 .w3-flat-amethyst {
     color: #fff;
-    background-color: #9b59b6!important;
+    background-color: #9b59b6 !important;
 }
 
 .w3-flat-wet-asphalt {
     color: #fff;
-    background-color: #34495e!important;
+    background-color: #34495e !important;
 }
 
 .w3-flat-green-sea {
     color: #fff;
-    background-color: #16a085!important;
+    background-color: #16a085 !important;
 }
 
 .w3-flat-nephritis {
     color: #fff;
-    background-color: #27ae60!important;
+    background-color: #27ae60 !important;
 }
 
 .w3-flat-belize-hole {
     color: #fff;
-    background-color: #2980b9!important;
+    background-color: #2980b9 !important;
 }
 
 .w3-flat-wisteria {
     color: #fff;
-    background-color: #8e44ad!important;
+    background-color: #8e44ad !important;
 }
 
 .w3-flat-midnight-blue {
     color: #fff;
-    background-color: #2c3e50!important;
+    background-color: #2c3e50 !important;
 }
 
 .w3-flat-sun-flower {
     color: #fff;
-    background-color: #f1c40f!important;
+    background-color: #f1c40f !important;
 }
 
 .w3-flat-carrot {
     color: #fff;
-    background-color: #e67e22!important;
+    background-color: #e67e22 !important;
 }
 
 .w3-flat-alizarin {
     color: #fff;
-    background-color: #e74c3c!important;
-}
-
-.w3-flat-clouds {
-    color: #000;
-    background-color: #ecf0f1!important;
+    background-color: #e74c3c !important;
 }
 
 .w3-flat-concrete {
     color: #fff;
-    background-color: #95a5a6!important;
+    background-color: #95a5a6 !important;
 }
 
 .w3-flat-orange {
     color: #fff;
-    background-color: #f39c12!important;
+    background-color: #f39c12 !important;
 }
 
 .w3-flat-pumpkin {
     color: #fff;
-    background-color: #d35400!important;
+    background-color: #d35400 !important;
 }
 
 .w3-flat-pomegranate {
     color: #fff;
-    background-color: #c0392b!important;
-}
-
-.w3-flat-silver {
-    color: #000;
-    background-color: #bdc3c7!important;
+    background-color: #c0392b !important;
 }
 
 .w3-flat-asbestos {
     color: #fff;
-    background-color: #7f8c8d!important;
+    background-color: #7f8c8d !important;
 }
 
 
 .w3-metro-light-green {
     color: #fff;
-    background-color: #99b433!important;
+    background-color: #99b433 !important;
 }
 
 .w3-metro-green {
     color: #fff;
-    background-color: #00a300!important;
+    background-color: #00a300 !important;
 }
 
 .w3-metro-dark-green {
     color: #fff;
-    background-color: #1e7145!important;
+    background-color: #1e7145 !important;
 }
 
 .w3-metro-magenta {
     color: #fff;
-    background-color: #ff0097!important;
+    background-color: #ff0097 !important;
 }
 
 .w3-metro-light-purple {
     color: #fff;
-    background-color: #9f00a7!important;
+    background-color: #9f00a7 !important;
 }
 
 .w3-metro-purple {
     color: #fff;
-    background-color: #7e3878!important;
+    background-color: #7e3878 !important;
 }
 
 .w3-metro-dark-purple {
     color: #fff;
-    background-color: #603cba!important;
+    background-color: #603cba !important;
 }
 
 .w3-metro-darken {
     color: #fff;
-    background-color: #1d1d1d!important;
+    background-color: #1d1d1d !important;
 }
 
 .w3-metro-teal {
     color: #fff;
-    background-color: #00aba9!important;
-}
-
-.w3-metro-light-blue {
-    color: #000;
-    background-color: #eff4ff!important;
+    background-color: #00aba9 !important;
 }
 
 .w3-metro-blue {
     color: #fff;
-    background-color: #2d89ef!important;
+    background-color: #2d89ef !important;
 }
 
 .w3-metro-dark-blue {
     color: #fff;
-    background-color: #2b5797!important;
+    background-color: #2b5797 !important;
 }
 
 .w3-metro-yellow {
     color: #fff;
-    background-color: #ffc40d!important;
+    background-color: #ffc40d !important;
 }
 
 .w3-metro-orange {
     color: #fff;
-    background-color: #e3a21a!important;
+    background-color: #e3a21a !important;
 }
 
 .w3-metro-dark-orange {
     color: #fff;
-    background-color: #da532c!important;
+    background-color: #da532c !important;
 }
 
 .w3-metro-red {
     color: #fff;
-    background-color: #ee1111!important;
+    background-color: #ee1111 !important;
 }
 
 .w3-metro-dark-red {
     color: #fff;
-    background-color: #b91d47!important;
+    background-color: #b91d47 !important;
+}
+
+.w3-win8-lime {
+    color: #fff;
+    background-color: #a4c400 !important;
+}
+
+.w3-win8-green {
+    color: #fff;
+    background-color: #60a917 !important;
+}
+
+.w3-win8-emerald {
+    color: #fff;
+    background-color: #008a00 !important;
+}
+
+.w3-win8-teal {
+    color: #fff;
+    background-color: #00aba9 !important;
+}
+
+.w3-win8-cyan {
+    color: #fff;
+    background-color: #1ba1e2 !important;
+}
+
+.w3-win8-blue {
+    color: #fff;
+    background-color: #3e65ff !important;
+}
+
+.w3-win8-cobalt {
+    color: #fff;
+    background-color: #0050ef !important;
+}
+
+.w3-win8-indigo {
+    color: #fff;
+    background-color: #6a00ff !important;
+}
+
+.w3-win8-violet {
+    color: #fff;
+    background-color: #aa00ff !important;
+}
+
+.w3-win8-pink {
+    color: #fff;
+    background-color: #f472d0 !important;
+}
+
+.w3-win8-magenta {
+    color: #fff;
+    background-color: #d80073 !important;
+}
+
+.w3-win8-crimson {
+    color: #fff;
+    background-color: #a20025 !important;
+}
+
+.w3-win8-red {
+    color: #fff;
+    background-color: #e51400 !important;
+}
+
+.w3-win8-orange {
+    color: #fff;
+    background-color: #fa6800 !important;
+}
+
+.w3-win8-amber {
+    color: #fff;
+    background-color: #f0a30a !important;
+}
+
+.w3-win8-yellow {
+    color: #fff;
+    background-color: #e3c800 !important;
+}
+
+.w3-win8-brown {
+    color: #fff;
+    background-color: #825a2c !important;
+}
+
+.w3-win8-olive {
+    color: #fff;
+    background-color: #6d8764 !important;
+}
+
+.w3-win8-steel {
+    color: #fff;
+    background-color: #647687 !important;
+}
+
+.w3-win8-mauve {
+    color: #fff;
+    background-color: #76608a !important;
+}
+
+.w3-win8-taupe {
+    color: #fff;
+    background-color: #87794e !important;
+}
+
+.w3-win8-sienna {
+    color: #fff;
+    background-color: #a0522d !important;
+}
+
+.w3-food-aspargus {
+    color: #fff;
+    background-color: #77ab56 !important;
+}
+
+.w3-food-apricot {
+    color: #fff;
+    background-color: #ffb16d !important;
+}
+
+.w3-food-aubergine {
+    color: #fff;
+    background-color: #3d0734 !important;
+}
+
+.w3-food-avocado {
+    color: #fff;
+    background-color: #87a922 !important;
+}
+
+.w3-food-blueberry {
+    color: #fff;
+    background-color: #464196 !important;
+}
+
+.w3-food-carrot {
+    color: #fff;
+    background-color: #e67e22 !important;
+}
+
+.w3-food-cherry {
+    color: #fff;
+    background-color: #cf0234 !important;
+}
+
+.w3-food-chocolate {
+    color: #fff;
+    background-color: #411900 !important;
+}
+
+.w3-food-cranberry {
+    color: #fff;
+    background-color: #9e003a !important;
+}
+
+.w3-food-coffee {
+    color: #fff;
+    background-color: #a6814c !important;
+}
+
+.w3-food-grape {
+    color: #fff;
+    background-color: #6c3461 !important;
+}
+
+.w3-food-mango {
+    color: #fff;
+    background-color: #ffa62b !important;
+}
+
+.w3-food-mushroom {
+    color: #fff;
+    background-color: #ba9e88 !important;
+}
+
+.w3-food-mustard {
+    color: #fff;
+    background-color: #ceb301 !important;
+}
+
+.w3-food-olive {
+    color: #fff;
+    background-color: #6e750e !important;
+}
+
+.w3-food-orange {
+    color: #fff;
+    background-color: #f97306 !important;
+}
+
+.w3-food-pea {
+    color: #fff;
+    background-color: #a4bf20 !important;
+}
+
+.w3-food-peach {
+    color: #fff;
+    background-color: #ffb07c !important;
+}
+
+.w3-food-plum {
+    color: #fff;
+    background-color: #3f012c !important;
+}
+
+.w3-food-pomegranate {
+    color: #fff;
+    background-color: #c0392b !important;
+}
+
+.w3-food-pumpkin {
+    color: #fff;
+    background-color: #d35400 !important;
+}
+
+.w3-food-raspberry {
+    color: #fff;
+    background-color: #b00149 !important;
+}
+
+.w3-food-saffron {
+    color: #fff;
+    background-color: #feb209 !important;
+}
+
+.w3-food-salmon {
+    color: #fff;
+    background-color: #ff796c !important;
+}
+
+.w3-food-squash {
+    color: #fff;
+    background-color: #f2ab15 !important;
+}
+
+.w3-food-strawberry {
+    color: #fff;
+    background-color: #fb2943 !important;
+}
+
+.w3-food-tomato {
+    color: #fff;
+    background-color: #ec2d01 !important;
+}
+
+.w3-food-wine {
+    color: #fff;
+    background-color: #80013f !important;
+}
+
+.w3-vivid-pink {
+    color: #fff;
+    background-color: #ffb5bA !important;
+}
+
+.w3-vivid-red {
+    color: #fff;
+    background-color: #be0032 !important;
+}
+
+.w3-vivid-orange {
+    color: #fff;
+    background-color: #f38400 !important;
+}
+
+.w3-vivid-yellow {
+    color: #fff;
+    background-color: #f3c300 !important;
+}
+
+.w3-vivid-green {
+    color: #fff;
+    background-color: #008856 !important;
+}
+
+.w3-vivid-blue {
+    color: #fff;
+    background-color: #00a1c2 !important;
+}
+
+.w3-vivid-black {
+    color: #fff;
+    background-color: #000 !important;
+}
+
+.w3-vivid-purple {
+    color: #fff;
+    background-color: #9a4eae !important;
+}
+
+.w3-vivid-purple {
+    color: #fff;
+    background-color: #9a4eae !important;
+}
+
+.w3-vivid-yellowish-pink {
+    color: #fff;
+    background-color: #ffb7a5 !important;
+}
+
+.w3-vivid-reddish-orange {
+    color: #fff;
+    background-color: #e25822 !important;
+}
+
+.w3-vivid-orange-yellow {
+    color: #fff;
+    background-color: #f6a600 !important;
+}
+
+.w3-vivid-greenish-yellow {
+    color: #fff;
+    background-color: #dcd300 !important;
+}
+
+.w3-vivid-yellow-green {
+    color: #fff;
+    background-color: #8db600 !important;
+}
+
+.w3-vivid-yellowish-green {
+    color: #fff;
+    background-color: #27a64c !important;
+}
+
+.w3-vivid-bluish-green {
+    color: #fff;
+    background-color: #008882 !important;
+}
+
+.w3-vivid-greenish-blue {
+    color: #fff;
+    background-color: #0085a1 !important;
+}
+
+.w3-vivid-purplish-blue {
+    color: #fff;
+    background-color: #30267a !important;
+}
+
+.w3-vivid-reddish-purple {
+    color: #fff;
+    background-color: #870074 !important;
+}
+
+.w3-vivid-purplish-red {
+    color: #fff;
+    background-color: #ce4676 !important;
+}
+
+.w3-2018-red-pear {
+    color: #fff;
+    background-color: #7F4145 !important;
+}
+
+.w3-2018-valiant-poppy {
+    color: #fff;
+    background-color: #BD3D3A !important;
+}
+
+.w3-2018-nebulas-blue {
+    color: #fff;
+    background-color: #3F69AA !important;
+}
+
+.w3-2018-martini-olive {
+    color: #fff;
+    background-color: #766F57 !important;
+}
+
+.w3-2018-russet-orange {
+    color: #fff;
+    background-color: #E47A2E !important;
+}
+
+.w3-2018-quetzal-green {
+    color: #fff;
+    background-color: #006E6D !important;
+}
+
+.w3-2018-sargasso-sea {
+    color: #fff;
+    background-color: #485167 !important;
+}
+
+.w3-2018-quiet-gray,
+.w3-2018-cherry-tomato {
+    color: #fff;
+    background-color: #E94B3C !important;
+}
+
+.w3-2018-chili-oil {
+    color: #fff;
+    background-color: #944743 !important;
+}
+
+.w3-2018-arcadia {
+    color: #fff;
+    background-color: #00A591 !important;
+}
+
+.w3-2018-emperador {
+    color: #fff;
+    background-color: #6C4F3D !important;
+}
+
+.w3-2018-ultra-violet {
+    color: #fff;
+    background-color: #6B5B95 !important;
+}
+
+.w3-2018-spring-crocus {
+    color: #fff;
+    background-color: #BC70A4 !important;
+}
+
+.w3-2018-sailor-blue {
+    color: #fff;
+    background-color: #2E4A62 !important;
+}
+
+.w3-2017-greenery {
+    color: #fff;
+    background-color: #92B558 !important;
+}
+
+.w3-2017-grenadine {
+    color: #fff;
+    background-color: #DC4C46 !important;
+}
+
+.w3-2017-tawny-port {
+    color: #fff;
+    background-color: #672e3b !important;
+}
+
+.w3-2017-butterum {
+    color: #fff;
+    background-color: #c48f65 !important;
+}
+
+.w3-2017-navy-peony {
+    color: #fff;
+    background-color: #223a5e !important;
+}
+
+.w3-2017-neutral-gray {
+    color: #fff;
+    background-color: #898e8c !important;
+}
+
+.w3-2017-shaded-spruce {
+    color: #fff;
+    background-color: #005960 !important;
+}
+
+.w3-2017-golden-lime {
+    color: #fff;
+    background-color: #9c9a40 !important;
+}
+
+.w3-2017-marina {
+    color: #fff;
+    background-color: #4F84C4 !important;
+}
+
+.w3-2017-autumn-maple {
+    color: #fff;
+    background-color: #d2691e !important;
+}
+
+.w3-2017-niagara {
+    color: #fff;
+    background-color: #578CA9 !important;
+}
+
+.w3-2017-lapis-blue {
+    color: #fff;
+    background-color: #004b8d !important;
+}
+
+.w3-2017-flame {
+    color: #fff;
+    background-color: #f2552c !important;
+}
+
+.w3-2017-pink-yarrow {
+    color: #fff;
+    background-color: #ce3175 !important;
+}
+
+.w3-2017-kale {
+    color: #fff;
+    background-color: #5a7247 !important;
 }
