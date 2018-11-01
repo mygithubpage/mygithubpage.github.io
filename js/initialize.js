@@ -83,7 +83,7 @@ function addHead() {
     }).appendTo(head);
 
     // CSS 
-    let styles = ["w3", "w3-colors", "style", "hljs"]
+    let styles = ["w3", "w3-colors", "style"]
     $(styles).each(function () {
         $("<link>", {
             rel: "stylesheet",
@@ -231,12 +231,18 @@ window.addEventListener("load", () => {
         addScripts();
         addHead();
         
-        waitLoad("#colors", ()=> {
+        if (typeof colors != "undefined" && colors && typeof colors.length != "undefined") {
             addColor();
             addTopNav(color);
             addFooter(color);
-            bgColor = window.getComputedStyle(footer[0]).backgroundColor;
-        });
+            bgColor = window.getComputedStyle(topNav[0]).backgroundColor;
+        } else {
+            waitLoad("#colors", () => {
+                addColor();
+                addTopNav(color);
+                addFooter(color);
+            }); 
+        }
         
     });
 })

@@ -1,5 +1,5 @@
 function initialize() {
-    
+
     function updateCharacter() {
         main.html(main.html().replace(/\u00E2\u20AC\u201D/g, "\u2013"))
         main.html(main.html().replace(/\u00E2\u20AC\u201C/g, "\u2014"))
@@ -8,7 +8,7 @@ function initialize() {
         main.html(main.html().replace(/\u00E2\u20AC\u009D/g, "\u201D"))
         main.html(main.html().replace(/\u00E2\u20AC\u00A6/g, "\u2026"))
     }
-    
+
     updateCharacter();
 
     if (uri.match(/toefl(\/(tpo|og)){2}\.html/)) {
@@ -25,8 +25,7 @@ function initialize() {
                 var parent = $("<div>", {
                     class: `w3-bar`,
                 }).prependTo(main)
-            }
-            else {
+            } else {
                 var parent = main
             }
             $("<button>", {
@@ -44,7 +43,13 @@ function initialize() {
 
     // Create Recite Button for vocabulary
     if (uri.includes("vocabulary")) {
-        waitLoad("#vocabulary", createWordSets);
+        if (typeof sets != "undefined" && sets) {
+            createWordSets();
+        } else {
+            waitLoad("#vocabulary", () => {
+                createWordSets();
+            });
+        }
     }
 
     if (sidebar.length) {
@@ -55,12 +60,17 @@ function initialize() {
     if (uri.includes("topic")) {
         //question = $("section").hide();
         article = $("article").toggleClass("w3-section");
-            
+
         //createNode(["div", question.html()], article, true);
         var textarea = addTextarea(main).addClass("w3-section w3-block").removeClass("w3-half");
         if (mobileFlag) {
-            textarea.css({height: screen.height / 4 - 16 + "px"});
-            article.css({height: screen.height / 2 - 96 + "px", overflow : "scroll"});
+            textarea.css({
+                height: screen.height / 4 - 16 + "px"
+            });
+            article.css({
+                height: screen.height / 2 - 96 + "px",
+                overflow: "scroll"
+            });
         }
     }
 
@@ -241,17 +251,21 @@ function initialize() {
             "jsxgraph/1.3.5/jsxgraphcore.js",
         ]
         $(scripts).each(function () {
-            $.getScript(`${prefix}${this}`, function() {
-                if(this.url.match(/jsxgraph/)) {
+            $.getScript(`${prefix}${this}`, function () {
+                if (this.url.match(/jsxgraph/)) {
                     createSVG();
                 }
             });
         });
     }
 
-    waitLoad("#style", () => {
+    if (typeof setStyle != "undefined" && setStyle) {
         setStyle();
-    });
+    } else {
+        waitLoad("#style", () => {
+            setStyle();
+        });
+    }
 }
 
 initialize();

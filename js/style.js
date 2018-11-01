@@ -12,7 +12,11 @@ function renameTitle() {
     title = title.replace(/\bkap/, "Kaplan");
     title = title.replace(/\bpr/, "Princeton Review");
     title = title.replace(/\bmp/, "Manhattan Prep");
+    title = title.replace(/\bbe/, "Barron's Edu");
+    title = title.replace(/\bgr/, "Gruber's");
+    title = title.replace(/\bdt(\d+)?/, "Diagnostic Test $1");
     title = title.replace(/\bpd(\d+)?/, "Practice Drill $1");
+    title = title.replace(/\bpp(\d+)?/, "Practice Problems $1");
     title = title.replace(/\bpq(\d+)?/, "Practice Questions $1");
     title = title.replace(/\bes(\d+)?/, "Exercise Set $1");
     title = title.replace(/\bps(\d+)?/, "Practice Set $1");
@@ -52,7 +56,9 @@ function removeLeadingWhiteSpace() {
 
 function setStyle() {
 
-
+    bgColor = window.getComputedStyle(topNav[0]).backgroundColor;
+    
+    $("a").css("textDecoration", "none");
     $(".my-color").addClass(color);
     $(".my-search").addClass("w3-btn w3-section w3-large w3-right");
     $(".my-tag").addClass("w3-btn w3-padding-small my-margin-small my-highlight my-border");

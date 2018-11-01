@@ -1,11 +1,11 @@
 . $PSScriptRoot\Utility.ps1
 $wordApp = $null
-$set = "pr"
-$name = "$set-dr-verbal" 
-$type = "html"
+$set = "be"
+$name = "$set-dt-verbal" 
+$type = "txt"
 $ebooks = "C:\github\temp\ebooks"
 $testHtml = "C:\github\temp\files\html\test.html"
-$path = "C:\github\gre\$set\$name.html"
+$path = "C:\github\gre\$set\$name.$type"
 $prepositions = "\b(about|across|after|against|along|and|around|at|between|by|down|for|from|in|into|of|off|on|onto|over|through|to|toward|under|up|with)\b"
 
 $passageRegex = "`"(no)?indentr?1?(-float)?`"|hang(3|-nums)|block_(rc|9[23])|-stimulus|nums-|Test_samplei" #_\d+_r1.jpg|
@@ -25,9 +25,9 @@ function Get-ImageText ($path, [ref]$wordApp, $scale = 100) {
         $width = $img.Width * $scale / 100 / $length
         $height = $img.Height * $scale / 100
         $rect = New-Object System.Drawing.Rectangle ($width * $i),0,$width,$height
-        $text = Export-ImageText $path.Replace("_r1","") $rect
-        $text = $text -replace "^.*?\n" -replace "\n+", "`n"
-        $words = ($text | Select-String $regex -AllMatches).Matches
+        $content = Export-ImageText $path.Replace("_r1","") $rect
+        $content = $content -replace "^.*?\n" -replace "\n+", "`n"
+        $words = ($content | Select-String $regex -AllMatches).Matches
         if ($words.Length -gt 3) {
             for ($j = 0; $j -lt $words.Count; $j+=2) {
                 $options += $words[$j] + " " + $words[$j+1]
@@ -61,14 +61,14 @@ function Get-ImageText ($path, [ref]$wordApp, $scale = 100) {
     if ($scale -ne 100) { 
         $newPath = $path.Replace(".jpg","_$scale.jpg")
         Resize-Image $path $newPath -Scale $scale 
-        $text = Export-ImageText $newPath
+        $content = Export-ImageText $newPath
         Remove-Item $newPath
     }
     else {
-        $text = Export-ImageText $path
+        $content = Export-ImageText $path
     }
 
-    $text -replace "(\w)\|(\w)", "`$1l`$2"
+    $content -replace "(\w)\|(\w)", "`$1l`$2"
 }
 
 function Get-Logic ($expression) {
@@ -143,7 +143,7 @@ function ConvertFrom-Epub {
     
         function Get-QuestionText {
             if ($question.Class -match "ktp") {
-                $text = if (Test-Logic $question) {
+                $content = if (Test-Logic $question) {
                     $question.ChildNodes[1].InnerText
                 }
                 else {
@@ -151,9 +151,9 @@ function ConvertFrom-Epub {
                 }
             }
             else {
-                $text = $question.InnerText -replace "^\d+\.? ?|\u00A0"
+                $content = $question.InnerText -replace "^\d+\.? ?|\u00A0"
             }
-            $text
+            $content
         }
     
         if (Test-Path $path) { 
@@ -173,8 +173,8 @@ function ConvertFrom-Epub {
     
             Write-Host $i
     
-            $text = Get-QuestionText
-            $blank = (Get-RegExMatch $text "_{2,}").Count
+            $content = Get-QuestionText
+            $blank = (Get-RegExMatch $content "_{2,}").Count
     
             if ($question.InnerXml -match " sentence " -and !$blank -and 
             $question.InnerXml -notmatch " highlighted ") { $type = "select" }
@@ -189,7 +189,7 @@ function ConvertFrom-Epub {
             #Write-Host "Question $id"
             
             $questionDiv = Add-XmlNode ("div", @{id = "question$id"; "data-choice-type" = $type}) $questionsDiv
-            Add-XmlNode ("div", @{class = "question"}, "<p>$text</p>") $questionDiv | Out-Null
+            Add-XmlNode ("div", @{class = "question"}, "<p>$content</p>") $questionDiv | Out-Null
     
             #endregion
     
@@ -255,7 +255,7 @@ function ConvertFrom-Epub {
                             # get option text
                             $content = Get-ImageText "$ebooks\$ebook\$(Test-Image)" ([ref]$wordApp) ($scale*$step)
                             if ($content.Count -gt 1) { $content = $content[1] }
-                            $content = if ($text -match "i{2,3}") { $content -replace "^.*?\n"} else {$content}
+                            $content = if ($content -match "i{2,3}") { $content -replace "^.*?\n"} else {$content}
                             $options = Get-RegExMatch $content $optionRegex
                             $options = $options.Where{$_ -match "\w+" -and $_ -notmatch "Blank|i{2,3}"}
                             
@@ -390,7 +390,7 @@ function ConvertFrom-Epub {
             #endregion
        
             #region Passage
-            for ($j = 0; $j -lt $passages.Count -and $text -notmatch "__"; $j++) {
+            for ($j = 0; $j -lt $passages.Count -and $content -notmatch "__"; $j++) {
     
                 #region Text
                 $content = ""
@@ -698,240 +698,158 @@ function ConvertFrom-Epub {
     #Set-Content $testHtml $passages.OuterXml -Encoding UTF8 
 }
 
-function ConvertFrom-Text ($content, $path) {
-    function Remove-FootNote ($text) {
-        $text = $text -replace "CHAPTER.*\r\n" # page footnote
-        $text = $text -replace "\d{1,3}\r\n" # page number
-        $text = $text -replace "GRE Verbal Reasoning Practice Questions\r\n" # page footnote
-        $text = $text -replace "Question Type.*\r\n" # page footnote
-        $text = $text -replace "\d{2,3} PART .*\r\n" # page footnote
-        $text
-    }
-    
-    function Update-Text($regex, $oldText, $newText) {
-        foreach ($match in (Get-RegExMatch $text $regex)) {
-            $text = $text -replace (Invoke-Expression $oldText), (Invoke-Expression $newText)
-        }
-        $text
-    }
-    
-    function Get-Answer ($explanation, $path) {
+function ConvertFrom-Text {
 
-        $xml = [xml] (Get-Content $path)
-        $answers = Select-Xml "//div[@class=`"answer`"]" $xml
-    
-        if ($path.Contains("\notes\")) {
-            Set-Content $explanation (Remove-FootNote (Get-Content $explanation -Encoding UTF8 -Raw)) -Encoding UTF8
-            $content = Get-Content $explanation -Encoding UTF8
-            $count = 0
-            $choice = ($content[0] | Select-String "(?<questionID>.):" -AllMatches).Matches
-            $number = 0
-            foreach ($line in $content) {
-                if ($line.Contains("Explanation ")) {
-                    $answer = ""
-                    $answer += $choice[$number++][0] 
-                    while ($content[0][$choice[$number].Index - 13] -eq ";" -or $content[0][$choice[$number].Index - 12] -eq ";" -or $content[0][$choice[$number].Index - 8] -eq ";") { 
-                        $answer += $choice[$number++][0] 
-                        #if ($number -eq $choice.Length) {break}
-                    }
-                    $answers[$count].Node.SetAttribute("data-answer", $answer)
-                    $answers[$count].Node.ChildNodes[0].InnerXml = "<p>" + $line.Replace("Explanation ") + "</p>"
-                    $count++
-                }
-            }
-        }
-        else {
-            $explanation = Remove-FootNote $explanation
-            $choicesDiv = ( $explanation | Select-String "\d{1,2}\. ([A-F]|\d{1,2})" -AllMatches).Matches
-            for ($i = 0; $i -lt $choicesDiv.Count; $i++) {
-                $start = $explanation.IndexOf($choicesDiv[$i])
-    
-                # answer
-                $answer = $choicesDiv[$i][-1]
-                
-                $string = $explanation.substring($start + $choicesDiv[$i].Length, 4)
-                if ($string -eq " and") {
-                    $answer += $explanation.substring($start + $choicesDiv[$i].Length + 5, 1)
-                }
-                elseif ($string -eq ", ") {
-                    $answer += $explanation.substring($start + $choicesDiv[$i].Length + 2, 1)
-                    $answer += $explanation.substring($start + $choicesDiv[$i].Length + 9, 1)
-                }
-                $answers[$i].Node.SetAttribute("data-answer", $answer)
-    
-                # explanation 
-                $end = if ($i -eq $choicesDiv.Count - 1) {$explanation.Length - 1} else {$explanation.IndexOf($choicesDiv[$i + 1])}
-                
-                $answers[$i].Node.ChildNodes[0].InnerXml = "<p>" + $explanation.substring($start, $end - $start) + "</p>"
-            }
-        }
-    
-    
-        #New-Item -Path $path -value $xml.OuterXml -ErrorAction SilentlyContinue | Out-Null
-        Set-Content $path $xml.OuterXml.Replace("html[]", "html") -Encoding UTF8
+    function Set-Swap ([ref]$value1, [ref]$value2) {
+        $temp = $value1.Value.InnerText
+        $value1.Value.InnerText = $value2.Value.InnerText
+        $value2.Value.InnerText = $temp
     }
-    
-    $beginning = "<div id=`"passage`" class=`"passage`"><p>"
-    $end = "</p></div><div class=`"answer`" data-answer=`"`"><div class=`"explanation`"><p></p></div></div></div>"
+
+    function Update-Text($regex, $oldText, $newText) {
+        foreach ($match in (Get-RegExMatch $content $regex)) {
+            $content = $content -replace (Invoke-Expression $oldText), (Invoke-Expression $newText)
+        }
+        $content
+    }
+
+    $beginning = "<div class=`"passage`"><p>"
+    $end = "</p></div><div class=`"explanation`"><p></p></div></div>"
     $start = "<div id=`"question`" data-choice-type=`"`"><div class=`"question`"><p>"
-    $text = $content
+    
+    #region Remove Extra Text
+
+    # replace character
+    $content = $content -replace " (\u00e2\u20ac\u201d)+ ", " _______ " # Grubers
+    $content = $content -replace "\u00e2\u20ac\u0153", [char]0x201C
+    $content = $content -replace "\u00e2\u20ac\u009d", [char]0x201D
+    $content = $content -replace "\u00e2\u20ac\u2122", [char]0x2019
+    $content = $content -replace "\u00e2\u20ac\u00a6", [char]0x2026
+    $content = $content -replace "\u00e2\u20ac\u201d", [char]0x2014
+    $content = $content -replace " & ", " and "
 
     # remove extra text
-    $text = $text -replace "PRACTICE( )?SET.*\r\n" # set title
-    $text = $text -replace "SET.*\r\n" # question set easy medium hard title
-    $text = $text -replace "For Questions.*(text|meaning)\." # question introduction
-    $text = $text -replace "For each of.*instructed\.\r\n1\. ", $end + $start # text completion introduction
-    $text = $text -replace "For each of.*\." # text completion introduction
-    $text = $text -replace "For (the following|this question).*(apply|choices|meaning)\.\r\n" # question introduction
-    $text = $text -replace "(L|l)ine \d" # passage line number
-    $text = $text -replace "\. \. \. ", "&#8230; " # ellipse
-    $text = $text -replace "This passage is adapted.*?\." # sentence euivalence introduction
-    $text = Remove-FootNote $text
-    Set-Content $testHtml $text
-
-    # add passage start then add question start to first question of each passage
-    $text = $text -replace "Questions ", $end + $beginning + "Questions "
-    $text = $text -replace "Question ", $end + $beginning + "Question "
-    if ($text.Substring($end.length + $beginning.length, 20) -like "*Question*1*") {
-        $text = $text.Substring($end.length + $text.IndexOf($end), $text.length - 1 - $end.length - $text.IndexOf($end))
-    }
+    $content = $content -replace "(\r\n)*Blank (\(i*\)|[123])"
+    $content = $content -replace "\(\d+\) |(?<=\r\n)(\d{0,1}[05]|\s*)(?!\.)"
+    $content = $content -replace "-\s*\r\n|\s+(?=\r\n)|(?<=\r\n)line "
+    $content = $content -replace "(?<!Question.*\r\n)(?<=\r\n). ", "(A) "
     
-    $regex = "<p>Question(s)? (?<question>\d+?) " 
-    $oldText = "`"(\u201D)?[(\r\n)| ]`$(`$match.Trim(`"<p>Questions `"))\. `""
-    $text = Update-Text $regex $oldText "`"</p></div>`$start`""
+    $words = "[A-Za-z]+(\s[A-Za-z]+)"
+    do {
+        $content = $content -replace "($words{4,})\r\n($words{0,2})", "`$1 `$3"
+    } while ($content -match "($words{4,})\r\n($words{0,2})")
 
-    # remove extra text again
-    $text = $text -replace "Question(s)? .* passage(\.|:)"
-    $text = $text -replace "(\r\n)*Blank \(i*\)"
-
-    # add question 
-    $text = $text -replace "(\u0002)?( |\r\n)A ", "</p></div><div class=`"choices`"><p>A " # add choice start
-    Set-Content $testHtml $text
-
-    $prefixes = "[A-F]", "[0-9]."
-    # remove chocie start in the middle, like remove E(start)A -> E A
-    # remove chocie start in the start, like remove 6. (start)A book -> 6. A book
-    $oldText = "`$match"
-    $newText = "`"`$(`$match.Replace('</p></div><div class=`"choices`"><p>', ' '))`""
+    $content = $content -replace "(?<=\r\n)($words{0,2})(?=\r\n)", "(A) `$1"
+    if ($name -match "gr") { $content = $content -creplace "\r\n(?=[a-z])", " " }
+    $content = $content -creplace "(?<!Question.*)\r\n(?!(\(A|\d|Question))", " "
+    Set-Content $testHtml $content -Encoding UTF8
+    #endregion
     
-    foreach ($prefix in $prefixes) {
-        $regex = "$prefix</p></div><div class=`"choices`"><p>A"
-        $text = Update-Text $regex $oldText $newText
+    #region Replace Text
+    $subsitutions = if ($name -match "gr") { "`$1" }
+    $content = $content -creplace "(?<=\r\n\d+.+[\.?:\)\w])\s+(\(?A\)? )", "</p></div><div class=`"choices`"><p> " # add choice start
+    if ($name -match "gr") {
+        $content = $content -creplace "(?<=\r\n)([A-Z])", "$end$beginning$subsitutions" # add passage start 
     }
-    $text = $text -replace "class=`"passage`"><p></p></div><div class=`"choices`"><p>", "class=`"passage`"><p>"
-
-    Set-Content $testHtml $text
-
-    foreach ($character in "BCDEFGHI".ToCharArray()) {
-        $text = $text -replace " $character ", "</p><p>$character "
-        if ( $character -eq 'I' ) {
-            # remove I word not the I choice, well,</p><p>I -> well, I 
-            $regex = "[^\w]</p><p>I " 
-            $newText = "`"`$(`$match.Replace('</p><p>', ' '))`""
-            $text = Update-Text $regex $oldText $newText
-        }
+    else {
+        $content = $content -creplace "Question.*\r\n", "$end$beginning$subsitutions" # add passage start 
     }
-    Set-Content $testHtml $text
-
-    $text = $text -replace "[(\r\n)| ]1\. ", $start # add question start and choice end
-    $text = $text -replace "[(\r\n)| ]\d{1,2}\. ", $end + $start # add question start and choice end
-    $text = $text -replace "\. +\r\n", "." # remove extra newline
-    $text = $text -replace "(\r)?(\n)?" # remove extra newline
-    $text = "<div id=`"questions`">$text$end</div>"
-    Set-Content $testHtml $text
-
-    Set-Content $path $text.replace(" & ", " and ") -Encoding UTF8
-    $xml = [xml] (Get-Content $path)
-    $questionsDiv = Select-Xml "//div[@id=`"question`"]" $xml
+    $content = $content -creplace "(?<=\r\n)\(?([A-I])\)? ", "</p><p>$subsitutions " # add choice 
+    $content = $content -replace "(?<=\r\n)1\. ", $start # add question start and choice end
+    $content = $content -replace "(?<=\r\n)\d{1,2}\. ", ($end + $start) # add question start and choice end
+    $content = $content -replace "<p></p>|\r\n"
+    $content = $content -replace "(class=`"passage`">.*?(\r\n)?</p></div>).*?</div></div>", "`$1" # remove extra explanation
+    $content = "<div id=`"questions`">$content$end</div>"
+    
+    Set-Content $testHtml $content -Encoding UTF8
+    Set-Content $path $content -Encoding UTF8
+    $html = [xml] (Get-Content $path)
+    $questions = Select-Xml "//div[@id=`"question`"]" $html
+    #endregion
 
     # traverse questions
-    for ($i = 0; $i -lt $questionsDiv.Count; $i++) {
-        $question = $questionsDiv[$i]
-        $question.Node.SetAttribute("id", "question$($i+1)") # add question id
-        $questionText = $question.Node.ChildNodes[0].InnerText
+    for ($i = 0; $i -lt $questions.Count; $i++) {
+        $question = $questions[$i].Node
+        $question.SetAttribute("id", "question$($i+1)") # add question id
+        $questionText = $question.ChildNodes[0].InnerText
+        
+        #region Choice
+        $choices = $question.ChildNodes[1].ChildNodes
 
-        # decide choice type
-        if ($questionText.Contains("ii")) {
-            # text-completetion 2 or 3 blanks
-            $question.Node.SetAttribute("data-choice-type", "radio")
-            function Set-Swap ([ref]$value1, [ref]$value2) {
-                $temp = $value1.InnerText
-                $value1.InnerText = $value2.InnerText
-                $value2.InnerText = $temp
-            }
-            $choicesDiv = $question.Node.ChildNodes[1].ChildNodes
-
-            # chonge choice order
-            if ($choicesDiv.Count -eq 6) {
-                #2 blanks
-                Set-Swap ([ref]$choicesDiv[1]) ([ref]$choicesDiv[2]) # A DB ECF -> A BD ECF
-                Set-Swap ([ref]$choicesDiv[3]) ([ref]$choicesDiv[4]) # ABD EC F -> ABD CE F
-                Set-Swap ([ref]$choicesDiv[2]) ([ref]$choicesDiv[3]) # AB DC EF -> AB CD EF
-                $question.Node.InnerXml = $question.Node.InnerXml.Replace("</p><p>D", "</p></div><div class=`"choices`"><p>D")
-            }
-            else {
-                # 3 blanks
-                Set-Swap ([ref]$choicesDiv[1]) ([ref]$choicesDiv[3]) # 1(4)7(2)58369 -> 1(2)7(4)58369
-                Set-Swap ([ref]$choicesDiv[2]) ([ref]$choicesDiv[6]) # 12(7)458(3)69 -> 12(3)458(7)69
-                Set-Swap ([ref]$choicesDiv[5]) ([ref]$choicesDiv[7]) # 12345(8)7(6)9 -> 12345(6)7(8)9
-                $question.Node.InnerXml = $question.Node.InnerXml.Replace("</p><p>D", "</p></div><div class=`"choices`"><p>D")
-                $question.Node.InnerXml = $question.Node.InnerXml.Replace("</p><p>G", "</p></div><div class=`"choices`"><p>G")
-            }
-        }
-        elseif ($question.Node.ChildNodes[1].ChildNodes.Count -eq 6 -or $question.Node.ChildNodes[1].ChildNodes.Count -eq 3) { $question.Node.SetAttribute("data-choice-type", "checkbox") }
-        elseif ($question.Node.ChildNodes[1].ChildNodes.Count -eq 5) { $question.Node.SetAttribute("data-choice-type", "radio") }
-        else {
-            $question.Node.SetAttribute("data-choice-type", "select")
+        $options = @()
+        for ($j = 0; $j -lt $choices.Count; $j++) {
+            $options += , ("($([char](65+$j))) " + $choices[$j].InnerText)
         }
 
-        # single question passage
-        if (!$questionText.Contains("_") -and !$questionText.Contains("ii") -and $questionText.Contains(".") -and $questionText.Length -gt 300) {
-            $passage = $questionText.Substring(0, (Get-AllIndexesOf $questionText ".")[-1] + 1)
-            $passageNode = $xml.CreateElement("div")
-            $passageNode.InnerXml = "<p>$passage</p>"
-            $passageNode.SetAttribute("id", "passage")
-            $passageNode.SetAttribute("class", "passage")
-
-            $question.Node.AppendChild($passageNode) | Out-Null
-            $question.Node.ChildNodes[0].InnerText = $questionText.Substring((Get-AllIndexesOf $questionText ".")[-1] + 2, $questionText.Length - (Get-AllIndexesOf $questionText ".")[-1] - 2)
+        $options.ForEach{
+            $index = [int][char](Get-RegExMatch $_ "(?<=\()[A-I]\b") - 65
+            $choices[$index].InnerText = $_
         }
-        $question.Node.ChildNodes[0].InnerText = [regex]::Replace($questionText, " \(.*?\)") # remove extra newline
+
+        if ((Get-RegExMatch $questionText "_{2,}").Count -gt 1) {
+            $question.SetAttribute("data-choice-type", "radio")
+            $question.InnerXml = $question.InnerXml -replace "</p>(<p>\(?D\)?)", "</p></div><div class=`"choices`">`$1"
+            $question.InnerXml = $question.InnerXml -replace "</p>(<p>\(?G\)?)", "</p></div><div class=`"choices`">`$1"
+        }
+        elseif ($choices.Count -eq 5) { $question.SetAttribute("data-choice-type", "radio") }
+        elseif ($choices.Count -eq 6 -or $choices.Count -eq 3) { $question.SetAttribute("data-choice-type", "checkbox") }
+        else { $question.SetAttribute("data-choice-type", "select") }
+        #endregion
+
+        #region Explanations
+        $content = $explanation
+        if ($name -match "gr") {
+            $explanations = Get-RegExMatch $content "(?<=\r\n\d{1,2}\.? )[A-I](, [A-I])?"
+            $answer = $explanations[$i] -replace ", "
+            (Select-Xml "div[@class=`"explanation`"]" $question).Node.SetAttribute("data-answer", $answer)
+        }
+        elseif ($name -match "be") {
+            $content = $content -creplace "\r\n(?!\d+\.)"
+            $explanations = $content -split "\r\n" 
+            $content = $explanations[$i]
+            $content = $content -replace "-\s*"
+            $answer = (Get-RegExMatch $content "(?<=\()[A-I](?=\))") -join ""
+            $node = (Select-Xml "div[@class=`"explanation`"]" $question).Node
+            $node.SetAttribute("data-answer", $answer)
+            $node.InnerXml = "<p>$content</p>"
+        }
+        #endregion
+
+        #region Passage
+        Set-Content $testHtml $html.OuterXml -Encoding UTF8
+        if ( $questionText -match "_") { continue }
+        $passages = Select-Xml "//div[@class=`"passage`"]" $html
+        if($passages.Count -eq 1) {$passages = @($passages)}
+        $node = $question
+        do {
+            $node = $node.PreviousSibling
+        } until ( $node.class -eq "passage")
+        $index = if($passages.Count -gt 1) { $passages.Node.IndexOf($node) } else { 0 }
+        $passages[$index].Node.SetAttribute("id", "passage$($index+1)") # add question id
+        $question.SetAttribute("data-passage", "passage$($index+1)")
+        #endregion
+
     }
-    Set-Content $testHtml $xml.OuterXml
-    $passages = Select-Xml "//div[@id=`"passage`"]" $xml
-    for ($i = 0; $i -lt $passages.Count; $i++) {
-        $passage = $passages[$i]
-        $passage.Node.SetAttribute("id", "passage$($i+1)") # add question id
 
-        if ($passage.Node.ParentNode.id -ne "questions") {
-            # add single question passage id
-            $passage.Node.ParentNode.SetAttribute("data-passage", $passage.Node.id)
-        }
+    $html = "<!DOCTYPE html><html lang=`"en`"><head><title></title><script src=`"/index.js`"></script></head><body><main class=`"w3-container`">" + $html.OuterXml + "</main></body></html>"
+    $html = $html -replace "\n(\s*\n)*(?=</p>)"
+    $html = Format-Html $html
+    $html = $html -replace "\[\]"
 
-        for ($j = 0; $j -lt $xml.div.ChildNodes.Count; $j++) {
-            $div = $xml.div.ChildNodes[$j];
-            if ($div.id.Contains("passage")) {
-                for ($k = $j + 1; $k -lt $xml.div.ChildNodes.Count; $k++) {
-                    $node = $xml.div.ChildNodes[$k]
-                    if ($node.id.Contains("passage") -or $node.InnerXml.Contains("id=`"passage")) { break }
-                    else { $node.SetAttribute("data-passage", $div.id) }
-                }
-            }
-        }
-    }
-    $html = "<!DOCTYPE html><html lang=`"en`"><head><title></title><script src=`"/index.js`"></script></head><body><main class=`"w3-container`">" + $xml.OuterXml + "</main></body></html>"
-    #New-Item -Path $path -value $html -ErrorAction SilentlyContinue | Out-Null
-    
     Set-Content $path $html -Encoding UTF8
 }
 
-
 if ($type -eq "txt") {
+    $extraRegex = "PRACTICE ?SET|STRATEGY|GRE2015|SET|CHAPTER|\d{2,3} PART|Question Type|GRE Verbal|For each of|Select two |For (the following|this question)|\d+  .*?  GRUBER|Screen clipping"
+
+    $content = Get-Content $path.Replace("\gre", "\temp\gre") -Raw
+    $path = $path -replace ".txt", ".html"
+    $content = $content -creplace "(?<=\r\n)($extraRegex).*\r\n"
+
     $splitIndex = $content.IndexOf("Answers")
-    $question = $content.Substring(0, $splitIndex)
-    $explanation = $content.Substring($splitIndex + 7, $content.Length - $splitIndex - 7) 
-    ConvertFrom-Text $question $path
-    Get-Answer $explanation $path
+    $explanation = $content.Substring($splitIndex + 9, $content.Length - $splitIndex - 9) 
+    $content = $content.Substring(0, $splitIndex)
+    ConvertFrom-Text
 }
 else {
     ConvertFrom-Epub

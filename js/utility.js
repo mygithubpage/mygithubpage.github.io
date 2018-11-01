@@ -25,6 +25,7 @@ function toggleHighlight(element) {
 }
 
 function rgb2hex(rgb) {
+    
     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 
     function hex(x) {

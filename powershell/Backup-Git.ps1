@@ -36,4 +36,4 @@ function Update-Android {
 
 
 #Update-Android
-#Update-Git
+Update-Git

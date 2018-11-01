@@ -27,6 +27,37 @@ bookmarks = [
     },
     //#endregion
 
+    //#region MOOC
+    {
+        href: "https://academicearth.org/",
+        tags: ["Academic Earth", "MOOC"]
+    },
+    {
+        href: "https://www.coursera.org/",
+        tags: ["Coursera", "MOOC"]
+    },
+    {
+        href: "https://www.edx.org/",
+        tags: ["edX", "MOOC"]
+    },
+    {
+        href: "https://www.khanacademy.org/",
+        tags: ["Khan Academy", "MOOC"]
+    },
+    {
+        href: "https://www.linkedin.com/learning/",
+        tags: ["LinkedIn Learning", "MOOC"]
+    },
+    {
+        href: "https://www.udemy.com/",
+        tags: ["Udemy", "MOOC"]
+    },
+    {
+        href: "https://www.udacity.com/",
+        tags: ["Udacity", "MOOC"]
+    },
+    //#endregion
+
     //#region Test Preparation
     {
         href: "https://kaptest.com",
@@ -58,6 +89,10 @@ bookmarks = [
     {
         href: "https://developer.nvidia.com/deep-learning",
         tags: ["NVIDIA", "AI", "Developer"]
+    },
+    {
+        href: "https://www.oreilly.com/topics/ai",
+        tags: ["OReilly", "AI"]
     },
     //#endregion
 
@@ -146,8 +181,8 @@ bookmarks = [
         tags: ["Wikipedia"]
     },
     {
-        href: "https://www.oreilly.com/topics/ai",
-        tags: ["OReilly", "AI"]
+        href: "https://en.wikipedia.org/wiki/List_of_MOOCs",
+        tags: ["Wikipedia"]
     },
     //#endregion
 ]
