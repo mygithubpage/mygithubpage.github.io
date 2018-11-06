@@ -109,7 +109,7 @@ function addTopNav(color) {
         var barItems = ["TPO", "Essay", "OG", "PT", "EQ", "BE", "Cambridge", "Longman", "Notes"];
     } else if (uri.includes("/gre/")) {
         var test = "/gre/";
-        var barItems = ["OG", "PQ", "PR", "Kap", "MP", "BE", "MH", "Grubers", "Notes"];
+        var barItems = ["OG", "PQ", "PR", "Kap", "MP", "BE", "MH", "GR", "Notes"];
     } else {
         var test = "/"
         var barItems = ["Notes", "TOEFL", "GRE"];
@@ -196,7 +196,7 @@ function addFooter(color) {
 function addScripts() {
     var scripts = [{
         dir: "literals/",
-        names: ["colors", "vocabulary", "notes", "bookmarks", "categories", "topics"]
+        names: ["colors", "gre", "vocabulary", "notes", "bookmarks", "categories", "topics"]
     }, {
         dir: "",
         names: ["utility", "style", "filter", "test", "word", "svg", "external"]

@@ -1,0 +1,46 @@
+{
+    "Settings":  {
+                     "value":  "{\r\n    \"editor.minimap.enabled\": false,\r\n    \"editor.wordWrap\": \"on\",\r\n    \"editor.largeFileOptimizations\": false,\r\n\r\n    \"html.format.wrapLineLength\": 0,\r\n    \"breadcrumbs.enabled\": true,\r\n\r\n    \"files.autoSave\": \"afterDelay\",\r\n    \"files.encoding\": \"utf8\",\r\n    \"files.associations\": {\r\n        \"*.opf\": \"xml\"\r\n    },\r\n    \"files.exclude\": {\r\n        \"**/.git\": true,\r\n        \"**/.svn\": true,\r\n        \"**/.hg\": true,\r\n        \"**/CVS\": true,\r\n        \"**/.DS_Store\": true,\r\n        \"**/*.mp3\": true,\r\n        \"**/*.jpg\": true,\r\n        \"**/*Prin*.txt\": true\r\n    },\r\n\r\n    \"workbench.iconTheme\": \"vscode-icons\",\r\n    \"workbench.colorTheme\": \"One Dark Pro\",\r\n    \"[html]\": {\r\n        \"editor.tabSize\": 2\r\n    },\r\n\r\n    // Extensions Settings\r\n    \"cSpell.language\": \"en\",\r\n\r\n    \"vsicons.dontShowNewVersionMessage\": true,\r\n    \"vsicons.associations.folders\": [{\r\n            \"icon\": \"node\",\r\n            \"extensions\": [\"node\", \"nodejs\"],\r\n            \"format\": \"svg\"\r\n        },\r\n        {\r\n            \"icon\": \"powershell\",\r\n            \"extensions\": [\"powershell\"],\r\n            \"format\": \"svg\"\r\n        }\r\n    ],\r\n    \"search.followSymlinks\": false\r\n}",
+                     "PSPath":  "C:\\Users\\decisactor\\AppData\\Roaming\\Code\\User\\settings.json",
+                     "PSParentPath":  "C:\\Users\\decisactor\\AppData\\Roaming\\Code\\User",
+                     "PSChildName":  "settings.json",
+                     "PSDrive":  {
+                                     "CurrentLocation":  "github",
+                                     "Name":  "C",
+                                     "Provider":  "Microsoft.PowerShell.Core\\FileSystem",
+                                     "Root":  "C:\\",
+                                     "Description":  "",
+                                     "MaximumSize":  null,
+                                     "Credential":  "System.Management.Automation.PSCredential",
+                                     "DisplayRoot":  null
+                                 },
+                     "PSProvider":  {
+                                        "ImplementingType":  "Microsoft.PowerShell.Commands.FileSystemProvider",
+                                        "HelpFile":  "System.Management.Automation.dll-Help.xml",
+                                        "Name":  "FileSystem",
+                                        "PSSnapIn":  "Microsoft.PowerShell.Core",
+                                        "ModuleName":  "Microsoft.PowerShell.Core",
+                                        "Module":  null,
+                                        "Description":  "",
+                                        "Capabilities":  52,
+                                        "Home":  "C:\\Users\\decisactor",
+                                        "Drives":  "C G E"
+                                    },
+                     "ReadCount":  1
+                 },
+    "Extensions":  [
+                       "dbaeumer.vscode-eslint",
+                       "donjayamanne.jquerysnippets",
+                       "eamodio.gitlens",
+                       "GrapeCity.gc-excelviewer",
+                       "HookyQR.beautify",
+                       "ms-python.python",
+                       "ms-vscode.cpptools",
+                       "ms-vscode.csharp",
+                       "ms-vscode.PowerShell",
+                       "msjsdiag.debugger-for-chrome",
+                       "robertohuertasm.vscode-icons",
+                       "streetsidesoftware.code-spell-checker",
+                       "zhuangtongfa.Material-theme"
+                   ]
+}

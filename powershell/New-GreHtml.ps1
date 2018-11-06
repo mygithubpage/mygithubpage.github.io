@@ -48,7 +48,6 @@ function Get-ImageText ($path, [ref]$wordApp, $scale = 100) {
 
     if ($extension -ne ".jpg") {
         #Load required assemblies and get object reference 
-        [Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
         $i = New-Object System.Drawing.Bitmap($path)
         $path = $path -replace "\.(\w+)$", ".jpg"
 

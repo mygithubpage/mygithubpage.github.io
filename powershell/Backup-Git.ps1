@@ -1,39 +1,41 @@
-<# 
+
+<#
+git add .
+git commit -m "update"
+git push -u origin master 
+#>    
 
 
-
-@("OneDrive", "Google Drive", "iCloudDrive").ForEach{
-    $folder = $_
-    $directory = "$env:USERPROFILE\$folder\"
-    (Get-ChildItem "C:\github" -Recurse -File).ForEach{
-        $item = $_
-    }
-}
-#>
-
-function Update-Git {
-    git add .
-    git commit -m "update"
-    git push -u origin master 
+$folders = "OneDrive", "Google Drive", "iCloudDrive", "Box Sync"
+(Get-PSDrive -PSProvider FileSystem).Root.ForEach{
+    if ( (Test-Path $_) -and ($_ | Get-ChildItem).Name.Contains("Android") ) { $folders += , $_ -replace "\\$" }
 }
 
-function Update-Android {
-    <#
-    (Get-PSDrive -PSProvider FileSystem).Root.ForEach{
-    ($_ | Get-ChildItem).Name.IndexOf("Android")
-    }
-    #>
+(Get-ChildItem "C:\github" -Recurse).ForEach{
+    $file = $_
+    $folders.ForEach{
+        $path = if ($_ -notmatch ":") { "$env:USERPROFILE\$_\github" } else { "$_\github" }
+        if (!(Test-Path $path)) { 
+            New-Item $path -ItemType Directory | Out-Null
+        }
+        $path = $file.FullName -replace "C:", "$env:USERPROFILE\$_"
+        if (!(Test-Path $path) -or (Get-Item $path).LastWriteTime -lt $file.LastWriteTime ) { 
+            Copy-Item $file.FullName $path
+        }
 
-    (Get-ChildItem "D:\github\" -Recurse -File).ForEach{
-        $file = $_
-        if ($file.Name -match ".html") {
+        if ($_ -match ":" -and $file.Name -match ".html") {
             $content = (Get-Content $file.FullName).Replace("/index.js", "/storage/sdcard1/github/index.js")
             if (!$content) { continue }
             Set-Content $file.FullName $content
         }
+        
     }
 }
 
-
-#Update-Android
-Update-Git
+$folders.ForEach{
+    $path = if ($_ -notmatch ":") { "$env:USERPROFILE\$_\github" } else { "$_\github" }
+    (Get-ChildItem $path -Recurse).ForEach{
+        $path = $_.FullName -replace "($env:USERPROFILE\)?$_", "C:"
+        if (!(Test-Path $path)) { Remove-Item $path }
+    }
+}

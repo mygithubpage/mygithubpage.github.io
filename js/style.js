@@ -7,13 +7,13 @@ function renameTitle() {
     }
 
     title = html.split(".")[0].replace(/-/g, ' ');
-    title = title.replace(/\bog/, "Official Guide");
-    title = title.replace(/\bmh/, "McGraw-Hill");
-    title = title.replace(/\bkap/, "Kaplan");
-    title = title.replace(/\bpr/, "Princeton Review");
-    title = title.replace(/\bmp/, "Manhattan Prep");
-    title = title.replace(/\bbe/, "Barron's Edu");
-    title = title.replace(/\bgr/, "Gruber's");
+    title = title.replace(/\bog\b/, "Official Guide");
+    title = title.replace(/\bmh\b/, "McGraw-Hill");
+    title = title.replace(/\bkap\b/, "Kaplan");
+    title = title.replace(/\bpr\b/, "Princeton Review");
+    title = title.replace(/\bmp\b/, "Manhattan Prep");
+    title = title.replace(/\bbe\b/, "Barron's Edu");
+    title = title.replace(/\bgr\b/, "Gruber's");
     title = title.replace(/\bdt(\d+)?/, "Diagnostic Test $1");
     title = title.replace(/\bpd(\d+)?/, "Practice Drill $1");
     title = title.replace(/\bpp(\d+)?/, "Practice Problems $1");
@@ -56,7 +56,7 @@ function removeLeadingWhiteSpace() {
 
 function setStyle() {
 
-    bgColor = window.getComputedStyle(topNav[0]).backgroundColor;
+    bgColor = window.getComputedStyle(footer[0]).backgroundColor;
     
     $("a").css("textDecoration", "none");
     $(".my-color").addClass(color);

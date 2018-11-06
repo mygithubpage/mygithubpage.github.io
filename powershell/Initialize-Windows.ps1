@@ -1,79 +1,75 @@
-#  
 
-#Set-ExecutionPolicy Undefined
-$programs = "Git", "VSCode"
-# https://github.com/PowerShell/vscode-powershell/blob/master/scripts/Install-VSCode.ps1
 
-function Install-VSCode {
+function Invoke-Installer {
     param (
-        [string]$Architecture = "64-bit",
-        [string]$BuildEdition = "Stable"
+        [string]$Installer,
+        [string]$FileUri
     )
 
-    # Setting Variable
-    $bitVersion = "win32-x64"
-
-    $codeCmdPath = "$env:LocalAppData\Programs\Microsoft VS Code\bin\code.cmd"
-    $appName = "Visual Studio Code ($($Architecture))"
-    $fileUri = "https://vscode-update.azurewebsites.net/latest/$($bitVersion)/stable"
-
-    $installer = "$env:TEMP\vscode-$($BuildEdition).exe"
-
-    # Installing Application
-    if (!(Test-Path $codeCmdPath)) {
-        if (!(Test-Path $installer)) 
-        {
-            Write-Host "`nDownloading latest $appName..."
-            Invoke-WebRequest $fileUri -OutFile $installer
+    function Test-Version {
+        if ($FileUri -match "/git/") {
+            $fileUri.Contains((git --version) -replace "git version ")
         }
         else {
-            Write-Host "`n$installer is already downloaded."
+            $true
         }
-        Write-Host "`nInstalling $appName..."
-        Start-Process -Wait $installer -ArgumentList "/verysilent /tasks=addcontextmenufiles,addcontextmenufolders,addtopath"
+    }
+
+    if ($cmdPath -cmatch " Code") { 
+        $fileUri = "https://vscode-update.azurewebsites.net/latest/win32-x64/stable" 
+        $installer = "$env:TEMP\$installer.exe"
     }
     else {
-        Write-Host "`n$appName is already installed." 
+        $html = Invoke-WebRequest $fileUri
+        $document = $html.ParsedHtml.body
+
+        $fileUri = $document.getElementsByTagName("a") | Foreach-Object { if ($_.href -match $installer) { $_.href }}
+        $installer = "$env:TEMP\" + $fileUri.Split("/")[-1] 
     }
 
-    # Install Extensions
-    $extensions = "ms-vscode.cpptools", "ms-vscode.csharp", "ms-vscode.powershell", "ms-python.python", `
-    "formulahendry.code-runner", "zhuangtongfa.material-theme", "robertohuertasm.vscode-icons", `
-    "DavidAnson.vscode-markdownlint"
-    foreach($extension in $extensions) {
-        Write-Host "`nInstalling extension $extension..."
-        & $codeCmdPath --install-extension $extension
+    if (!(Test-Path $CmdPath) -or !(Test-Version $FileUri) ) {
+        if (!(Test-Path $Installer)) 
+        {
+            Write-Host "Downloading $Installer..."
+            Invoke-WebRequest $FileUri -OutFile $Installer
+        }
+        Write-Host "`nInstalling $Installer..."
+        Invoke-Item $Installer
     }
-
-    # Change Settings
-    $setting = "$env:APPDATA\Code\User\settings.json"
-
-    if (!(Test-Path $setting)) { 
-        New-Item $setting
-        Set-Content $setting `
-        '{
-            "editor.minimap.enabled": false,
-            "editor.wordWrap": "on",
-            "extensions.autoUpdate": true,
-            "files.autoSave": "afterDelay",
-            "files.encoding": "utf8",
-            "vsicons.dontShowNewVersionMessage": true,
-            "workbench.colorTheme": "One Dark Pro",
-            "workbench.iconTheme": "vscode-icons"
-        }'
-    }
-    else {
-        Get-Content
-    }
-
-    Write-Host "`nInstallation complete, starting $appName...`n`n"
-    $codeCmdPath
-}
-
-function Install-Git {
     
 }
 
-$prgrams.ForEach{
-    Invoke-Expression "Install-$_"
+
+# Set-ExecutionPolicy Undefined
+$programs = "VSCode", "iCloud", "Git"
+# https://github.com/PowerShell/vscode-powershell/blob/master/scripts/Install-VSCode.ps1
+
+$programs.ForEach{
+    $startMenu = "Microsoft\Windows\Start Menu\Programs\$_"
+    $cmdPath = "$env:ProgramFiles\$startMenu"
+
+    if ($_ -match "Git") {
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+
+        $fileUri = "https://git-scm.com/download/win"
+        $installer = "64-bit.exe"
+    }
+    elseif ($_ -match "VSCode") {
+        $cmdPath = "$env:APPDATA\$startMenu" -replace "VSCode", "Visual Studio Code"
+    }
+    elseif ($_ -match "iCloud") {
+        $fileUri = "https://support.apple.com/en-us/HT204283"
+        $installer = "iCloudSetup.exe"
+    }
+
+    Invoke-Installer $installer $fileUri
+
+    if ($_ -match "VSCode") {
+        # Install Extensions
+        (Get-Content "$PSScriptRoot\json\vscode.json" | ConvertFrom-Json).Extensions.ForEach{
+            code --install-extension $_
+        }
+        # Change Settings
+        Set-Content "$env:APPDATA\Code\User\settings.json" $json.Settings.Value
+    }
 }

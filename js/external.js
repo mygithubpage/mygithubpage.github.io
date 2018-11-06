@@ -9,6 +9,42 @@ function initialize() {
         main.html(main.html().replace(/\u00E2\u20AC\u00A6/g, "\u2026"))
     }
 
+    function createNavigation() {
+        name = getUri(uri).file.replace(".html", "");
+        set = links.find(set => set.name.match(name));
+
+        $(set.sets).each(function () {
+            let div = $("<div>", {
+                class: "w3-bar my-margin"
+            }).appendTo(main);
+
+            $("<div>", {
+                class: "w3-bar-item w3-margin-right my-color my-page",
+                html: `${this.name}`
+            }).appendTo(div);
+
+            if (this.links) {
+                sets = this
+                $(this.links).each(function () {
+                    $("<a>", {
+                        class: "w3-button w3-bar-item my-color my-page",
+                        html: `${this}`,
+                        href: `${set.name}-${sets.name}-${this}.html`.toLowerCase()
+                    }).appendTo(div);
+                });
+            }
+            else {
+                for (let i = 1; i <= this.count; i++) {
+                    $("<a>", {
+                        class: "w3-button w3-bar-item my-color my-page",
+                        html: `${i}`,
+                        href: `${this.href}`.replace("verbal.html", `verbal${i}.html`)
+                    }).appendTo(div);
+                }
+            }
+        });
+    }
+
     updateCharacter();
 
     if (uri.match(/toefl(\/(tpo|og)){2}\.html/)) {
@@ -46,14 +82,23 @@ function initialize() {
         if (typeof sets != "undefined" && sets) {
             createWordSets();
         } else {
-            waitLoad("#vocabulary", () => {
-                createWordSets();
-            });
+            waitLoad("#vocabulary", createWordSets);
         }
     }
 
     if (sidebar.length) {
         addTOC();
+    }
+
+    if (uri.match(/gre\/(\w+).\1.html/)) {
+
+        if (typeof links != "undefined" && links) {
+            createNavigation();
+        } else {
+            waitLoad("#gre", createNavigation);
+        }
+
+
     }
 
     // essay folder
@@ -263,7 +308,7 @@ function initialize() {
         setStyle();
     } else {
         waitLoad("#style", () => {
-            setStyle();
+            setStyle()
         });
     }
 }
