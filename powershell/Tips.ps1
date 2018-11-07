@@ -84,7 +84,7 @@ Get-CimInstance Win32_ComputerSystem
 Get-CimInstance Win32_Processor
 Get-CimInstance Win32_OperatingSystem # 
 Get-CimInstance Win32_LocalTime
-(Get-CimInstance Win32_LogicalDisk -Filter "DeviceID like `"C:`"").Size / (2 -shl 29) # GB
+(Get-CimInstance Win32_LogicalDisk).Size[0] / (2 -shl 29) # GB
 
 Get-CimClass *Network*
 Get-CimInstance Win32_NetworkAdapterConfiguration
