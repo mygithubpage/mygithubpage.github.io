@@ -47,10 +47,12 @@ if ((Get-ExecutionPolicy) -eq "Restricted") {
 # Show Hidden Item; File Extension
 
 # Installation
-$programs = "VSCode", "Git", "7-Zip"
+$programs = "Git", "Node", "VSCode", "7-Zip"
 if ((Get-CimInstance Win32_LogicalDisk).Size[0] / (2 -shl 29) -gt 60) { 
-    $programs += , "iCloud", "Chrome"
+    $programs += , "iCloud", "Google Sync", "Box", "Chrome", "Firefox", "VMware", "VirtualBox", "TeamViewer", "VLC",
+    ".Net Core", "Anaconda", "Steam", "Office"
 }
+$apps = "iTunes", "VPN Pro"
 $programs.ForEach{
     $startMenu = "Microsoft\Windows\Start Menu\Programs\$_"
     $cmdPath = "$env:ProgramData\$startMenu"

@@ -1,4 +1,4 @@
-var greFlag = (/verbal|quantitative|issue|argument|test/).exec(uri)
+
 var setFlag = uri.match(/ing\d\.html/);
 var num = +uri.match(/\d(?=\.html)/);
 var sections = [{
@@ -795,6 +795,7 @@ function addDropDown(element, length, parent) {
 
 // Add Category Filter for test set page
 function addCategoryFilter() {
+    addScripts(["categories"]);
     let length;
 
     if (setFlag) {
@@ -1037,7 +1038,7 @@ function updateQuestionUI() {
 
         questions.each(function (i) {
             $("<button>", {
-                class: `${color} w3-bar-item w3-button my-page`,
+                class: `${color} my-page`,
                 html: i + 1
             }).appendTo(pageBar).click(function () {
                 let id = "question" + $(this).text();
@@ -1086,7 +1087,7 @@ function updateQuestionUI() {
                     }
                     setStyle();
 
-                })[0].click();
+                })//[0].click();
                 if (!greFlag && !uri.includes("test.html")) showSpecialQuestion(article, questionDiv);
                 addWord();
                 setStyle();
@@ -1096,7 +1097,7 @@ function updateQuestionUI() {
     }
 
     questions = $("#questions [id^='question']");
-    if ($("#questions")) { // Update Verbal Reasoning UI
+    if ($("#questions").length > 0) { // Update Verbal Reasoning UI
         // audio lyrics
         let audio = $("audio", main);
         if (audio && uri.includes("listening")) {
@@ -1109,7 +1110,7 @@ function updateQuestionUI() {
             setArticleHeight(listening, screen.height - audio.offsetTop - 160 + "px")
 
             if (timeSpan) {
-                audio.ontimeupdate = e => {
+                audio.ontimeupdate = () => {
                     let duration = parseFloat(timeSpan[n].getAttribute("data-times")) + parseFloat(timeSpan[n].getAttribute("data-time"));
                     if (parseFloat(this.currentTime.toFixed(2)) <= duration) {
                         listening.scrollTop = timeSpan[n].parentNode.offsetTop - 320;
@@ -1127,7 +1128,7 @@ function updateQuestionUI() {
 
 
     } else { // Update Speaking and Writing
-        let responses = $(".response", main)
+        var responses = $(".response", main)
         if (responses.length > 1) {
             //$("#question").toggle()
             div = $("<div>").appendTo(main);
@@ -1138,12 +1139,12 @@ function updateQuestionUI() {
                 id: "responseDiv"
             }).appendTo(div);
             //setArticleHeight(div);
-            responses.each(function () {
+            responses.each(function (i) {
                 $("<button>", {
                     class: `${color} w3-bar-item w3-button`,
                     html: `${i+1}`
                 }).appendTo(pageBar).click(function () {
-                    responseDiv.html(responses[i].html())
+                    responseDiv.html(responses.eq(i).html())
                 });
             });
         }
@@ -1172,4 +1173,6 @@ function updateQuestionUI() {
         setArticleHeight($("#reading-text"));
          */
     }
+    
+    setStyle();
 }

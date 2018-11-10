@@ -149,9 +149,17 @@ function addTags() {
 
         function getTitle() {
             let title;
-            if (!entry.href.match("wikipedia")) title = entry.tags[0];
+            if (entry.tags.includes("Products")) title = entry.tags[0] + " Products";
+            else if (!entry.href.match("wikipedia")) title = entry.tags[0];
             else title = entry.href.split("/").splice(-1)[0].replace(/_/g," ").replace(/.* of /,"");
             return title;
+        }
+
+        function getLink() {
+            let href;
+            if (entry.tags.includes("Products")) href = `products/${entry.href}`;
+            else href = entry.href
+            return href;
         }
 
         let div = $("<div>", {
@@ -163,7 +171,7 @@ function addTags() {
 
         $("<a>", {
             class: "my-highlight w3-large my-link",
-            href: entry.href,
+            href: getLink(),
             html: getTitle()
         }).appendTo(titleDiv).css("padding",0);
 

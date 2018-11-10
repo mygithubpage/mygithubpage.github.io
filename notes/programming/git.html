@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="/index.js"></script>
+</head>
+
+<body>
+
+  <main class="w3-container">
+
+    <section>
+      <h1>Git</h1>
+
+      <section>
+        <h2>Getting Started</h2>
+
+        <section>
+          <h3>First-Time Git Setup</h3>
+          <p>Git comes with a tool called <code>git config</code> that lets you get and set configuration variables that control all aspects of how Git looks and operates.</p>
+
+          <section>
+            <h4>Config Location</h4>
+            Configuration variables can be stored in three different places:
+            <ol>
+              <li>
+                /etc/gitconfig file: Contains values applied to every user on the system and all their repositories. If you pass the option --system to git config, it reads and writes from this file specifically. (Because this is a system configuration file, you would need administrative or superuser privilege to make changes to it.)
+              </li>
+
+              <li>
+                ~/.gitconfig or ~/.config/git/config file: Values specific personally to you, the user. You can make Git read and write to this file specifically by passing the --global option, and this affects all of the repositories you work with on your system.
+              </li>
+
+              <li>
+                config file in the Git directory (that is, .git/config) of whatever repository you’re currently using: Specific to that single repository.
+              </li>
+            </ol>
+
+            <pre><code class="shell my-code">
+              $ git config --global user.name "decisact"
+              $ git config --global user.email decisact@example.com
+            </code></pre>
+          </section>
+
+          <section>
+            <h4>Your Identity</h4>
+            <p>This is important because every Git commit uses this information. Again, you need to do this only once if you pass the <code class="shell">--global</code> option, because then Git will always use that information for anything you do on that system. If you want to override this with a different name or email address for specific projects, you can run the command without the <code class="shell">--global</code> option when you’re in that project.</p>
+            <pre><code class="shell my-code">
+              $ git config --global user.name "decisact"
+              $ git config --global user.email decisact@example.com
+            </code></pre>
+          </section>
+
+        </section>
+
+      </section>
+
+    </section>
+
+  </main>
+
+</body>
+
+</html>

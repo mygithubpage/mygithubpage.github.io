@@ -39,32 +39,17 @@ function setListStyle() {
     $("ol>ol").css("listStyle", "lower-alpha");
 }
 
-function removeLeadingWhiteSpace() {
-    $("pre").each(function () {
-        let lines = $(this).html().split("\n");
-        let length = lines[1].length - lines[1].trimLeft(" ").length // The Greatest WhiteSpace Length to be removed
-        let innerHTML = "";
-
-        $(lines).each(function () {
-            let regexp = new RegExp(`\\s{${length}}`)
-            innerHTML += this.replace(regexp, "") + (this.match(/code/) ? "" : "\n");
-        })
-
-        $(this).html(innerHTML.replace(/\s+</, "<"));
-    });
-}
-
 function setStyle() {
 
-    bgColor = window.getComputedStyle(footer[0]).backgroundColor;
     
-    $("a").css("textDecoration", "none");
+    $("main a:not([class])").addClass("my-highlight").css("textDecoration", "none");
+    $(".my-page").addClass("w3-button w3-bar-item my-color");
     $(".my-color").addClass(color);
     $(".my-search").addClass("w3-btn w3-section w3-large w3-right");
     $(".my-tag").addClass("w3-btn w3-padding-small my-margin-small my-highlight my-border");
     $(".my-border, hr").css("border", `2px solid ${bgColor}`);
     $(".my-math").addClass("my-highlight").css("font-size", "16px");
-    $(".my-code").addClass("w3-code w3-panel w3-card w3-light-gray").css("borderLeft", `2px solid ${bgColor}`)
+    $(".my-code").addClass("w3-code w3-panel w3-card w3-dark-gray").css("borderLeft", `3px solid ${bgColor}`)
     $(".my-highlight, h1, h2, h3, h4, h5, h6, b, u, em, strong").each(function () {
         addHighlight($(this))
     });

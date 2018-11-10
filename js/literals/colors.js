@@ -2,7 +2,7 @@ colors = [{
     css: "w3",
     schemes: [{
             scheme: "flat",
-            color: [, "turquoise", "emerald", "peter-river", "amethyst", "wet-asphalt", "green-sea", "nephritis", "belize-hole", "wisteria", "midnight-blue", "sun-flower", "carrot", "alizarin", "concrete", "orange", "pumpkin", "pomegranate", "asbestos"]
+            color: ["turquoise", "emerald", "peter-river", "amethyst", "wet-asphalt", "green-sea", "nephritis", "belize-hole", "wisteria", "midnight-blue", "sun-flower", "carrot", "alizarin", "concrete", "orange", "pumpkin", "pomegranate", "asbestos"]
         },
         {
             scheme: "metro",
@@ -22,7 +22,7 @@ colors = [{
         },
         {
             scheme: "2018",
-            color: ["red-pear", "valiant-poppy", "nebulas-blue", "martini-olive", "russet-orange",, "quetzal-green", "sargasso-sea", "quiet-gray,", "cherry-tomato", "chili-oil", "arcadia", "emperador", "ultra-violet",, "spring-crocus", "lime-punch", "sailor-blue"]
+            color: ["red-pear", "valiant-poppy", "nebulas-blue", "martini-olive", "russet-orange", "quetzal-green", "sargasso-sea", "quiet-gray,", "cherry-tomato", "chili-oil", "arcadia", "emperador", "ultra-violet","spring-crocus", "lime-punch", "sailor-blue"]
         },
         {
             scheme: "2017",

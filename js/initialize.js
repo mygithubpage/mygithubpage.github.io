@@ -83,7 +83,7 @@ function addHead() {
     }).appendTo(head);
 
     // CSS 
-    let styles = ["w3", "w3-colors", "style"]
+    let styles = ["w3", "colors", "style"]
     $(styles).each(function () {
         $("<link>", {
             rel: "stylesheet",
@@ -193,23 +193,12 @@ function addFooter(color) {
     }).appendTo(footer);
 }
 
-function addScripts() {
-    var scripts = [{
-        dir: "literals/",
-        names: ["colors", "gre", "vocabulary", "notes", "bookmarks", "categories", "topics"]
-    }, {
-        dir: "",
-        names: ["utility", "style", "filter", "test", "word", "svg", "external"]
-    }, ]
-
+function addScripts(scripts) {
     $(scripts).each(function () {
-        let dir = this.dir
-        $(this.names).each(function () {
-            createNode("<script>", {
-                id: `${this}`,
-                src: `${folder}/js/${dir}${this}.js`
-            }).async = false;
-        })
+        createNode("<script>", {
+            id: `${this.split("/").slice(-1)}`,
+            src: `${folder}/js/${this}.js`
+        }).async = false;
     });
 }
 // Execute script after window load
@@ -228,21 +217,15 @@ window.addEventListener("load", () => {
         if ($("#questions").length) questions = $("#questions [id^='question']");
         else questions = $("#question > div");
         testFlag = questions.length || $("#question").length;
-        addScripts();
+        greFlag = (/verbal|quantitative|issue|argument|test/).exec(uri)
+        addScripts(["literals/colors", "utility", "style", "filter"]);
         addHead();
-        
-        if (typeof colors != "undefined" && colors && typeof colors.length != "undefined") {
+        waitLoad("#colors", () => {
             addColor();
             addTopNav(color);
             addFooter(color);
-            bgColor = window.getComputedStyle(topNav[0]).backgroundColor;
-        } else {
-            waitLoad("#colors", () => {
-                addColor();
-                addTopNav(color);
-                addFooter(color);
-            }); 
-        }
+            addScripts(["external"]);
+        });
         
     });
 })

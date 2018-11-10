@@ -16,14 +16,6 @@ function removeHighlight(element) {
     });
 }
 
-function toggleHighlight(element) {
-    if (element.style.color !== bgColor) {
-        addHighlight(element);
-    } else {
-        removeHighlight(element);
-    }
-}
-
 function rgb2hex(rgb) {
     
     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
@@ -33,6 +25,7 @@ function rgb2hex(rgb) {
     }
     return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
+
 function createModal() {
     let parent = typeof testDiv != "undefined" ? testDiv : main;
     return $("<div>", {
@@ -40,7 +33,6 @@ function createModal() {
     }).appendTo($("<div>", {
         class: "w3-modal"
     }).appendTo(parent));
-    
 }
 
 function toggleElement() {

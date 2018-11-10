@@ -35,15 +35,22 @@ notes = [
     //#region Misc
     {
         href: "admission.html",
-        tags: ["Admission"]
+        tags: ["Admission", "Others"]
     },
     {
         href: "bookmarks.html",
-        tags: ["Bookmarks"]
+        tags: ["Bookmarks", "Others"]
+    },
+    //#endregion
+
+    //#region Products
+    {
+        href: "computers.html",
+        tags: ["Computers", "Products"]
     },
     {
-        href: "to-do.html",
-        tags: ["To Do"]
+        href: "networking.html",
+        tags: ["Networking", "Products"]
     },
     //#endregion
 ]

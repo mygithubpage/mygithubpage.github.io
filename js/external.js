@@ -19,7 +19,7 @@ function initialize() {
             }).appendTo(main);
 
             $("<div>", {
-                class: "w3-bar-item w3-margin-right my-color my-page",
+                class: "w3-margin-right my-page",
                 html: `${this.name}`
             }).appendTo(div);
 
@@ -27,13 +27,12 @@ function initialize() {
                 sets = this
                 $(this.links).each(function () {
                     $("<a>", {
-                        class: "w3-button w3-bar-item my-color my-page",
+                        class: "my-page",
                         html: `${this}`,
                         href: `${set.name}-${sets.name}-${this}.html`.toLowerCase()
                     }).appendTo(div);
                 });
-            }
-            else {
+            } else {
                 for (let i = 1; i <= this.count; i++) {
                     $("<a>", {
                         class: "w3-button w3-bar-item my-color my-page",
@@ -43,62 +42,32 @@ function initialize() {
                 }
             }
         });
+        setStyle();
     }
 
     updateCharacter();
+    bgColor = window.getComputedStyle(footer[0]).backgroundColor;
 
-    if (uri.match(/toefl(\/(tpo|og)){2}\.html/)) {
-        addCategoryFilter();
-    }
-
-    if (testFlag) {
-        updateQuestionUI(questions);
-
-        if (uri.match(/ing\d\.html/)) {
-            addCategoryFilter();
-        } else {
-            if (greFlag) {
-                var parent = $("<div>", {
-                    class: `w3-bar`,
-                }).prependTo(main)
-            } else {
-                var parent = main
-            }
-            $("<button>", {
-                id: "test",
-                class: `${color} w3-button w3-right w3-section my-bar-small`,
-                html: "Test"
-            }).prependTo(parent).click(startTest);
+    $(["computers", "literals/notes", "literals/bookmarks"]).each(function () {
+        if (uri.includes(`${this.replace("literals/", "")}.html`)) {
+            addScripts([this]);
+            if (uri.includes("literals/")) { waitLoad(`#${this.replace("literals/", "")}`, () => addTags()); }
         }
-
-    }
-
-    if ($("#tags").length) {
-        addTags();
-    }
+    })
 
     // Create Recite Button for vocabulary
     if (uri.includes("vocabulary")) {
-        if (typeof sets != "undefined" && sets) {
-            createWordSets();
-        } else {
-            waitLoad("#vocabulary", createWordSets);
-        }
+        addScripts(["vocabulary", "literals/words"]);
+        waitLoad("#words", () => createWordSets());
     }
 
     if (sidebar.length) {
         addTOC();
     }
 
-    if (uri.match(/gre\/(\w+).\1.html/)) {
-
-        if (typeof links != "undefined" && links) {
-            createNavigation();
-        } else {
-            waitLoad("#gre", createNavigation);
-        }
-
-
+    if (uri.match(/gre\/(\w+).\1.html/) && !uri.includes("notes.html")) {
+        addScripts(["literals/gre"]);
+        waitLoad("#gre", createNavigation);
     }
 
     // essay folder
@@ -120,6 +89,7 @@ function initialize() {
     }
 
     if (uri.includes("essay.html")) {
+        addScripts(["literals/topics"]);
         topics.forEach(topic => {
             let div = $("<div>", {
                 class: "w3-section"
@@ -183,11 +153,7 @@ function initialize() {
                 }).appendTo(tr);
 
                 let inputs = mobileTable.querySelectorAll("input");
-                inputs.forEach(element => {
-                    element.onchange = () => {
-                        getChecked(inputs, description, table);
-                    }
-                });
+                inputs.forEach(element => element.onchange = () => getChecked(inputs, description, table));
                 mobileTable.querySelectorAll("label").forEach(element => {
                     element.style.display = "unset";
                 });
@@ -270,8 +236,25 @@ function initialize() {
     }
 
     if ($("pre").length) {
-        removeLeadingWhiteSpace();
-        $.getScript(`${prefix}highlight.js/9.12.0/highlight.min.js`, () => {
+        $("<link>", {
+            href: `https://github.com/highlightjs/highlight.js/raw/master/src/styles/atom-one-dark.css`
+        }).appendTo(head);
+
+        $("pre").each(function () {
+            let lines = $(this).html().split("\n");
+            if (lines[1]) { var length = lines[1].length - lines[1].trimLeft(" ").length } // The Greatest WhiteSpace Length to be removed
+            let innerHTML = "";
+
+            $(lines).each(function () {
+                let regexp = new RegExp(`\\s{${length}}`)
+                innerHTML += this.replace(regexp, "") + (this.match(/code/) ? "" : "\n");
+            })
+
+            $(this).html(innerHTML.replace(/\s+</, "<"));
+        });
+
+        highlightjs = `${prefix}highlight.js/9.13.1/highlight.min.js`
+        $.getScript(highlightjs, () => {
             flag = true;
             languages = ["apache", "bash", "cs", "cpp", "css", "coffeescript", "diff", "xml", "http", "ini", "json", "java", "js", "makefile", "markdown", "nginx", "objectivec", "php", "perl", "python", "ruby", "sql", "shell"]
             $("code").each(function () {
@@ -280,9 +263,13 @@ function initialize() {
                     flag = false;
                     languages.push(language);
                     if (language == "ps") language = "powershell"
-
-                    $.getScript(`${prefix}highlight.js/9.12.0/languages/${language}.min.js`, () => {
+                    highlightjs = highlightjs.replace("highlight.min", `languages/${language}.min`)
+                    $.getScript(highlightjs, () => {
                         hljs.initHighlighting();
+                        $("code:not(.my-code)").each(function () {
+                            hljs.highlightBlock(this);
+                            $(this).css({"backgroundColor":"white", "display": "unset"});
+                        });
                     });
                 }
             });
@@ -304,13 +291,41 @@ function initialize() {
         });
     }
 
+
+    if (uri.match(/toefl(\/(tpo|og)){2}\.html/)) {
+        addCategoryFilter();
+    }
+
+    if (testFlag) {
+        addScripts(["test", "vocabulary", "literals/words"]);
+        waitLoad("#test", () => {
+            updateQuestionUI(questions);
+            if (uri.match(/ing\d\.html/)) {
+                addCategoryFilter();
+            } else {
+                var parent;
+                if (greFlag) {
+                    parent = $("<div>", {
+                        class: `w3-bar`,
+                    }).prependTo(main)
+                } else {
+                    parent = main
+                }
+                $("<button>", {
+                    id: "test",
+                    class: `${color} w3-button w3-right w3-section my-bar-small`,
+                    html: "Test"
+                }).prependTo(parent).click(startTest);
+            }
+        })
+    }
+
     if (typeof setStyle != "undefined" && setStyle) {
         setStyle();
     } else {
-        waitLoad("#style", () => {
-            setStyle()
-        });
+        waitLoad("#style", () => setStyle());
     }
+
 }
 
 initialize();
